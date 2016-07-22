@@ -97,7 +97,6 @@ void UserInfoWindow::OnLoaded(suic::LoadedEventArg* e)
     _pos = GetLocation();
     // ¥∞ø⁄æ”÷–œ‘ æ
     SetDataContext(_userInfo);
-    InvalidatePropDeps(DataContextProperty, true);
 
     /*SetPos(_pos.x, _pos.y - _moveTop);
 

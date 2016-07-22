@@ -354,7 +354,7 @@ void ChatWindow::OnLoaded(suic::LoadedEventArg* e)
         _fontSetInfo = new FontSettingInfo(pInputText);
         _fontSetInfo->ref();
         fontSetPanel->SetDataContext(_fontSetInfo);
-        fontSetPanel->InvalidatePropDeps(suic::Element::DataContextProperty, true);
+        //fontSetPanel->InvalidatePropDeps(suic::Element::DataContextProperty, true);
     }
 
     //
