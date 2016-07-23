@@ -38,11 +38,11 @@ protected:
     void ArrangeCore(const suic::Rect& arrangeRect);
 };
 
-class TreeItemStackPanel : public suic::StackPanel
+class TreeItemDockPanel : public suic::StackPanel
 {
 public:
 
-    RTTIOfClass(TreeItemStackPanel);
+    RTTIOfClass(TreeItemDockPanel);
 
 public:
 

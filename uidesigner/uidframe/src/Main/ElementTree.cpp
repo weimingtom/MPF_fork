@@ -18,7 +18,7 @@
 
 ImplementRTTIOfClass(ElementTreeItem, suic::TreeViewItem)
 ImplementRTTIOfClass(TreeItemGrid, suic::Grid)
-ImplementRTTIOfClass(TreeItemStackPanel, suic::StackPanel)
+ImplementRTTIOfClass(TreeItemDockPanel, suic::StackPanel)
 
 ImplementRTTIOfClass(ElementTree, suic::TreeView)
 ImplementRTTIOfClass(ProjectTree, suic::TreeView)
@@ -71,19 +71,21 @@ void ElementTreeItem::ArrangeCore(const suic::Rect& arrangeRect)
 
     if (GetVisualChildrenCount() == 1)
     {
-        TreeItemStackPanel* child = RTTICast<TreeItemStackPanel>(GetVisualChild(0));
+        TreeItemDockPanel* child = RTTICast<TreeItemDockPanel>(GetVisualChild(0));
         if (NULL != child)
         {
             child->ArrangeChild(this, scrollView);
         }
     }
+
+    _descendantBounds = Rect(_screenOffset, _renderSize);
 }
 
-void TreeItemStackPanel::ArrangeCore(const suic::Rect& arrangeRect)
+void TreeItemDockPanel::ArrangeCore(const suic::Rect& arrangeRect)
 {
 }
 
-void TreeItemStackPanel::ArrangeChild(ElementTreeItem* parent, suic::ScrollViewer* scrollView)
+void TreeItemDockPanel::ArrangeChild(ElementTreeItem* parent, suic::ScrollViewer* scrollView)
 {
     suic::Rect rcArrange;
 
@@ -149,7 +151,7 @@ void TreeItemGrid::ArrangeChild(Element* parent, suic::ScrollViewer* scrollView)
     _offset.y = 0;
 
     _screenOffset = parent->GetScreenOffset();
-    _renderSize.cx = scrollView->GetViewportWidth();
+    _renderSize.cx = parent->GetActualWidth();//scrollView->GetViewportWidth();
     _renderSize.cy = GetDesiredSize().Height();
 
     suic::Debug::Trace(_U("TreeItemGrid: %d\n"), _renderSize.cx);
@@ -174,6 +176,9 @@ void TreeItemGrid::ArrangeChild(Element* parent, suic::ScrollViewer* scrollView)
     {
         suic::Debug::Trace(_U("************************* TreeItemStackPanel: %d\n"), _renderSize.cx);
     }
+
+    _renderSize.cx += 6;
+    _descendantBounds = Rect(_screenOffset, _renderSize);
 }
 
 ProjectTree::ProjectTree()

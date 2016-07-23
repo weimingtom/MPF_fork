@@ -151,7 +151,7 @@ void InitDControls()
     suic::BuildFactory::Ins()->Add(ElementTree::RTTIType());
     suic::BuildFactory::Ins()->Add(ElementTreeItem::RTTIType());
     suic::BuildFactory::Ins()->Add(TreeItemGrid::RTTIType());
-    suic::BuildFactory::Ins()->Add(TreeItemStackPanel::RTTIType());
+    suic::BuildFactory::Ins()->Add(TreeItemDockPanel::RTTIType());
     
     suic::BuildFactory::Ins()->Add(NameEditor::RTTIType());
     suic::BuildFactory::Ins()->Add(GradientStop::RTTIType());

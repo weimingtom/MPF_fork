@@ -233,19 +233,15 @@ bool DesignElement::GetShowElement()
 
 void DesignElement::SetShowElement(bool val)
 {
-    //if (!IsLocked())
+    if (val)
     {
-        if (val)
-        {
-            GetUIElement()->SetVisibility(suic::Visibility::Visible);
-        }
-        else
-        {
-            GetUIElement()->SetVisibility(suic::Visibility::Hidden);
-        }
+        GetUIElement()->SetVisibility(suic::Visibility::Visible);
+    }
+    else
+    {
+        GetUIElement()->SetVisibility(suic::Visibility::Hidden);
     }
 
-    //g_lockshow->Notify(this, false);
     NotifyShowChanged();
 }
 
@@ -275,7 +271,6 @@ void DesignElement::NotifyLockedChanged()
 void DesignElement::SetLockElement(bool val)
 {
     SetLocked(val);
-    //g_lockshow->Notify(this, true);
     NotifyLockedChanged();
 }
 
@@ -417,36 +412,10 @@ String DesignElement::GetChildXml(const String& offset)
     return strXml;
 }
 
-String DesignElement::GetResXml(const String& offset)
+void DesignElement::GetElementSetterXml(const String& offset, int iCurrSerial, String& strProp, String& strChildProp)
 {
-    String strXml;
-    String strChild;
-    String strProp;
-    String strRes;
-    String strChildXml;
-    String strChildProp;
-    String strTypeName = GetElementName();
-
-    int iCurrSerial = 0;
-
-    if (strTypeName.Empty())
-    {
-        return strXml;
-    }
-
-    ResourceDictionaryNode* pResDic = GetResourceDictionary();
     SetterCollectionNode* setterColl = GetSetterCollection();
     RTTIOfInfo* ownerType = setterColl->GetOwnerType();
-
-    strXml += offset + _U("<");
-    strXml += strTypeName;
-
-    if (!GetKey().Empty())
-    {
-        strXml += _U(" x:Key=\"");
-        strXml += GetKey();
-        strXml += _U("\"");
-    }
 
     for (int i = 0; i < setterColl->GetCount(); ++i)
     {
@@ -550,6 +519,40 @@ String DesignElement::GetResXml(const String& offset)
             }
         }
     }
+}
+
+String DesignElement::GetResXml(const String& offset)
+{
+    String strXml;
+    String strChild;
+    String strProp;
+    String strRes;
+    String strChildXml;
+    String strChildProp;
+    String strTypeName = GetElementName();
+
+    int iCurrSerial = 0;
+
+    if (strTypeName.Empty())
+    {
+        return strXml;
+    }
+
+    ResourceDictionaryNode* pResDic = GetResourceDictionary();
+    SetterCollectionNode* setterColl = GetSetterCollection();
+    RTTIOfInfo* ownerType = setterColl->GetOwnerType();
+
+    strXml += offset + _U("<");
+    strXml += strTypeName;
+
+    if (!GetKey().Empty())
+    {
+        strXml += _U(" x:Key=\"");
+        strXml += GetKey();
+        strXml += _U("\"");
+    }
+
+    GetElementSetterXml(offset, iCurrSerial, strProp, strChildProp);
 
     if (pResDic->IsOnlyResItem())
     {
@@ -1963,17 +1966,22 @@ UserDesignElement::~UserDesignElement()
 
 bool UserDesignElement::IsLocked() const
 {
-    return true;
+    return DesignElement::IsLocked();
+}
+
+suic::String UserDesignElement::GetTypeName()
+{
+    return _holdItem.name;
 }
 
 bool UserDesignElement::GetLockElement()
 {
-    return true;
+    return DesignElement::GetLockElement();
 }
 
 void UserDesignElement::SetLockElement(bool val)
 {
-
+    DesignElement::SetLockElement(val);
 }
 
 String UserDesignElement::ToString()
@@ -2064,7 +2072,35 @@ void UserDesignElement::Clear(HoldItem* pHold)
 
 String UserDesignElement::GetResXml(const String& offset)
 {
-    String strXml = GetResXml(&_holdItem, offset);
+    int iCurrSerial = 0;
+    String strProp;
+    String strChildProp;
+    String strXml = "";
+
+    strXml += offset + _U("<") + _holdItem.name;
+    GetElementSetterXml(offset, iCurrSerial, strProp, strChildProp);
+    strXml += _U(" ") + strProp;
+
+    if (_holdItem.children.GetCount() > 0)
+    {
+        strXml += _U(">\n");
+
+        String strChild;
+        for (int j = 0; j < _holdItem.children.GetCount(); ++j)
+        {
+            strChild += GetResXml(&_holdItem, offset);
+        }
+
+        strXml += strChild;
+        strXml += offset + _U("</") + _holdItem.name + _U(">");
+    }
+    else
+    {
+        strXml += _U("/>");
+    }
+
+    strXml += _U("\n");
+
     return strXml;
 }
 

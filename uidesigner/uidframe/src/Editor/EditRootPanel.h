@@ -92,6 +92,7 @@ public:
     void UpdateSetterToUI(SetterNode* pSetter);
 
     void SwitchCurrentElement(DesignElement* delem);
+    void EnableDesignWithElementLock(DesignElement* delem);
 
     void SetDesignPanel(DesignPanel* design);
     void UpdateDesignPanel(DesignElement* target);
@@ -160,6 +161,7 @@ private:
 
     void OnInitialized(EventArg* e);
     void OnEditGridDefinitions(suic::Element* sender, suic::RoutedEventArg* e);
+    void OnTimer(suic::Object* sender, suic::EventArg* e);
 
 private:
 
@@ -174,6 +176,8 @@ private:
 
     DesignPanel* _designPanel;
     ResNode* _currentResNode;
+
+    suic::AssignerTimer* _timer;
 
     bool _isSettingElement;
 

@@ -22,6 +22,8 @@ EditRootPanel::EditRootPanel()
     _currentResNode = NULL;
 
     _isSettingElement = false;
+    _timer = new suic::AssignerTimer();
+    _timer->ref();
 }
 
 EditRootPanel::~EditRootPanel()
@@ -35,11 +37,24 @@ EditRootPanel::~EditRootPanel()
     }
 
     _props.Clear();
+    _timer->unref();
 }
 
 void EditRootPanel::OnInitialized(EventArg* e)
 {
     suic::Grid::OnInitialized(e);
+
+    _timer->SetTick(suic::EventHandler(this, &EditRootPanel::OnTimer));
+    _timer->SetInterval(100);
+    _timer->Start();
+}
+
+void EditRootPanel::OnTimer(suic::Object* sender, suic::EventArg* e)
+{
+    if (NULL != _editElem)
+    {
+        EnableDesignWithElementLock(_editElem);
+    }
 }
 
 void EditRootPanel::InitPropsInfo(Element* parent)
@@ -182,6 +197,21 @@ void EditRootPanel::InitEditPanelInfo(RootItem* rootElem, DesignPanel* design)
     }
 }
 
+void EditRootPanel::EnableDesignWithElementLock(DesignElement* delem)
+{
+    if (delem != NULL)
+    {
+        if (delem->GetLockElement())
+        {
+            Enable(false);
+        }
+        else
+        {
+            Enable(true);
+        }
+    }
+}
+
 void EditRootPanel::SwitchCurrentElement(DesignElement* delem)
 {
     if (_editElem == delem || NULL == _designPanel || _isSettingElement)
@@ -200,14 +230,7 @@ void EditRootPanel::SwitchCurrentElement(DesignElement* delem)
     if (delem != NULL)
     {
         dfe = delem->GetUIElement();
-        if (delem->GetLockElement())
-        {
-            Enable(false);
-        }
-        else
-        {
-            Enable(true);
-        }
+        EnableDesignWithElementLock(delem);
     }
 
     if (delem != NULL && delem->GetParentUIElement() != NULL)

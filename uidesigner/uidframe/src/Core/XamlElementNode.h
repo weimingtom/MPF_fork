@@ -39,8 +39,8 @@ public:
     // 已经调用ref
     virtual void CloneNode(ResNodePtr& obj);
 
-    suic::String GetName();
-    suic::String GetTypeName();
+    virtual suic::String GetName();
+    virtual suic::String GetTypeName();
 
     suic::String GetNodeName();
     void SetNodeName(const suic::String& val);
@@ -95,6 +95,8 @@ public:
 
     virtual String GetElementName();
     virtual bool NeedNotifyChanged() const;
+
+    void GetElementSetterXml(const String& offset, int iCurrSerial, String& strProp, String& strChildProp);
 
     DesignElement* GetXamlElement(int index);
 
@@ -313,6 +315,7 @@ public:
     void SetLockElement(bool val);
 
     bool IsLocked() const;
+    suic::String GetTypeName();
 
     String ToString();
 
