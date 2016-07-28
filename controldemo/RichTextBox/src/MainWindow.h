@@ -40,7 +40,7 @@ private:
 
     void SendInfo();
 
-    suic::ImagePlayEmbbed* InsertOneImage(suic::String strDir, int count, int delay);
+    suic::PlayImageEmbbed* InsertOneImage(suic::String strDir, int count, int delay);
 };
 
 #endif

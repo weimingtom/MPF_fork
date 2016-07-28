@@ -125,19 +125,15 @@ void MainWindow::OnInsertImageClick(suic::Element* sender, suic::RoutedEventArg*
         imgEmb->ref();
         if (imgEmb->Load(fb.GetFilePath()))
         {
-            int wid = imgEmb->GetBitmap()->Width();
-            int hei = imgEmb->GetBitmap()->Height();
-
-            imgEmb->SetSize(suic::Size(wid, hei));
             pOutput->InsertEmbbed(imgEmb);
         }
         imgEmb->unref();
     }
 }
 
-suic::ImagePlayEmbbed* MainWindow::InsertOneImage(suic::String strDir, int count, int delay)
+suic::PlayImageEmbbed* MainWindow::InsertOneImage(suic::String strDir, int count, int delay)
 {
-    suic::ImagePlayEmbbed* imEmbbed = new suic::ImagePlayEmbbed();
+    suic::PlayImageEmbbed* imEmbbed = new suic::PlayImageEmbbed();
 
     for (int i = 0; i < count; ++i)
     {
@@ -160,25 +156,20 @@ void MainWindow::InsertAniImage()
         suic::String strDir;
         strDir = suic::FileDir::CalculatePath(_U("ControlDemo\\RichTextBox\\Gif\\"));
 
-        suic::ImagePlayEmbbed* imEmbbed = NULL;
+        suic::PlayImageEmbbed* imEmbbed = NULL;
         imEmbbed = InsertOneImage(strDir + _U("1"), 8, 300);
-        imEmbbed->SetSize(suic::Size(24, 24));
         pRichOne->InsertEmbbed(imEmbbed);
 
         imEmbbed = InsertOneImage(strDir + _U("2"), 3, 300);
-        imEmbbed->SetSize(suic::Size(48, 48));
         pRichOne->InsertEmbbed(imEmbbed);
 
         imEmbbed = InsertOneImage(strDir + _U("3"), 20, 200);
-        imEmbbed->SetSize(suic::Size(128, 128));
         pRichOne->InsertEmbbed(imEmbbed);
 
         imEmbbed = InsertOneImage(strDir + _U("4"), 22, 300);
-        imEmbbed->SetSize(suic::Size(50, 50));
         pRichOne->InsertEmbbed(imEmbbed);
 
         imEmbbed = InsertOneImage(strDir + _U("5"), 11, 200);
-        imEmbbed->SetSize(suic::Size(24, 24));
         pRichOne->InsertEmbbed(imEmbbed);
     }
 }
