@@ -19,8 +19,10 @@ class TriggerEditorWindow : public SetterEditorWindow
 {
 public:
 
-    TriggerEditorWindow(SetterCollectionNode* setterColl, TriggerCollectionNode* trgs, ThemeEditorWindow* owner);
+    TriggerEditorWindow(SetterCollectionNode* setterColl, TriggerCollectionNode* trgs, ThemeEditorWindow* owner, eTriggerType trgType);
     ~TriggerEditorWindow();
+
+    ePropertyType GetPropertyType();
 
     void SetSetterColl(SetterCollectionNode* setterColl);
     void SetTriggerCollectionNode(TemplateRootItem* tempRoot, TriggerCollectionNode* trgs);
@@ -50,6 +52,7 @@ protected:
     void OnIsVisibleChanged(suic::IsVisibleChangedEventArg* e);
 
     void ShowTriggerSetterNode(SetterNode* resNode);
+    suic::RTTIOfInfo* GetOwnerRTTIInfo();
 
     void SelectToSetterNode(SetterNode* pSetterNode);
     SetterNode* HandlePropItem(SetterEditor* setterEditor, DpItem* dpItem, SetterNode* pSetter);
@@ -66,6 +69,8 @@ protected:
     suic::Button* _addProp;
     suic::Button* _delProp;
     suic::ComboBox* _propCmb;
+
+    eTriggerType _triggerType;
 
     QueryDpCond _cond;
 };

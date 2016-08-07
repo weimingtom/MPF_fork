@@ -10,7 +10,7 @@
 
 #include <Framework/Controls/Rectangle.h>
 
-TriggerEditorWindow::TriggerEditorWindow(SetterCollectionNode* setterColl, TriggerCollectionNode* trgs, ThemeEditorWindow* owner)
+TriggerEditorWindow::TriggerEditorWindow(SetterCollectionNode* setterColl, TriggerCollectionNode* trgs, ThemeEditorWindow* owner, eTriggerType trgType)
     : SetterEditorWindow(owner)
 {
     _setterColl = setterColl;
@@ -25,6 +25,7 @@ TriggerEditorWindow::TriggerEditorWindow(SetterCollectionNode* setterColl, Trigg
 
     _tempRootItem = NULL;
 
+    _triggerType = trgType;
     _cond.fromTrigger = true;
 }   
 
@@ -124,11 +125,13 @@ void TriggerEditorWindow::OnDbClickTree(Element* sender, MouseButtonEventArg* e)
             if (NULL != _setterColl)
             {
                 propWnd->GetQueryDpCond()->inTemplate = false;
+                propWnd->SetPropertyType(ePropertyType::ePropStyleTrigger);
             }
             else
             {
                 // 来自于模版中的Trigger
                 propWnd->GetQueryDpCond()->inTemplate = true;
+                propWnd->SetPropertyType(ePropertyType::ePropTemplateTrigger);
             }
 
             // Trigger里暂时不允许编辑模版
@@ -219,7 +222,7 @@ void TriggerEditorWindow::UpdateSelectedPropShow()
 
         if (pSetter != NULL)
         {
-            ShowSetterNode(pSetter, _setterColl, true);
+            ShowSetterNode(pSetter, _setterColl, GetPropertyType());
         }
     }
 }
@@ -301,12 +304,27 @@ void TriggerEditorWindow::OnOpTriggerButton(Element* sender, RoutedEventArg* e)
     pTreeView->UpdateLayout();
 }
 
+ePropertyType TriggerEditorWindow::GetPropertyType()
+{
+    switch (_triggerType)
+    {
+    case eTriggerType::eTrgStyle:
+        return ePropertyType::ePropStyleTrigger;
+
+    case eTriggerType::eTrgTemplate:
+        return ePropertyType::ePropTemplateTrigger;
+
+    default:
+        return ePropertyType::ePropStyle;
+    }
+}
+
 void TriggerEditorWindow::OnAddTriggerButton(Element* sender, RoutedEventArg* e)
 {
     PropSelectorWindow* propWnd = new PropSelectorWindow();
     propWnd->ref();
 
-    _cond.target = _triggers->GetOwnerType();
+    _cond.target = GetOwnerRTTIInfo();
     propWnd->SetQueryDpCond(_cond);
 
     if (OpenPropSelectorWindow(sender, propWnd, PlacementMode::pmRight))
@@ -324,7 +342,8 @@ void TriggerEditorWindow::OnAddTriggerButton(Element* sender, RoutedEventArg* e)
 
             _triggers->AddItem(_trigger);
 
-            pSetter = SwitchToProperty(dpItem, NULL, _U(""), true);
+            pSetter = SwitchToProperty(dpItem, NULL, _U(""), GetPropertyType());
+
             _trigger->AddSetterNode(pSetter);
 
             _propCmb->SetItemsSource(_trigger->GetContSetterCollection()->GetItemColl());
@@ -362,7 +381,7 @@ void TriggerEditorWindow::OnAddPropButton(Element* sender, RoutedEventArg* e)
 
             if (NULL != dpItem)
             {
-                pSetter = SwitchToProperty(dpItem, NULL, _U(""), false);
+                pSetter = SwitchToProperty(dpItem, NULL, _U(""), GetPropertyType());
                 _trigger->AddSetterNode(pSetter);
                 _propCmb->SetSelectedIndex(_propCmb->GetCount() - 1);
                 _trigger->UpdateDisplayName();
@@ -454,15 +473,29 @@ void TriggerEditorWindow::OnSelTriggerItemChanged(suic::Element* sender, suic::S
     }
 }
 
+suic::RTTIOfInfo* TriggerEditorWindow::GetOwnerRTTIInfo()
+{
+    suic::RTTIOfInfo* ownerRtti = _triggers->GetOwnerType();
+    if (NULL == ownerRtti && _tempRootItem != NULL)
+    {
+        ownerRtti = _tempRootItem->GetTargetType();
+    }
+    return ownerRtti;
+}
+
 void TriggerEditorWindow::ShowTriggerSetterNode(SetterNode* resNode)
 {
     if (NULL != resNode)
     {
-        suic::RTTIOfInfo* ownerRtti = _triggers->GetOwnerType();
+        suic::RTTIOfInfo* ownerRtti = GetOwnerRTTIInfo();
         suic::TextBox* targetName = FindElem<suic::TextBox>(_U("targetName"));
         DpItem* dpItem = DpManager::Ins()->FindDpItem(resNode->GetName());
 
-        targetName->SetText(ownerRtti->typeName);
-        SwitchToProperty(dpItem, resNode, _U(""), true);
+        if (NULL != ownerRtti)
+        {
+            targetName->SetText(ownerRtti->typeName);
+        }
+
+        SwitchToProperty(dpItem, resNode, _U(""), GetPropertyType());
     }
 }

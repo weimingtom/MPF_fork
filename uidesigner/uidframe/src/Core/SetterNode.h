@@ -10,6 +10,7 @@
 #define _SETTERNODE_H
 
 #include <Core/ResNode.h>
+#include <Core/CoreDefines.h>
 #include <Core/XamlSceneNode.h>
 
 struct DpItem;
@@ -37,8 +38,8 @@ public:
     DpProperty* GetProperty() const;
     Object* GetValue();
 
-    bool IsFromTrigger() const;
-    void SetFromTriggerProp(bool val);
+    ePropertyType GetFromTrigger() const;
+    void SetFromTriggerProp(ePropertyType val);
     ResNode* GetResNode();
     Object* GetOldValue();
     void UpdateOldValue(Object* val);
@@ -53,7 +54,7 @@ private:
 
     String _name;
     String _targetName;
-    bool _fromTrigger;
+    ePropertyType _fromTrigger;
     DpProperty* _prop;
     ResNodePtr _value;
     ObjectPtr _oldValue;
@@ -97,12 +98,12 @@ inline Object* SetterNode::GetValue()
     }
 }
 
-inline bool SetterNode::IsFromTrigger() const
+inline ePropertyType SetterNode::GetFromTrigger() const
 {
     return _fromTrigger;
 }
 
-inline void SetterNode::SetFromTriggerProp(bool val)
+inline void SetterNode::SetFromTriggerProp(ePropertyType val)
 {
     _fromTrigger = val;
 }

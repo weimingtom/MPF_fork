@@ -485,7 +485,7 @@ String FloatControl::CheckFloat(suic::Float val)
     }
     else
     {
-        strText.Format(_U("%0.2lf"), val);
+        strText.Format(_U("%g"), val);
     }
 
     return strText;
@@ -549,7 +549,7 @@ String RatioControl::CheckRatio(Float val)
         val = 1;
     }
 
-    strText.Format(_U("%0.2lf"), val);
+    strText.Format(_U("%g"), val);
 
     return strText;
 }

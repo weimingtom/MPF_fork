@@ -96,25 +96,25 @@ void ThemeEditorWindow::OnInitialized(EventArg* e)
 
     // ÑùÊ½ÊôÐÔ±à¼­Ò³Ãæ
     strPath = _U("/mpfuid;/resource/uidesign/layout/editor/PropEditorWindow.xaml");
-    _stylePropEditorWnd = new PropEditorWindow(NULL, this);
+    _stylePropEditorWnd = new PropEditorWindow(NULL, this, ePropertyType::ePropStyle);
     //_stylePropEditorWnd->ref();
     InitChildEditPanel(strPath, _stylePropEditorWnd, _U("StylePropertyPanel"));
     
     // Ä£°æÊôÐÔ±à¼­Ò³Ãæ
     strPath = _U("/mpfuid;/resource/uidesign/layout/editor/PropEditorWindow.xaml");
-    _templatePropEditorWnd = new PropEditorWindow(NULL, this);
+    _templatePropEditorWnd = new PropEditorWindow(NULL, this, ePropertyType::ePropStyleTrigger);
     //_templatePropEditorWnd->ref();
     InitChildEditPanel(strPath, _templatePropEditorWnd, _U("TemplatePropertyPanel"));
 
     // Style±à¼­Ò³Ãæ
     strPath = _U("/mpfuid;/resource/uidesign/layout/editor/TriggEditorWindow.xaml");
-    _styleTrgEditorWnd = new TriggerEditorWindow(NULL, NULL, this);
+    _styleTrgEditorWnd = new TriggerEditorWindow(NULL, NULL, this, eTriggerType::eTrgStyle);
     //_styleTrgEditorWnd->ref();
     InitChildEditPanel(strPath, _styleTrgEditorWnd, _U("StyleTriggersPanel"));
 
     // Ä£°æTriggers±à¼­Ò³Ãæ
     strPath = _U("/mpfuid;/resource/uidesign/layout/editor/TriggEditorWindow.xaml");
-    _tempTrgEditorWnd = new TriggerEditorWindow(NULL, NULL, this);
+    _tempTrgEditorWnd = new TriggerEditorWindow(NULL, NULL, this, eTriggerType::eTrgTemplate);
     //_tempTrgEditorWnd->ref();
     InitChildEditPanel(strPath, _tempTrgEditorWnd, _U("TemplateTriggersPanel"));
 

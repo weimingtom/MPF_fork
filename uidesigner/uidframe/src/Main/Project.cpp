@@ -8,6 +8,8 @@
 #include <main/DesignPanel.h>
 #include <System/Tools/CoreHelper.h>
 
+Project* Project::_currentProject = NULL;
+
 ImplementRTTIOfClass(Project, FilterNode)
 
 Project::Project()
@@ -820,9 +822,23 @@ String Project::ComputeWindowPath(const String& shortPath)
     return strWndPath;
 }
 
+Project* Project::GetCurrentProject()
+{
+    return _currentProject;
+}
+
 void Project::SwitchToCurrent()
 {
-
+    ApplicationRootItem* appItem = NULL;
+    if (_currentProject != this)
+    {
+        _currentProject = this;
+        appItem = _currentProject->GetApplicationRootItem();
+        if (NULL != appItem)
+        {
+            DesignHelper::SetDesignApplication(appItem->GetApplicationNode()->GetApplication());
+        }
+    }
 }
 
 bool Project::OpenRootElement(ElementRootItem* mainElem)
@@ -846,6 +862,16 @@ bool Project::OpenRootElement(ElementRootItem* mainElem)
     {
         return false;
     }
+}
+
+ResNode* Project::FindResItem(const String& strName)
+{
+    ResNode* resNode = NULL;
+    if (NULL != _appRoot)
+    {
+        resNode = _appRoot->GetApplicationNode()->GetResourceDictionary()->SearchResItem(strName);
+    }
+    return resNode;
 }
 
 RootItem* Project::FindRootItem(const String& strPath)

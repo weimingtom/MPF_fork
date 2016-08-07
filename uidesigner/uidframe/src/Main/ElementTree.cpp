@@ -325,6 +325,11 @@ void ProjectTree::OnContextMenu(ContextMenuEventArg* e)
 void ProjectTree::OnSelectedItemChanged(RoutedPropChangedEventArg* e)
 {
     e->SetHandled(true);
+    if (NULL != GetProject())
+    {
+        GetProject()->SwitchToCurrent();
+    }
+    //GetProject()->SwitchToCurrent();
 }
 
 void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)

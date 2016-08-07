@@ -24,7 +24,7 @@ String PropSelectorWindow::GetTargetName()
 
     if (NULL != _targetElements)
     {
-        ComboBox* cmbBox = FindElem<ComboBox>(_U("targetType"));
+        ComboBox* cmbBox = FindElem<ComboBox>(_U("targetName"));
         if (cmbBox->GetSelectedIndex() > 0)
         {
             strName = cmbBox->GetSelectedItem()->ToString();
@@ -39,30 +39,63 @@ void PropSelectorWindow::SetTargetElements(suic::ItemCollection* itemColl)
     _targetElements = itemColl;
 }
 
+void PropSelectorWindow::ChangedTargetNameItem(TargetNameItem* targetItem)
+{
+    ListBox* pList = FindElem<ListBox>(_U("propList"));
+    if (NULL != pList)
+    {
+        suic::ItemCollection* itemColl = pList->GetItemsSource();
+        TextBox* targetType = FindElem<TextBox>(_U("targetType"));
+
+        if (NULL != targetType)
+        {
+            targetType->SetText(targetItem->GetTargetType()->typeName);
+        }
+
+        itemColl->Clear();
+        _cond.target = targetItem->GetTargetType();
+        DpManager::Ins()->QueryDpItems(&_cond, itemColl);
+        pList->AddPreviewMouseDoubleClick(new MouseButtonEventHandler(this, &PropSelectorWindow::OnDbListClick));
+    }
+}
+
+void PropSelectorWindow::OnTargetNameChanged(Element* sender, SelectionChangedEventArg* e)
+{
+    e->SetHandled(true);
+    if (e->GetAddedItems()->GetCount() == 1)
+    {
+        TargetNameItem* targetItem = dynamic_cast<TargetNameItem*>(e->GetAddedItems()->GetItem(0));
+        if (NULL != targetItem)
+        {
+            ChangedTargetNameItem(targetItem);
+        }
+    }
+}
+
 void PropSelectorWindow::OnInitialized(EventArg* e)
 {
     suic::Window::OnInitialized(e);
 
     ListBox* pList = FindElem<ListBox>(_U("propList"));
-    if (NULL != pList && NULL != _cond.target)
+    if (NULL != pList)
     {
-        suic::ItemCollection* itemColl = pList->GetItemsSource();
-
-        DpManager::Ins()->QueryDpItems(&_cond, itemColl);
         pList->AddPreviewMouseDoubleClick(new MouseButtonEventHandler(this, &PropSelectorWindow::OnDbListClick));
     }
 
-    ComboBox* cmbBox = FindElem<ComboBox>(_U("targetType"));
+    ComboBox* cmbBox = FindElem<ComboBox>(_U("targetName"));
+    cmbBox->AddSelectionChanged(new SelectionChangedEventHandler(this, &PropSelectorWindow::OnTargetNameChanged));
 
     if (NULL != _targetElements && _targetElements->GetCount() > 0)
     {
         cmbBox->SetItemsSource(_targetElements);
         cmbBox->SetSelectedIndex(0);
+        cmbBox->SetVisibility(Visibility::Visible);
     }
     else if (NULL != _cond.target)
     {
-        cmbBox->AddChild(new TargetTypeItem(_cond.target));
+        cmbBox->AddChild(new TargetNameItem(_U(""), _cond.target));
         cmbBox->SetSelectedIndex(0);
+        cmbBox->SetVisibility(Visibility::Collapsed);
     }
 }
 

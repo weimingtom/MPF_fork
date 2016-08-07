@@ -1687,12 +1687,12 @@ String DesignGrid::GetGridSizeXml(SetterCollectionNode* setterColl)
             {
                 if (FloatUtil::GreaterThanOrClose(gSize->GetValue(), 1))
                 {
-                    strProp.Format(_U(" %s=\"%0.2f*\""), pSetter->GetName().c_str(), gSize->GetValue());
+                    strProp.Format(_U(" %s=\"%g*\""), pSetter->GetName().c_str(), gSize->GetValue());
                 }
             }
             else if (FloatUtil::GreaterThanOrClose(gSize->GetValue(), 0))
             {
-                strProp.Format(_U(" %s=\"%0.2f\""), pSetter->GetName().c_str(), gSize->GetValue());
+                strProp.Format(_U(" %s=\"%g\""), pSetter->GetName().c_str(), gSize->GetValue());
             }
         }
         else

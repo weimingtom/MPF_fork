@@ -85,6 +85,21 @@ void MergedDictionariesNode::AddMergedResource(ResourceDictionaryNode* mergedRes
     AddItem(mergedRes);
 }
 
+ResNode* MergedDictionariesNode::SearchResItem(const String& key)
+{
+    ResNode* resNode = NULL;
+    for (int i = 0; i < GetCount(); ++i)
+    {
+        ResourceDictionaryNode* pResDic = RTTICast<ResourceDictionaryNode>(GetItem(i));
+        resNode = pResDic->SearchResItem(key);
+        if (NULL != resNode)
+        {
+            break;
+        }
+    }
+    return resNode;
+}
+
 void MergedDictionariesNode::FillResByResType(ItemCollection* itemColl, RTTIOfInfo* targetType, ResNode* breakNode)
 {
     for (int i = 0; i < GetCount(); ++i)
@@ -303,6 +318,24 @@ void ResourceDictionaryNode::AddMergedDictionary(ResourceDictionaryNode* resDic)
 ResNode* ResourceDictionaryNode::FindResItem(const String& key)
 {
     return _resItems->FindResItem(key);
+}
+
+ResNode* ResourceDictionaryNode::SearchResItem(const String& key)
+{
+    ResNode* resNode = NULL;
+    resNode = _resItems->FindResItem(key);
+    if (NULL == resNode)
+    {
+        if (NULL != _resSource && NULL != _resSource->GetResourceDicNode())
+        {
+            resNode = _resSource->GetResourceDicNode()->SearchResItem(key);
+        }
+        if (NULL == resNode)
+        {
+            resNode = _mergedDics->SearchResItem(key);
+        }
+    }
+    return resNode;
 }
 
 void ResourceDictionaryNode::AddInternalresItem(ResNode* pResNode)

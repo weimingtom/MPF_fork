@@ -12,7 +12,7 @@ SetterNode::SetterNode()
 {
     _prop = NULL;
     _dpItem = NULL;
-    _fromTrigger = false;
+    _fromTrigger = ePropertyType::ePropStyle;
 }
 
 SetterNode::SetterNode(const String& name, DpProperty* dp, Object* val)
@@ -28,7 +28,7 @@ SetterNode::SetterNode(const String& name, DpProperty* dp, Object* val)
     }
 
     _prop = dp;
-    _fromTrigger = false;
+    _fromTrigger = ePropertyType::ePropStyle;
     ResNode::CreateResNode(val, _value);
     _dpItem = NULL;
     _oldValue = val;

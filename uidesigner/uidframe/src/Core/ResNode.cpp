@@ -148,19 +148,19 @@ suic::String SingleResNode::GetSingleXml()
     if (NULL != fObj)
     {
         suic::fRect rect = fObj->TofRect();
-        return suic::String().Format(_U("%.2f,%.2f,%.2f,%.2f"), 
+        return suic::String().Format(_U("%g,%g,%g,%g"), 
             rect.left, rect.top, rect.right, rect.bottom);
     }
     suic::OfPoint* pObj = RTTICast<suic::OfPoint>(GetValue());
     if (NULL != pObj)
     {
         suic::fPoint point = pObj->TofPoint();
-        return suic::String().Format(_U("%.2f,%.2f"), point.x, point.y);
+        return suic::String().Format(_U("%g,%g"), point.x, point.y);
     }
     suic::OFloat* flObj = RTTICast<suic::OFloat>(GetValue());
     if (NULL != flObj)
     {
-        return suic::String().Format(_U("%.2f"), flObj->ToFloat());
+        return suic::String().Format(_U("%g"), flObj->ToFloat());
     }
 
     return GetValue()->ToString();
@@ -847,16 +847,16 @@ suic::String LinearGradientBrushResNode::GetResXml(const String& offset)
     }
 
     strXml += _U("StartPoint=\"");
-    strXml += String().Format(_U("%.2f,%.2f"), brush->GetStartPoint().x, brush->GetStartPoint().y);
+    strXml += String().Format(_U("%g,%g"), brush->GetStartPoint().x, brush->GetStartPoint().y);
     strXml += _U("\" EndPoint=\"");
-    strXml += String().Format(_U("%.2f,%.2f"), brush->GetEndPoint().x, brush->GetEndPoint().y);
+    strXml += String().Format(_U("%g,%g"), brush->GetEndPoint().x, brush->GetEndPoint().y);
 
     strXml += _U("\">\n");
 
     for (int i = 0; i < linearInfo->colors.GetCount(); ++i)
     {
         strXml += offset + ResNode::OFFSET1 + _U("<GradientStop Offset=\"");
-        strXml += String().Format(_U("%.2f"), linearInfo->ratios[i]);
+        strXml += String().Format(_U("%g"), linearInfo->ratios[i]);
         strXml += _U("\" Color=\"");
         strXml += Color::ToString(linearInfo->colors[i]);
         strXml += _U("\" />\n");
@@ -899,18 +899,18 @@ suic::String RadialGradientBrushResNode::GetResXml(const String& offset)
     }
 
     strXml += _U("GradientOrigin=\"");
-    strXml += String().Format(_U("%.2f,%.2f"), brush->GetOrigin().x, brush->GetOrigin().y);
+    strXml += String().Format(_U("%g,%g"), brush->GetOrigin().x, brush->GetOrigin().y);
     strXml += _U("\" RadiusX=\"");
-    strXml += String().Format(_U("%.2f"), brush->GetRadiusX());
+    strXml += String().Format(_U("%g"), brush->GetRadiusX());
     strXml += _U("\" RadiusY=\"");
-    strXml += String().Format(_U("%.2f"), brush->GetRadiusY());
+    strXml += String().Format(_U("%g"), brush->GetRadiusY());
 
     strXml += _U("\">\n");
 
     for (int i = 0; i < radialInfo->colors.GetCount(); ++i)
     {
         strXml += offset + ResNode::OFFSET1 + _U("<GradientStop Offset=\"");
-        strXml += String().Format(_U("%.2f"), radialInfo->ratios[i]);
+        strXml += String().Format(_U("%g"), radialInfo->ratios[i]);
         strXml += _U("\" Color=\"");
         strXml += Color::ToString(radialInfo->colors[i]);//String::Int32ToHex(radialInfo->colors[i]);
         strXml += _U("\" />\n");
@@ -1065,7 +1065,7 @@ suic::String ImageBrushResNode::GetResXml(const String& offset)
     if (!bEqual)
     {
         strXml += _U("\" Viewport=\"");
-        strXml += String().Format(_U("%.1f,%.1f,%.1f,%.1f")
+        strXml += String().Format(_U("%g,%g,%g,%g")
             , brush->GetViewport().left
             , brush->GetViewport().top
             , brush->GetViewport().right
@@ -1082,7 +1082,7 @@ suic::String ImageBrushResNode::GetResXml(const String& offset)
     if (!bEqual)
     {
         strXml += _U("\" Viewbox=\"");
-        strXml += String().Format(_U("%.1f,%.1f,%.1f,%.1f")
+        strXml += String().Format(_U("%g,%g,%g,%g")
             , brush->GetViewbox().left
             , brush->GetViewbox().top
             , brush->GetViewbox().right

@@ -77,7 +77,7 @@ public:
     SetterEditor();
     virtual ~SetterEditor();
 
-    void SetSetterNode(SetterNode* setter, bool fromTrigger);
+    void SetSetterNode(SetterNode* setter, ePropertyType fromTrigger);
     SetterNode* GetSetterNode(bool bCreate);
 
     void UpdateOperPanel(SetterNode* setter);
@@ -105,6 +105,8 @@ public:
     void SetRealValue(Object* val, bool bCreate);
 
     virtual void SetDefaultValue(Object* val);
+
+    virtual void ClearItems();
 
     virtual void ShowProp(bool val);
     virtual void ResetSetterEditor();
@@ -425,6 +427,8 @@ public:
 
     void NotifySetterChanged();
     void OnSelItemChanged(suic::Element* sender, suic::SelectionChangedEventArg* e);
+
+    virtual void ClearItems();
 
     virtual void AddChild(Object* obj);
     virtual void AddText(String val);
@@ -821,6 +825,7 @@ public:
 protected:
 
     void OnEditClick();
+    StyleNode* CreateNewStyle(suic::FrameworkElement* fe);
 
     virtual bool IsSetterEmpty(SetterNode* pSetter);
     // 模版里的控件元素不允许编辑Style属性

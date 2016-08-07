@@ -60,7 +60,7 @@ void TextBoxRange::UpdateTextBox(suic::Float newValue)
     suic::String strText;
     if (NULL != _textBox)
     {
-        strText.Format(_U("%.2f"), newValue);
+        strText.Format(_U("%g"), newValue);
         SetTextValue(strText);
     }
 }

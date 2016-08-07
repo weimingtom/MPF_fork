@@ -39,7 +39,7 @@ void SetterEditorWindow::HandlePrevSetterNode()
     }
 }
 
-SetterNode* SetterEditorWindow::SwitchToProperty(DpItem* dpItem, SetterNode* pSetter, String targetName, bool fromTrigger)
+SetterNode* SetterEditorWindow::SwitchToProperty(DpItem* dpItem, SetterNode* pSetter, String targetName, ePropertyType fromTrigger)
 {
     HandlePrevSetterNode();
 
@@ -120,14 +120,17 @@ bool SetterEditorWindow::OpenPropSelectorWindow(Element* sender, PropSelectorWin
 //======================================================
 // PropEditorWindow
 
-PropEditorWindow::PropEditorWindow(SetterCollectionNode* setterColl, ThemeEditorWindow* owner)
+PropEditorWindow::PropEditorWindow(SetterCollectionNode* setterColl, ThemeEditorWindow* owner, ePropertyType propType)
     : SetterEditorWindow(owner)
 {
     _setterColl = setterColl;
     _prevSetterEditor = NULL;
     _propTreeView = NULL;
     _tempRootItem = NULL;
+    _targetBox = NULL;
+    _selSetterNode = NULL;
 
+    _propType = propType;
     _initTargetElements = false;;
     _targetElements.setAutoDelete(false);
 }   
@@ -155,9 +158,26 @@ QueryDpCond* PropEditorWindow::GetQueryDpCond()
     return &_cond;
 }
 
+void PropEditorWindow::GetTemplateTargetNames(DesignElement* elem, ItemCollection* itemColl)
+{
+    String strName = elem->GetName();
+    if (!strName.Empty())
+    {
+        itemColl->AddItem(new TargetNameItem(strName, elem->GetTypeInfo()));
+    }
+    for (int i = 0; i < elem->GetCount(); ++i)
+    {
+        DesignElement* child = elem->GetXamlElement(i);
+        GetTemplateTargetNames(child, itemColl);
+    }
+}
+
 void PropEditorWindow::UpdateSetterColl(TemplateRootItem* tempRoot, SetterCollectionNode* setterColl)
 {
-    _tempRootItem = tempRoot;
+    if (tempRoot != _tempRootItem)
+    {
+        _tempRootItem = tempRoot;
+    }
 
     if (NULL != _prevSetterEditor)
     {
@@ -170,14 +190,20 @@ void PropEditorWindow::UpdateSetterColl(TemplateRootItem* tempRoot, SetterCollec
     _cond.target = _setterColl->GetOwnerType();
     _cond.propFilter = _setterColl->GetChildren();
 
+    SetterNode* resNode = NULL;
     suic::TreeView* settersTree = GetTreeView();
+
+    if (NULL != _tempRootItem && GetQueryDpCond()->inTemplate)
+    {
+        InitTemplateTargetNames(resNode);
+    }
 
     if (NULL != settersTree)
     {
         settersTree->SetItemsSource(_cond.propFilter);
         if (_cond.propFilter->GetCount() > 0)
         {
-            SetterNode* resNode = RTTICast<SetterNode>(_cond.propFilter->GetItem(0));
+            resNode = RTTICast<SetterNode>(_cond.propFilter->GetItem(0));
             settersTree->SetSelectedItem(resNode);
         }
     }
@@ -185,11 +211,48 @@ void PropEditorWindow::UpdateSetterColl(TemplateRootItem* tempRoot, SetterCollec
     UpdateSelectedPropShow();
 }
 
+void PropEditorWindow::InitTemplateTargetNames(SetterNode* pSetterNode)
+{
+    suic::ComboBox* txtTarget = GetTargetNameControl();
+    if (NULL != txtTarget && NULL != _tempRootItem)
+    {
+        _targetElements.Clear();
+
+        _targetElements.AddItem(new TargetNameItem(_U(""), GetOwnerRTTIInfo()));
+        GetTemplateTargetNames(_tempRootItem->GetTemplateRootElement(), &_targetElements);
+        txtTarget->SetItemsSource(&_targetElements);
+    }
+}
+
+void PropEditorWindow::OnTargetNameChanged(Element* sender, SelectionChangedEventArg* e)
+{
+    e->SetHandled(true);
+    if (e->GetAddedItems()->GetCount() == 1)
+    {
+        suic::TextBox* targetType = FindElem<suic::TextBox>(_U("targetType"));
+        TargetNameItem* targetItem = dynamic_cast<TargetNameItem*>(e->GetAddedItems()->GetItem(0));
+        if (NULL != targetItem && NULL != _selSetterNode)
+        {
+            targetType->SetText(targetItem->GetTargetType()->typeName);
+            _selSetterNode->SetTargetName(targetItem->GetTargetName());
+        }
+    }
+}
+
 void PropEditorWindow::InitTreeDoc()
 {
 }
 
-void SetterEditorWindow::ShowSetterNode(SetterNode* resNode, SetterCollectionNode* setterColl, bool fromTrigger)
+suic::ComboBox* PropEditorWindow::GetTargetNameControl()
+{
+    if (NULL == _targetBox)
+    {
+        _targetBox = FindElem<suic::ComboBox>(_U("targetName"));
+    }
+    return _targetBox;
+}
+
+void SetterEditorWindow::ShowSetterNode(SetterNode* resNode, SetterCollectionNode* setterColl, ePropertyType fromTrigger)
 {
     //_themeWnd->GetEditRootPanel()->SetTemplateParent(NULL);
 
@@ -210,7 +273,27 @@ void PropEditorWindow::OnPropItemSelectedChanged(suic::Element* sender, suic::Ro
     SetterNode* resNode = RTTICast<SetterNode>(selObj);
     e->SetHandled(true);
 
-    ShowSetterNode(resNode, _setterColl, false);
+    _selSetterNode = resNode;
+
+    suic::ComboBox* txtTarget = GetTargetNameControl();
+    if (NULL != txtTarget)
+    {
+        int selItem = txtTarget->FindIndex(resNode->GetTargetName());
+        if (GetQueryDpCond()->inTemplate)
+        {
+            txtTarget->GetUIParent()->SetVisibility(suic::Visibility::Visible);
+            if (selItem >= 0)
+            {
+                txtTarget->SetSelectedIndex(selItem);
+            }
+        }
+        else
+        {
+            txtTarget->GetUIParent()->SetVisibility(suic::Visibility::Collapsed);
+        }
+    }
+
+    ShowSetterNode(resNode, _setterColl, _propType);
 }
 
 void PropEditorWindow::OnInitialized(EventArg* e)
@@ -250,6 +333,12 @@ void PropEditorWindow::OnInitialized(EventArg* e)
         _propTreeView->AddSelectedItemChanged(new suic::RoutedPropChangedEventHandler(this, &PropEditorWindow::OnPropItemSelectedChanged));
         _propTreeView->AddPreviewMouseDoubleClick(new MouseButtonEventHandler(this, &PropEditorWindow::OnDbClickTree));
     }
+
+    suic::ComboBox* pCmbBox = GetTargetNameControl();
+    if (NULL != pCmbBox)
+    {
+        pCmbBox->AddSelectionChanged(new SelectionChangedEventHandler(this, &PropEditorWindow::OnTargetNameChanged));
+    }
 }
 
 void PropEditorWindow::OnLoaded(suic::LoadedEventArg* e)
@@ -275,7 +364,7 @@ void PropEditorWindow::UpdateSelectedPropShow()
 
         if (pSetter != NULL)
         {
-            ShowSetterNode(pSetter, _setterColl, false);
+            ShowSetterNode(pSetter, _setterColl, _propType);
         }
     }
 }
@@ -309,13 +398,21 @@ void PropEditorWindow::OnDbClickTree(Element* sender, MouseButtonEventArg* e)
     e->SetHandled(true);
 }
 
+suic::RTTIOfInfo* PropEditorWindow::GetOwnerRTTIInfo()
+{
+    suic::RTTIOfInfo* ownerRtti = _setterColl->GetOwnerType();
+    if (NULL == ownerRtti && _tempRootItem != NULL)
+    {
+        ownerRtti = _tempRootItem->GetTargetType();
+    }
+    return ownerRtti;
+}
+
 SetterNode* PropEditorWindow::HandlePropItem(SetterEditor* setterEditor, DpItem* dpItem, SetterNode* pSetter)
 {
     SetterNode* pSetterNode = pSetter;
-    suic::RTTIOfInfo* ownerRtti = _setterColl->GetOwnerType();
+    suic::RTTIOfInfo* ownerRtti = GetOwnerRTTIInfo();
     suic::TextBox* propName = FindElem<suic::TextBox>(_U("propName"));
-    suic::TextBox* targetName = FindElem<suic::TextBox>(_U("targetName"));
-    //DpProperty* dp = DpManager::Ins()->FindDp(dpItem->name, ownerRtti, true);
     DpProperty* dp = dpItem->GetDp(ownerRtti, true);
     IAddChild* pAddChild = DynamicCast<IAddChild>(setterEditor);
 
@@ -324,13 +421,9 @@ SetterNode* PropEditorWindow::HandlePropItem(SetterEditor* setterEditor, DpItem*
         propName->SetText(dpItem->name);
     }
 
-    if (NULL != targetName)
-    {
-        targetName->SetText(ownerRtti->typeName);
-    }
-
     if (NULL != pAddChild)
     {
+        setterEditor->ClearItems();
         dpItem->FillAddChild(pAddChild);
     }
 
@@ -346,7 +439,7 @@ SetterNode* PropEditorWindow::HandlePropItem(SetterEditor* setterEditor, DpItem*
 
 void PropEditorWindow::AddPropertyItem(DpItem* dpItem, String targetName)
 {
-    SwitchToProperty(dpItem, NULL, targetName, false);
+    SwitchToProperty(dpItem, NULL, targetName, _propType);
     _themeWnd->SetModified();
 }
 
@@ -404,9 +497,11 @@ void PropEditorWindow::OnAddPropButton(Element* sender, RoutedEventArg* e)
 
     if (NULL != _tempRootItem)
     {
-        _targetElements.Clear();
-        _tempRootItem->GetChildAsNamed(&_targetElements);
         propWnd->SetTargetElements(&_targetElements);
+    }
+    else
+    {
+        propWnd->SetTargetElements(NULL);
     }
 
     if (OpenPropSelectorWindow(sender, propWnd, PlacementMode::pmRight))

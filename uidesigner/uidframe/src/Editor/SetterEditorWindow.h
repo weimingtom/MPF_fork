@@ -31,10 +31,10 @@ public:
     SetterEditorWindow(ThemeEditorWindow* themeWnd);
     ~SetterEditorWindow();
 
-    SetterNode* SwitchToProperty(DpItem* dpItem, SetterNode* pSetter, String targetName, bool fromTrigger);
+    SetterNode* SwitchToProperty(DpItem* dpItem, SetterNode* pSetter, String targetName, ePropertyType fromTrigger);
     bool OpenPropSelectorWindow(Element* sender, PropSelectorWindow* propWnd, PlacementMode mode);
 
-    void ShowSetterNode(SetterNode* resNode, SetterCollectionNode* setterColl, bool fromTrigger);
+    void ShowSetterNode(SetterNode* resNode, SetterCollectionNode* setterColl, ePropertyType fromTrigger);
 
 protected:
 

@@ -2,6 +2,8 @@
 #include "stdafx.h"
 
 #include "ValueEditor.h"
+
+#include <Editor/CreateStyleWindow.h>
 #include <Editor/EditRootPanel.h>
 #include <Editor/ExpressionWindow.h>
 #include <Editor/BindingEditorWindow.h>
@@ -355,17 +357,19 @@ void SetterEditor::UpdateOperPanel(SetterNode* setter)
         return;
     }
 
-    if (NULL != setter && setter->IsFromTrigger())
+    if (_target == NULL)//setter->GetFromTrigger() != ePropertyType::ePropStyle)
     {
-        _operPanel->Enable(false);
+        //_operPanel->Enable(false);
+        _operPanel->SetVisibility(Visibility::Hidden);
     }
     else
     {
-        _operPanel->Enable(true);
+        //_operPanel->Enable(true);
+        _operPanel->SetVisibility(Visibility::Visible);
     }
 }
 
-void SetterEditor::SetSetterNode(SetterNode* setter, bool fromTrigger)
+void SetterEditor::SetSetterNode(SetterNode* setter, ePropertyType fromTrigger)
 {
     SETREFOBJ(_setter, setter);
     NotifySetterChanged();
@@ -639,6 +643,11 @@ void SetterEditor::SetDefaultValue(Object* val)
 
 }
 
+void SetterEditor::ClearItems()
+{
+
+}
+
 void SetterEditor::ShowProp(bool val)
 {
     if (GetParent() != NULL)
@@ -738,7 +747,7 @@ void SetterEditor::OnSelectResource(Element* sender, suic::RoutedEventArg* e)
 
     SetterNode* pSetter = GetSetterNode(false);
 
-    if (NULL != pSetter && pSetter->IsFromTrigger())
+    if (NULL == _target)// pSetter->GetFromTrigger() != ePropertyType::ePropStyle)
     {
         return;
     }
@@ -1462,6 +1471,11 @@ void ChoiceSetterEditor::OnSelItemChanged(suic::Element* sender, suic::Selection
     }
 }
 
+void ChoiceSetterEditor::ClearItems()
+{
+    _items->Clear();
+}
+
 void ChoiceSetterEditor::InitComboBoxItems()
 {
     if (_items->GetCount() == 0)
@@ -1470,6 +1484,7 @@ void ChoiceSetterEditor::InitComboBoxItems()
 
         if (NULL != dpItem)
         {
+            _items->Clear();
             dpItem->FillAddChild(this);
         }
     }
@@ -1904,9 +1919,9 @@ void FontSizeSetterEditor::NotifySetterChanged()
 void FontSizeSetterEditor::OnApplyTemplate()
 {
     _items->Clear();
-    for (int i = 0; i <= 52; ++i)
+    for (int i = 0; i <= 63; ++i)
     {
-        _items->AddItem(new Integer(i + 9));
+        _items->AddItem(new Integer(i + 5));
     }
     ChoiceSetterEditor::OnApplyTemplate();
 }
@@ -2556,11 +2571,11 @@ void BrushResSetterEditor::NotifySetterChanged()
         SetterNode* pSetter = GetSetterNode(false);
         if (NULL == pSetter)
         {
-            pSetterEditor->SetSetterNode(pSetter, false);
+            pSetterEditor->SetSetterNode(pSetter, ePropertyType::ePropStyle);
         }
         else
         {
-            pSetterEditor->SetSetterNode(pSetter, pSetter->IsFromTrigger());
+            pSetterEditor->SetSetterNode(pSetter, pSetter->GetFromTrigger());
         }
     }
 }
@@ -2899,6 +2914,41 @@ void StyleSetterEditor::SetTemplateMode(bool inTemplate)
     }
 }
 
+StyleNode* StyleSetterEditor::CreateNewStyle(suic::FrameworkElement* fe)
+{
+    StyleNode* pStyle = NULL;
+    CreateStyleWindow styleWnd(true);
+    const String strPath = "/mpfuid;/resource/uidesign/layout/Editor/CreateStyleWindow.xaml";
+
+    styleWnd.setAutoDelete(false);
+
+    if (0 == styleWnd.ShowDialog(strPath))
+    {
+        if (!styleWnd.IsFromBlank())
+        {
+            ResNode* resNode = Project::GetCurrentProject()->FindResItem(fe->GetRTTIType()->typeName);
+            StyleNode* tempSty = suic::RTTICast<StyleNode>(resNode);
+            if (NULL != tempSty)
+            {
+                ResNodePtr resStyle;
+                tempSty->CloneNode(resStyle);
+                pStyle = suic::RTTICast<StyleNode>(resStyle.get());
+                pStyle->ref();
+            }
+        }
+
+        if (NULL == pStyle)
+        {
+            pStyle = new StyleNode();
+            pStyle->ref();
+        }
+
+        pStyle->SetTargetType(fe->GetRTTIType());
+    }
+    
+    return pStyle;
+}
+
 void StyleSetterEditor::OnEditClick()
 {
     suic::FrameworkElement* fe = NULL;
@@ -2908,22 +2958,30 @@ void StyleSetterEditor::OnEditClick()
         fe = target->GetUIElement();
     }
 
-    if (NULL != fe)
+    if (NULL != fe && NULL != Project::GetCurrentProject())
     {
         EditRootPanel* editPanel = FindEditRttoPanel(this);
         StyleNode* pStyle = RTTICast<StyleNode>(GetSetterNode(true)->GetResNode());
         const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
-        ThemeEditorWindow* themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL, NULL);
+        ThemeEditorWindow* themeWnd = NULL;
 
         // 如果控件本身没有Style，则重新生成一个
         // Style是放在控件的.Resources资源节点下
         if (NULL == pStyle)
         {
-            pStyle = new StyleNode();
-            pStyle->SetTargetType(fe->GetRTTIType());
+            pStyle = CreateNewStyle(fe);
+            if (NULL == pStyle)
+            {
+                return;
+            }
+        }
+        else 
+        {
+            pStyle->ref();
         }
 
-        pStyle->ref();
+        themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL, NULL);
+        
         themeWnd->ref();
         themeWnd->SetStyleNode(pStyle);
 

@@ -18,18 +18,24 @@
 
 using namespace suic;
 
-class TargetTypeItem : public Object
+class TargetNameItem : public Object
 {
 public:
 
-    TargetTypeItem(RTTIOfInfo* targetType)
+    TargetNameItem(const String& name, RTTIOfInfo* targetType)
     {
+        _targetName = name;
         _targetType = targetType;
     }
 
     String ToString()
     {
-        return _targetType->typeName;
+        return _targetName;//String().Format(_U("%s:%s"), _targetName.c_str(), _targetType->typeName);
+    }
+
+    suic::String GetTargetName() const
+    {
+        return _targetName;
     }
 
     RTTIOfInfo* GetTargetType() const
@@ -39,6 +45,7 @@ public:
 
 private:
 
+    suic::String _targetName;
     RTTIOfInfo* _targetType;
 };
 
@@ -60,9 +67,12 @@ public:
 protected:
 
     void InitTreeDoc();
+    void ChangedTargetNameItem(TargetNameItem* targetItem);
 
     void OnInitialized(EventArg* e);
     void OnLoaded(suic::LoadedEventArg* e);
+
+    void OnTargetNameChanged(Element* sender, SelectionChangedEventArg* e);
 
 private:
 

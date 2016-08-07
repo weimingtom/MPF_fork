@@ -201,13 +201,17 @@ void EditRootPanel::EnableDesignWithElementLock(DesignElement* delem)
 {
     if (delem != NULL)
     {
-        if (delem->GetLockElement())
+        suic::Element* propWnd = FindName(_U("propWindow"));
+        if (NULL != propWnd)
         {
-            Enable(false);
-        }
-        else
-        {
-            Enable(true);
+            if (delem->GetLockElement())
+            {
+                propWnd->Enable(false);
+            }
+            else
+            {
+                propWnd->Enable(true);
+            }
         }
     }
 }
@@ -394,7 +398,7 @@ void EditRootPanel::UpdateSetter(SetterNode* pSetter, bool needNotifyChanged)
     SetterEditor* pElemBase = DynamicCast<SetterEditor>(pElem);
     if (NULL != pElemBase)
     {
-        pElemBase->SetSetterNode(pSetter, false);
+        pElemBase->SetSetterNode(pSetter, pSetter->GetFromTrigger());
     }
 
     // 通知文件内容发生改变

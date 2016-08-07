@@ -49,6 +49,7 @@ public:
     bool HasModified();
     bool OpenRootElement(ElementRootItem* mainElem);
 
+    static Project* GetCurrentProject();
     static Project* OpenPrj(SlnTreeManager* docMana, const suic::String& path);
     static Project* CreatePrj(SlnTreeManager* docMana, const suic::String& name, const suic::String& path);
 
@@ -66,6 +67,7 @@ public:
     ElementRootItem* AddRootElement(FilterNode* pParent, const String& fileName);
     void RemoveRootElement(ElementRootItem* dmain);
 
+    ResNode* FindResItem(const String& strName);
     RootItem* FindRootItem(const String& strPath);
     // 根据文件路径返回对应节点，如果没有就创建
     //XamlRootItem* FindAndCreateRootItem(const String& strPath);
@@ -108,6 +110,8 @@ protected:
     String _prjPath;
 
     ApplicationRootItem* _appRoot;
+
+    static Project* _currentProject;
 };
 
 #endif
