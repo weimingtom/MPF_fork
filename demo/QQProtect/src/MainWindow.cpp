@@ -317,7 +317,7 @@ void MainWindow::OnMainMenuClick(Element* sender, RoutedEventArg* e)
         suic::ControlTemplate* menuTemp = DynamicCast<suic::ControlTemplate>(FindRes("MainMenuTemp"));
         if (menuTemp)
         {
-            suic::AutoObj root = menuTemp->LoadContent(this);
+            suic::AutoObj root = menuTemp->LoadContent(NULL);
             if (root.get() != NULL)
             {
                 _mainMenu = DynamicCast<suic::ContextMenu>(root.get());
