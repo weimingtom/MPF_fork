@@ -104,6 +104,27 @@ void BindingEditorWindow::InitBindingValue()
         else if (pExt->GetRTTIType()->InheritFrom(Binding::RTTIType()))
         {
             _binding->SetChecked(Boolean::True);
+            Binding* pBinding = (Binding*)pExt;
+            switch (pBinding->GetBindMode())
+            {
+            case BindingMode::OneTime:
+                FindElem<RadioButton>(_U("OneTime"))->SetChecked(suic::Boolean::True);
+                break;
+
+            case BindingMode::OneWay:
+                FindElem<RadioButton>(_U("OneWay"))->SetChecked(suic::Boolean::True);
+                break;
+
+            case BindingMode::TwoWay:
+                FindElem<RadioButton>(_U("TwoWay"))->SetChecked(suic::Boolean::True);
+                break;
+
+            case BindingMode::OneWayToSource:
+                FindElem<RadioButton>(_U("OneWayToSource"))->SetChecked(suic::Boolean::True);
+                break;
+            }
+
+            _pathText->SetText(pBinding->GetPath().Path);
         }
         else if (pExt->GetRTTIType()->InheritFrom(SRExtension::RTTIType()))
         {

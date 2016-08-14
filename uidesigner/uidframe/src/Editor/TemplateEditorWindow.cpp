@@ -17,6 +17,7 @@ TemplateEditorWindow::TemplateEditorWindow(DesignElement* resElem, ThemeEditorWi
     _themeWnd = owner;
     _objTree->ref();
     _tempElement = NULL;
+    _templateParent = NULL;
 }
 
 TemplateEditorWindow::~TemplateEditorWindow()

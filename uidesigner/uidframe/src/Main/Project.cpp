@@ -475,7 +475,30 @@ bool Project::LoadProject(const String& path)
         }
     }
 
+    CreateBackup();
+
     return Reload();
+}
+
+suic::String Project::GetBackupDir()
+{
+    suic::String strPath = _prjDir + _U("backup\\");
+    return strPath;
+}
+
+void Project::CreateBackup()
+{
+    suic::String strPath = GetBackupDir();
+    FileDir::DupCreateDir(strPath);
+}
+
+void Project::BackupRootItem(RootItem* rootItem)
+{
+    // 保存到备份目录
+    String strBackPath = GetBackupDir() + rootItem->GetRelativePath();
+
+    FileDir::DupCreateDir(strBackPath);
+    FileDir::CopyFileTo(rootItem->GetFullPath(), strBackPath, true);
 }
 
 Project* Project::CreatePrj(SlnTreeManager* docMana, const suic::String& name, const suic::String& path)
@@ -494,6 +517,9 @@ Project* Project::CreatePrj(SlnTreeManager* docMana, const suic::String& name, c
 
     FileDir::DupCreateDir(pPrj->_prjDir);
 
+    // 创建备份目录
+    pPrj->CreateBackup();
+
     if (!pPrj->InitDefaultProject())
     {
         pPrj->unref();
@@ -503,11 +529,14 @@ Project* Project::CreatePrj(SlnTreeManager* docMana, const suic::String& name, c
     return pPrj;
 }
 
-bool Project::CopyTemplateFile(const String& tempPath, const String& destPath)
+bool Project::CopyTemplateFile(const String& tempPath, const String& shortPath)
 {
     Mulstr buff;
     Mulstr strPath;
     String strFlag;
+    String destPath;
+
+    destPath.Format(_U("%s%s"), _prjDir.c_str(), shortPath.c_str());
 
     strPath = tempPath.c_str();
     strFlag.Format(_U("%s"), GetProjectName().c_str());
@@ -528,6 +557,13 @@ bool Project::CopyTemplateFile(const String& tempPath, const String& destPath)
     {
         fwrite(buff.c_str(), 1, buff.Length(), f);
         fclose(f);
+
+        // 保存到备份目录
+        String strBackPath = GetBackupDir() + shortPath;
+
+        FileDir::DupCreateDir(strBackPath);
+        FileDir::CopyFileTo(destPath, strBackPath, true);
+
         return true;
     }
     else
@@ -549,7 +585,7 @@ bool Project::InitDefaultProject()
 
     // 拷贝Application.xml文件
     tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\Application.xaml"));
-    destFile.Format(_U("%sApplication.xaml"), _prjDir.c_str());
+    destFile = _U("Application.xaml");
     if (!CopyTemplateFile(tempFile, destFile))
     {
         return false;
@@ -557,7 +593,7 @@ bool Project::InitDefaultProject()
 
     // 拷贝Window.xml文件
     tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\Window.xaml"));
-    destFile.Format(_U("%sMainWindow.xaml"), _prjDir.c_str());
+    destFile = _U("MainWindow.xaml");
     if (!CopyTemplateFile(tempFile, destFile))
     {
         return false;
@@ -565,7 +601,7 @@ bool Project::InitDefaultProject()
 
     // 拷贝default.xml文件
     tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\theme.xaml"));
-    destFile.Format(_U("%stheme\\default.xaml"), _prjDir.c_str());
+    destFile = _U("theme\\default.xaml");
     if (!CopyTemplateFile(tempFile, destFile))
     {
         return false;
@@ -933,9 +969,10 @@ ElementRootItem* Project::AddRootElement(FilterNode* pParent, const String& file
     ElementRootItem* rootItem = new ElementRootItem(new DesignElement());
 
     rootItem->SetFileName(strName);
-    //rootItem->SetProject(this);
-
     pParent->AddItem(rootItem);
+
+    // 保存到备份目录
+    BackupRootItem(rootItem);
 
     return rootItem;
 }

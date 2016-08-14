@@ -442,6 +442,7 @@ public:
     virtual void SetValue(suic::Object* val);
     virtual suic::Object* GetValue();
     virtual suic::String GetSingleXml();
+    virtual suic::String GetResXml(const String& offset);
 
     ImageSource* GetImageSource();
     void ParseResPath(const String& path);

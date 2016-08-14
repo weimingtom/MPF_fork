@@ -458,6 +458,12 @@ bool ElementRootItem::Save()
             fs.Write(strXml);
             fs.Close();
             SetModified(false);
+
+            Project* pPrj = GetProject();
+            if (NULL != pPrj)
+            {
+                pPrj->BackupRootItem(this);
+            }
         }
 
         suic::Toast::Show(_U("±£´æ³É¹¦"), 3);
@@ -1168,7 +1174,7 @@ void TemplateRootItem::CheckTemplateInstantiate()
         }
         else
         {
-            pTempRoot->InstantiateDesignElement(pRoot, NULL, true);
+            pTempRoot->InstantiateDesignElement(pRoot, pRoot->GetUIElement(), true);
         }
     }
 }

@@ -74,11 +74,16 @@ public:
 
 public:
 
+    void BackupRootItem(RootItem* rootItem);
+
     bool HasModified(FilterNode* pNode);
     void SaveFilterNode(FilterNode* pNode);
     String GetRootItemsAsString(const String& offset, FilterNode* pNode);
 
 protected:
+
+    void CreateBackup();
+    suic::String GetBackupDir(); 
 
     void InitEditNodes();
     bool InternalLoadPrj();
@@ -87,7 +92,7 @@ protected:
 
     void RefleshFilterNode(FilterNode* pNode, RootItem* currShow);
 
-    bool CopyTemplateFile(const String& tempPath, const String& destPath);
+    bool CopyTemplateFile(const String& tempPath, const String& shortPath);
 
     void ReadThemeNodeFromDir();
 

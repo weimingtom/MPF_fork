@@ -640,7 +640,15 @@ suic::String ExtensionResNode::GetSingleXml()
     {
         String strXml = _U("{TemplateBinding ");
 
-        strXml += tempRes->GetProp()->GetName();
+        if (tempRes->GetProp()->IsAttached())
+        {
+            strXml += tempRes->GetProp()->GetOwnerType()->typeName;
+            strXml +=  _U(".") + tempRes->GetProp()->GetName();
+        }
+        else
+        {
+            strXml += tempRes->GetProp()->GetName();
+        }
         strXml += _U("}");
         return strXml;
     }
@@ -1203,6 +1211,24 @@ suic::String SourceResNode::GetSingleXml()
         return _source->GetUri().ToString();
     }
     return suic::String();
+}
+
+suic::String SourceResNode::GetResXml(const String& offset)
+{
+    suic::String strXml;
+    strXml = offset + _U("<ImageSource x:Key=\"");
+    strXml += GetKey() + _U("\" Source=\"");
+
+    if (NULL != _source)
+    {
+        strXml += _source->GetUri().ToString() + _U("\" />\n");
+    }
+    else
+    {
+        strXml += _U("\" />\n");
+    }
+    
+    return strXml;
 }
 
 ImageSource* SourceResNode::GetImageSource()

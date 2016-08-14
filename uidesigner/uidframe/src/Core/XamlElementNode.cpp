@@ -1145,7 +1145,22 @@ void DesignElement::InitElementProps(bool bOnlyExt)
             }
             else if (!bOnlyExt)
             {
-                fe->SetValue(pSetter->GetProperty(), objVal);
+                if (pSetter->GetProperty() != NULL)
+                {
+                    fe->SetValue(pSetter->GetProperty(), objVal);
+                }
+                else
+                {
+                    suic::String strName = pSetter->GetName();
+                    if (strName.Length() == 7 && strName.Equals(_U("Command")))
+                    {
+                        suic::ResourceParserOp::DoCommand(fe, objVal->ToString());
+                    }
+                    else
+                    {
+                        fe->SetAttribute(strName, objVal);
+                    }
+                }
             }
         }
     }
@@ -1830,11 +1845,20 @@ void DesignTrack::AddXamlElement(DesignElement* elem)
 
 void DesignTrack::OnFinishReadChildElement(DesignElement* child)
 {
-    _drb = AddTrackChild(_drb);
-    _irb = AddTrackChild(_irb);
-    _thumb = AddTrackChild(_thumb);
+    if (child == _drb)
+    {
+        _drb = AddTrackChild(_drb);
+    }
+    if (_irb == child)
+    {
+        _irb = AddTrackChild(_irb);
+    }
+    if (_thumb == child)
+    {
+        _thumb = AddTrackChild(_thumb);
+    }
 
-    Clear();
+    ClearChildren();
 }
 
 DesignElement* DesignTrack::AddTrackChild(DesignElement* pNode)

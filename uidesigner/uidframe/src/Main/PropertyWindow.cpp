@@ -74,6 +74,7 @@ PropertyWindowOp::PropertyWindowOp()
 {
     _propWindow = NULL;
     _editPanel = NULL;
+    _designPanel = NULL;
 }
 
 PropertyWindowOp::~PropertyWindowOp()

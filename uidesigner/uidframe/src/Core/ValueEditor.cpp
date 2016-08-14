@@ -356,17 +356,6 @@ void SetterEditor::UpdateOperPanel(SetterNode* setter)
     {
         return;
     }
-
-    if (_target == NULL)//setter->GetFromTrigger() != ePropertyType::ePropStyle)
-    {
-        //_operPanel->Enable(false);
-        _operPanel->SetVisibility(Visibility::Hidden);
-    }
-    else
-    {
-        //_operPanel->Enable(true);
-        _operPanel->SetVisibility(Visibility::Visible);
-    }
 }
 
 void SetterEditor::SetSetterNode(SetterNode* setter, ePropertyType fromTrigger)
@@ -749,7 +738,7 @@ void SetterEditor::OnSelectResource(Element* sender, suic::RoutedEventArg* e)
 
     if (NULL == _target)// pSetter->GetFromTrigger() != ePropertyType::ePropStyle)
     {
-        return;
+        //return;
     }
 
     /*FrameworkElement* feTarget = NULL;
