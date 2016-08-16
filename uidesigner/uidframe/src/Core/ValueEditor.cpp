@@ -76,6 +76,7 @@ ImplementRTTIOfClass(TemplateSetterEditor, STSetterEditor)
 ImplementRTTIOfClass(DataTemplateSetterEditor, TemplateSetterEditor)
 ImplementRTTIOfClass(ControlTemplateSetterEditor, TemplateSetterEditor)
 ImplementRTTIOfClass(StyleSetterEditor, STSetterEditor)
+ImplementRTTIOfClass(ItemContainerStyleSetterEditor, StyleSetterEditor)
 
 ImplementRTTIOfClass(SourceSetterEditor, SetterEditor)
 ImplementRTTIOfClass(TextBoxRangeSetterEditor, SetterEditor)
@@ -542,13 +543,14 @@ Button* SetterEditor::CreateResButton(Style* expresionStyle)
 void SetterEditor::OnApplyTemplate()
 {
     Control::OnApplyTemplate();
+
+    SetClipToBounds(true);
     
     FrameworkElement* fe = GetTemplateChild();
     if (NULL != fe)
     {
         Rect rcMgr = fe->GetMargin();
-
-        rcMgr.right += 38;
+        rcMgr.right += 16;
         fe->SetMargin(rcMgr);
     }
 
@@ -568,12 +570,13 @@ Size SetterEditor::OnMeasure(const suic::Size& constraitSize)
 void SetterEditor::OnArrange(const Size& arrangeSize)
 {
     Control::OnArrange(arrangeSize);
-    if (NULL != _operPanel)
+    FrameworkElement* fe = GetTemplateChild();
+
+    if (NULL != fe && NULL != _operPanel)
     {
         int hei = arrangeSize.Height();
-        int x = GetActualWidth() - 35;
-        int y = 0;//(GetActualHeight() - _operPanel->GetDesiredSize().Height()) / 2;
-        Rect rect(Point(x, y), Size(_operPanel->GetDesiredSize().Width(), hei));
+        int x = fe->GetVisualOffset().x + fe->GetRenderSize().Width() + 3;
+        Rect rect(Point(x, 0), Size(_operPanel->GetDesiredSize().Width(), hei));
         _operPanel->Arrange(rect);
     }
 }
@@ -1360,9 +1363,13 @@ void ChoiceSetterEditor::NotifySetterChanged()
 
     if (NULL != _comboBox)
     {
-        int index = 0;
+        int index = -1;
 
-        //InitComboBoxItems();
+        DpItem* dpItem = GetDpItem();
+        if (NULL != dpItem)
+        {
+            index = dpItem->GetSelectIndex();
+        }
 
         if (NULL != pSetter)
         {
@@ -1383,14 +1390,12 @@ void ChoiceSetterEditor::NotifySetterChanged()
             {
                 index = meta->GetDefaultValue()->ToInt();
             }
-            else
-            {
-                // meta为空表示可能来自资源编辑
-                index = 0;
-            }
         }
 
-        _comboBox->SetSelectedIndex(index);
+        if (index >= 0)
+        {
+            _comboBox->SetSelectedIndex(index);
+        }
     }
 
     _updatingCheckValue = false;
@@ -1465,29 +1470,29 @@ void ChoiceSetterEditor::ClearItems()
     _items->Clear();
 }
 
-void ChoiceSetterEditor::InitComboBoxItems()
+int ChoiceSetterEditor::InitComboBoxItems()
 {
+    int index = 0;
     if (_items->GetCount() == 0)
     {
         DpItem* dpItem = GetDpItem();
-
         if (NULL != dpItem)
         {
             _items->Clear();
             dpItem->FillAddChild(this);
+            index = dpItem->GetSelectIndex();
         }
     }
+    return index;
 }
 
 void ChoiceSetterEditor::OnApplyTemplate()
 {
     SetterEditor::OnApplyTemplate();
 
-    InitComboBoxItems();
-
     _comboBox = RTTICast<ComboBox>(GetTemplateChild(_U("PART_ComboBox")));
+    int index = InitComboBoxItems();
     _comboBox->SetItemsSource(_items);
-    _comboBox->SetSelectedIndex(0);
     UpdateChoiceItem();
     _comboBox->AddSelectionChanged(new suic::SelectionChangedEventHandler(this, &ChoiceSetterEditor::OnSelItemChanged));
 }
@@ -2903,7 +2908,7 @@ void StyleSetterEditor::SetTemplateMode(bool inTemplate)
     }
 }
 
-StyleNode* StyleSetterEditor::CreateNewStyle(suic::FrameworkElement* fe)
+StyleNode* StyleSetterEditor::CreateNewStyle(suic::RTTIOfInfo* targetRtti)
 {
     StyleNode* pStyle = NULL;
     CreateStyleWindow styleWnd(true);
@@ -2915,7 +2920,7 @@ StyleNode* StyleSetterEditor::CreateNewStyle(suic::FrameworkElement* fe)
     {
         if (!styleWnd.IsFromBlank())
         {
-            ResNode* resNode = Project::GetCurrentProject()->FindResItem(fe->GetRTTIType()->typeName);
+            ResNode* resNode = Project::GetCurrentProject()->FindResItem(targetRtti->typeName);
             StyleNode* tempSty = suic::RTTICast<StyleNode>(resNode);
             if (NULL != tempSty)
             {
@@ -2932,14 +2937,15 @@ StyleNode* StyleSetterEditor::CreateNewStyle(suic::FrameworkElement* fe)
             pStyle->ref();
         }
 
-        pStyle->SetTargetType(fe->GetRTTIType());
+        pStyle->SetTargetType(targetRtti);
     }
     
     return pStyle;
 }
 
-void StyleSetterEditor::OnEditClick()
+suic::RTTIOfInfo* StyleSetterEditor::GetStyleTargetRTTIInfo()
 {
+    suic::RTTIOfInfo* rttiInfo = NULL;
     suic::FrameworkElement* fe = NULL;
     DesignElement* target = GetTargetElement();
     if (NULL != target)
@@ -2947,7 +2953,20 @@ void StyleSetterEditor::OnEditClick()
         fe = target->GetUIElement();
     }
 
-    if (NULL != fe && NULL != Project::GetCurrentProject())
+    if (NULL != fe)
+    {
+        rttiInfo = fe->GetRTTIType();
+    }
+
+    return rttiInfo;
+}
+
+void StyleSetterEditor::OnEditClick()
+{
+    DesignElement* target = GetTargetElement();
+    suic::RTTIOfInfo* rttiInfo = GetStyleTargetRTTIInfo();
+
+    if (NULL != rttiInfo && NULL != Project::GetCurrentProject())
     {
         EditRootPanel* editPanel = FindEditRttoPanel(this);
         StyleNode* pStyle = RTTICast<StyleNode>(GetSetterNode(true)->GetResNode());
@@ -2958,7 +2977,7 @@ void StyleSetterEditor::OnEditClick()
         // Style是放在控件的.Resources资源节点下
         if (NULL == pStyle)
         {
-            pStyle = CreateNewStyle(fe);
+            pStyle = CreateNewStyle(rttiInfo);
             if (NULL == pStyle)
             {
                 return;
@@ -2996,6 +3015,35 @@ void StyleSetterEditor::OnEditClick()
         pStyle->unref();
         themeWnd->unref();
     }
+}
+
+ItemContainerStyleSetterEditor::ItemContainerStyleSetterEditor()
+{
+
+}
+
+suic::RTTIOfInfo* ItemContainerStyleSetterEditor::GetStyleTargetRTTIInfo()
+{
+    suic::RTTIOfInfo* rttiInfo = NULL;
+    suic::ItemsControl* fe = NULL;
+    suic::Element* itemContainer = NULL;
+    DesignElement* target = GetTargetElement();
+    if (NULL != target)
+    {
+        fe = suic::RTTICast<suic::ItemsControl>(target->GetUIElement());
+    }
+
+    if (NULL != fe)
+    {
+        itemContainer = fe->GetContainerForItem(suic::DpProperty::UnsetValue());
+        if (NULL != itemContainer)
+        {
+            rttiInfo = itemContainer->GetRTTIType();
+            itemContainer->unref();
+        }
+    }
+
+    return rttiInfo;
 }
 
 //==============================================

@@ -1197,6 +1197,7 @@ void TemplateRootItem::SetTemplateType(suic::RTTIOfInfo* typeInfo)
 void TemplateRootItem::SetTargetType(suic::RTTIOfInfo* typeInfo)
 {
     _targetType = typeInfo;
+    _trgColl->SetRTTIOfInfo(_targetType);
 }
 
 void TemplateRootItem::SetIsControlTemplate(bool v)
@@ -1267,6 +1268,10 @@ DesignElement* TemplateRootItem::GetTemplateRootElement()
 
 TriggerCollectionNode* TemplateRootItem::GetTriggerCollection()
 {
+    if (_trgColl->GetOwnerType() == NULL)
+    {
+        _trgColl->SetRTTIOfInfo(GetTargetType());
+    }
     return _trgColl;
 }
 

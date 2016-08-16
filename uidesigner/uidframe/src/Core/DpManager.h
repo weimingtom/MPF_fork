@@ -94,6 +94,7 @@ struct DpItem : public Object
     }
 
     virtual String GetEditorName();
+    virtual int GetSelectIndex();
 
     virtual suic::String ValueToString(ResNode* val)
     {
@@ -1021,10 +1022,15 @@ public:
     virtual void FillAddChild(IAddChild* sender)
     {
         sender->AddText(_U("Disabled"));
-        sender->AddText(_U("AutoScroll"));
+        sender->AddText(_U("Auto"));
         sender->AddText(_U("Hidden"));
         sender->AddText(_U("Visible"));
         sender->AddText(_U("Collapsed"));
+    }
+
+    virtual int GetSelectIndex()
+    {
+        return 1;
     }
 
     suic::String ValueToString(ResNode* val)
@@ -1055,7 +1061,7 @@ public:
         }
         else
         {
-            return _U("AutoScroll");
+            return _U("Auto");
         }
     }
 };

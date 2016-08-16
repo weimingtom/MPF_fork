@@ -387,3 +387,8 @@ String DpItem::GetEditorName()
         return type->typeName;
     }
 }
+
+int DpItem::GetSelectIndex()
+{
+    return 0;
+}

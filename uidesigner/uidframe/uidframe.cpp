@@ -145,6 +145,8 @@ void InitDControls()
     suic::BuildFactory::Ins()->Add(DataTemplateSetterEditor::RTTIType());
     suic::BuildFactory::Ins()->Add(ControlTemplateSetterEditor::RTTIType());
 
+    suic::BuildFactory::Ins()->Add(ItemContainerStyleSetterEditor::RTTIType());
+
     suic::BuildFactory::Ins()->Add(SourceSetterEditor::RTTIType());
 
     suic::BuildFactory::Ins()->Add(ProjectTree::RTTIType());

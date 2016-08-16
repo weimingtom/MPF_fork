@@ -442,7 +442,7 @@ protected:
     void OnInitialized(suic::EventArg* e);
     int FindIndexByText(const String& text);
 
-    void InitComboBoxItems();
+    int InitComboBoxItems();
     void UpdateChoiceItem();
     void AddChoiceItem(Object* item);
 
@@ -825,15 +825,29 @@ public:
 protected:
 
     void OnEditClick();
-    StyleNode* CreateNewStyle(suic::FrameworkElement* fe);
+    StyleNode* CreateNewStyle(suic::RTTIOfInfo* targetRtti);
 
     virtual bool IsSetterEmpty(SetterNode* pSetter);
     // 模版里的控件元素不允许编辑Style属性
     virtual void SetTemplateMode(bool inTemplate);
+    virtual suic::RTTIOfInfo* GetStyleTargetRTTIInfo();
 
 private:
 
     suic::TextBlock* _info;
+};
+
+class ItemContainerStyleSetterEditor : public StyleSetterEditor
+{
+public:
+
+    ItemContainerStyleSetterEditor();
+
+    RTTIOfClass(ItemContainerStyleSetterEditor)
+
+protected:
+
+    virtual suic::RTTIOfInfo* GetStyleTargetRTTIInfo();
 };
 
 //

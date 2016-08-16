@@ -47,6 +47,11 @@ void TriggerEditorWindow::SetTriggerCollectionNode(TemplateRootItem* tempRoot, T
     if (_triggers == NULL && _tempRootItem != NULL)
     {
         _triggers = _tempRootItem->GetTriggerCollection();
+        if (NULL == _triggers->GetOwnerType() || 
+            _triggers->GetOwnerType() != _tempRootItem->GetTargetType())
+        {
+            _triggers->SetRTTIOfInfo(_tempRootItem->GetTargetType());
+        }
     }
 }
 
