@@ -1349,7 +1349,7 @@ void DesignGrid::SetRowMaxHeight(int index, Float val)
 
         if (NULL == setterNode)
         {
-            setterNode = new SetterNode(_U("MinHeight"), suic::RowDefinition::MaxHeightProperty, oVal);
+            setterNode = new SetterNode(_U("MaxHeight"), suic::RowDefinition::MaxHeightProperty, oVal);
             pRow->AddSetter(setterNode);
         }
         else
