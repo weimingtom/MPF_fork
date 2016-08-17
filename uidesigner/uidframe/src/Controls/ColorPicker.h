@@ -128,6 +128,28 @@ protected:
     void OnRangeChanged(suic::Float val);
 };
 
+class ColorPickerBox : public suic::Control
+{
+public:
+
+    ColorPickerBox();
+
+    RTTIOfClass(ColorPickerBox)
+
+    void OnMouseMove(suic::MouseButtonEventArg* e);
+    void OnMouseLeftButtonDown(suic::MouseButtonEventArg* e);
+    void OnMouseLeftButtonUp(suic::MouseButtonEventArg* e);
+
+private:
+
+    suic::OCursor* GetCursor();
+    void OnSetCursor(suic::CursorEventArg* e);
+
+private:
+
+    suic::OCursor* _cursor;
+};
+
 class ColorPicker : public suic::Control
 {
 public:
@@ -168,6 +190,9 @@ public:
     void OnLastColorClick(Element* sender, RoutedEventArg* e);
     void OnInitColorClick(Element* sender, RoutedEventArg* e);
 
+    void OnHexColorChanged(suic::DpObject* sender, suic::RoutedEventArg* e);
+    void OnPickColorButtonChanged(suic::Element* sender, suic::RoutedEventArg* e);
+
 protected:
 
     void OnApplyTemplate();
@@ -189,6 +214,9 @@ private:
     bool _hueDraging;    
     bool _updatingColor;
     bool _initializingColor;
+
+    suic::TextBox* _colorHex;
+    ColorPickerBox* _colorPick;
     ColorSlider* _colorSlider;
     ColorSelector* _colorSelector;
 

@@ -2437,7 +2437,7 @@ void BrushEditorPanel::OnBrushChanged(DpObject* sender, RoutedEventArg* e)
     {
         ResNodePtr resNode = brushEditor->GetCloneResValue();
         SetterNode* pSetter = _brushEditor->GetSetterNode(true);
-        if (pSetter->GetResNode() != resNode.get())
+        if (NULL != pSetter && pSetter->GetResNode() != resNode.get())
         {
             pSetter->SetResNode(resNode.get());
         }

@@ -1,14 +1,18 @@
 
 #include "stdafx.h"
 
+#include "resource.h"
+
 #include <Controls/ColorPicker.h>
 #include <System/Input/Mouse.h>
 
 ImplementRTTIOfClass(ColorSlider, suic::RangeBase)
 ImplementRTTIOfClass(ColorSelector, suic::Control)
 ImplementRTTIOfClass(ColorPicker, suic::Control)
+ImplementRTTIOfClass(ColorPickerBox, suic::Control)
 ImplementRTTIOfClass(ColorChannel, TextBoxRange)
 ImplementRTTIOfClass(ColorButton, suic::ButtonBase)
+
 
 DpProperty* ColorButton::ColorProperty;
 
@@ -368,6 +372,62 @@ void ColorChannel::CheckInputValue()
     }
 }
 
+ColorPickerBox::ColorPickerBox()
+{
+    _cursor = suic::OCursor::Hand;
+}
+
+suic::OCursor* ColorPickerBox::GetCursor()
+{
+    if (NULL == _cursor)
+    {
+        _cursor = suic::RTTICast<suic::OCursor>(FindRes(_U("pickcursor")));
+    }
+    return _cursor;
+}
+
+void ColorPickerBox::OnSetCursor(suic::CursorEventArg* e)
+{
+    e->SetHandled(true);
+    e->SetCursor(_cursor);
+    suic::Control::OnSetCursor(e);
+}
+
+void ColorPickerBox::OnMouseMove(suic::MouseButtonEventArg* e)
+{
+    e->SetHandled(true);
+    if (IsMouseCaptured())
+    {
+        _cursor->SetCursor();
+        //::SetCursor(LoadCursor(NULL, MAKEINTRESOURCE(IDC_PICKER)));
+        ColorPicker* clrPicker = RTTICast<ColorPicker>(GetTemplatedParent());
+        if (NULL != clrPicker)
+        {
+            POINT pt;
+            HDC hdc = ::GetDC(NULL);
+            ::GetCursorPos(&pt);
+            COLORREF clr = ::GetPixel(hdc, pt.x, pt.y);
+            ::ReleaseDC(NULL, hdc);
+
+            clrPicker->SetColor(new suic::SolidColorBrush(suic::Color::FromRgb(clr)));
+        }
+    }
+}
+
+void ColorPickerBox::OnMouseLeftButtonDown(suic::MouseButtonEventArg* e)
+{
+    e->SetHandled(true);
+    SetCaptureMouse();
+    _cursor = suic::RTTICast<suic::OCursor>(FindRes(_U("pickcursor")));
+}
+
+void ColorPickerBox::OnMouseLeftButtonUp(suic::MouseButtonEventArg* e)
+{
+    e->SetHandled(true);
+    ReleaseCaptureMouse();
+    _cursor = suic::OCursor::Hand;
+}
+
 DpProperty* ColorPicker::ColorProperty;
 DpProperty* ColorPicker::InitColorProperty;
 DpProperty* ColorPicker::LastColorProperty;
@@ -405,8 +465,8 @@ void ColorPicker::OnColorPropChanged(suic::DpObject* d, suic::DpPropChangedEvent
             colorPicker->SetValue(LastColorProperty, lastColor);
             colorPicker->UpdateColorInternal(pColor->GetColor());
             colorPicker->UpdateARGBColor(pColor->ToColor(), false);
-            colorPicker->_updatingColor = false;
             colorPicker->OnColorChanged(pColor);
+            colorPicker->_updatingColor = false;
         }
     }
 }
@@ -427,6 +487,9 @@ ColorPicker::ColorPicker()
 {
     _colorSelector = NULL;
     _colorSlider = NULL;
+    _colorPick = NULL;
+    _colorHex = NULL;
+
     _hueDraging = false;
     _updatingColor = false;
     
@@ -609,6 +672,37 @@ void ColorPicker::OnInitColorClick(Element* sender, RoutedEventArg* e)
     e->SetHandled(true);
 }
 
+void ColorPicker::OnHexColorChanged(suic::DpObject* sender, suic::RoutedEventArg* e)
+{
+    e->SetHandled(true);
+    if (!_updatingColor)
+    {
+        suic::String strHex = _colorHex->GetText().Trim();
+
+        if (strHex.Length() >= 8)
+        {
+            strHex = _U("#") + strHex.Substring(0, 8);
+            suic::Color clr = suic::Color::Parse(strHex);
+            suic::String strLast = suic::Color::ToHex(clr).Substring(1);
+
+            if (strLast.Length() == 6)
+            {
+                strLast = _U("FF") + strLast;
+            }
+
+            if (strLast.CompareI(strHex.Substring(1)) == 0)
+            {
+                SetColor(new suic::SolidColorBrush(clr));
+            }
+        }
+    }
+}
+
+void ColorPicker::OnPickColorButtonChanged(suic::Element* sender, suic::RoutedEventArg* e)
+{
+    e->SetHandled(true);
+}
+
 void ColorPicker::OnApplyTemplate()
 {
     suic::Control::OnApplyTemplate();
@@ -625,6 +719,13 @@ void ColorPicker::OnApplyTemplate()
         initBtn->AddClick(new ClickEventHandler(this, &ColorPicker::OnInitColorClick));
     }
 
+    _colorHex = RTTICast<suic::TextBox>(GetTemplateChild(_U("PART_HexColor")));
+    if (NULL != _colorHex)
+    {
+        _colorHex->AddTextChanged(new suic::RoutedEventHandler(this, &ColorPicker::OnHexColorChanged));
+    }
+
+    _colorPick = RTTICast<ColorPickerBox>(GetTemplateChild(_U("PART_PickColor")));
     _colorSelector = RTTICast<ColorSelector>(GetTemplateChild(_U("PART_Selector")));
     _colorSlider  = RTTICast<ColorSlider>(GetTemplateChild(_U("PART_ColorSlider")));
 
@@ -665,5 +766,15 @@ void ColorPicker::UpdateARGBColor(suic::Color color, bool bForce)
     if (NULL != aEdit)
     {
         aEdit->SetChannel(suic::Color::A(color));
+    }
+
+    if (_colorHex != NULL)
+    {
+        suic::String strHex = Color::ToHex(color).Substring(1);
+        if (strHex.Length() == 6)
+        {
+            strHex = _U("FF") + strHex;
+        }
+        _colorHex->SetText(strHex);
     }
 }

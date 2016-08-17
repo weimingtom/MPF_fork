@@ -186,6 +186,8 @@ void InitDControls()
     suic::BuildFactory::Ins()->Add(ColorSlider::RTTIType());
     suic::BuildFactory::Ins()->Add(ColorChannel::RTTIType());
     suic::BuildFactory::Ins()->Add(ColorPicker::RTTIType());
+    suic::BuildFactory::Ins()->Add(ColorPickerBox::RTTIType());
+    
     suic::BuildFactory::Ins()->Add(ColorSelector::RTTIType());
     suic::BuildFactory::Ins()->Add(ColorButton::RTTIType());
     
