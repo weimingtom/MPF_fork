@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uidrun", "uidrun\uidrun.vcp
 		{D83629AD-231E-4A95-9E0E-98C398A6C5FB} = {D83629AD-231E-4A95-9E0E-98C398A6C5FB}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skia", "skia\skia.vcproj", "{E702AC1C-4AC7-3904-9CE2-27CF661F6049}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -32,6 +34,10 @@ Global
 		{C653D618-AFD6-48E8-98AC-FC8A32675A4E}.Debug|Win32.Build.0 = Debug|Win32
 		{C653D618-AFD6-48E8-98AC-FC8A32675A4E}.Release|Win32.ActiveCfg = Release|Win32
 		{C653D618-AFD6-48E8-98AC-FC8A32675A4E}.Release|Win32.Build.0 = Release|Win32
+		{E702AC1C-4AC7-3904-9CE2-27CF661F6049}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E702AC1C-4AC7-3904-9CE2-27CF661F6049}.Debug|Win32.Build.0 = Debug|Win32
+		{E702AC1C-4AC7-3904-9CE2-27CF661F6049}.Release|Win32.ActiveCfg = Release|Win32
+		{E702AC1C-4AC7-3904-9CE2-27CF661F6049}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
