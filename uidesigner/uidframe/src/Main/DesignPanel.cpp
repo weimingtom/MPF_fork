@@ -1689,6 +1689,7 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
 
                 dfocus->unref();
 
+                _root->SetModified(true);
                 newParent->GetUIElement()->UpdateLayout();
                 UpdateDElement();
                 _docTree->UpdateElementTree();
@@ -1707,6 +1708,7 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
                     if (NULL != dSamePanel)
                     {
                         xamlParent->MoveElement(dfocus, dSameMouse);
+                        _root->SetModified(true);
                         _docTree->UpdateElementTree();
                         UpdateLayout();
                         return;
