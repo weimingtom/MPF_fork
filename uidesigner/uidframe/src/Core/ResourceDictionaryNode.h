@@ -110,7 +110,6 @@ public:
     void SetApplication(Application* pApp);
     Application* GetApplication() const;
 
-    void SetStartupUri(const String& strUri);
     ResourceUri GetStartupUri() const;
 
     void SetMainRootItem(ElementRootItem* rootItem);
@@ -126,7 +125,6 @@ private:
 
     Application* _value;
     ElementRootItem* _mainWnd;
-    ResourceUri _startupUri;
     // 元素本身的属性（local值）
     SetterCollectionNode* _setterColl;
     // 元素资源

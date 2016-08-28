@@ -28,16 +28,17 @@ RootItem::RootItem()
     : _objTree(NULL)
 {
     _isModified = false;
-    _isLoaded = NULL;
+    _isLoaded = false;
     _project = NULL;
 }
 
-RootItem::RootItem(const String& name, Project* pPrj)
+RootItem::RootItem(const String& name)
     : FilterNode(name)
-    , _project(pPrj)
+    , _project(NULL)
     , _objTree(NULL)
 {
-    
+    _isModified = false;
+    _isLoaded = false;
 }
 
 RootItem::~RootItem()
@@ -121,6 +122,20 @@ void RootItem::SetFileName(const String& name)
     }
 
     SetName(name);
+}
+
+ResourceUri RootItem::GetResourceUri() const
+{
+    suic::String strPath = GetRelativePath();
+    ResourceUri resPath;
+    Project* pPrj = GetProject();
+
+    if (pPrj != NULL)
+    {
+        resPath.SetComponent(pPrj->GetProjectName());
+        resPath.SetResourcePath(strPath);
+    }
+    return resPath;
 }
 
 void RootItem::SetObjTreeManager(ObjTreeManager* objTree)
@@ -242,6 +257,32 @@ SetterNode* ElementRootItem::SetElementValue(DesignElement* elem, DpProperty* dp
     else
     {
         return NULL;
+    }
+}
+
+void ElementRootItem::SetStartElement()
+{
+    if (GetProject() != NULL)
+    {
+        ApplicationRootItem* appRootItem = GetProject()->GetApplicationRootItem();
+
+        if (NULL != appRootItem && appRootItem->GetMainRootItem() != this)
+        {
+            appRootItem->SetMainRootItem(this, true);
+        }
+    }
+}
+
+void ElementRootItem::RemoveStartElement()
+{
+    if (GetProject() != NULL)
+    {
+        ApplicationRootItem* appRootItem = GetProject()->GetApplicationRootItem();
+
+        if (NULL != appRootItem && appRootItem->GetMainRootItem() == this)
+        {
+            appRootItem->SetMainRootItem(NULL, true);
+        }
     }
 }
 
@@ -829,6 +870,21 @@ ElementRootItem* ApplicationRootItem::GetMainRootItem() const
         return _app->GetMainRootItem();
     }
     return NULL;
+}
+
+void ApplicationRootItem::SetMainRootItem(ElementRootItem* pRootItem, bool bModified)
+{
+    Project* pPrj = GetProject();
+
+    if (_app != NULL && NULL != pPrj)
+    {
+        _app->SetMainRootItem(pRootItem);
+        if (bModified)
+        {
+            SetModified(true);
+            pPrj->GetSlnTreeManager()->GetProjectTree()->SetSelectedItem(this);
+        }
+    }
 }
 
 suic::String ApplicationRootItem::GetResXml(const String& offset)

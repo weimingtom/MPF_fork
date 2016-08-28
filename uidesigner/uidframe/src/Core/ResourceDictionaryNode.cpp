@@ -557,19 +557,18 @@ Application* ApplicationNode::GetApplication() const
     return _value;
 }
 
-void ApplicationNode::SetStartupUri(const String& strUri)
-{
-    _startupUri.Parse(strUri);
-}
-
 ResourceUri ApplicationNode::GetStartupUri() const
 {
-    return _startupUri;
+    if (NULL != _mainWnd)
+    {
+        return _mainWnd->GetResourceUri();
+    }
+    return ResourceUri();
 }
 
 void ApplicationNode::SetMainRootItem(ElementRootItem* rootItem)
 {
-    SETREFOBJ(_mainWnd, rootItem)
+    SETREFOBJ(_mainWnd, rootItem);
 }
 
 ElementRootItem* ApplicationNode::GetMainRootItem() const

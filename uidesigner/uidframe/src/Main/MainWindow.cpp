@@ -393,7 +393,15 @@ void MainWindow::OnRedoUndoButtonClick(suic::Element* sender, suic::RoutedEventA
     }
     else if (sender->GetName().Equals(_U("SaveBtn")))
     {
-        objMana->GetDesignPanel()->GetRootElement()->Save();
+        FileRootItem* pRootItem = suic::RTTICast<FileRootItem>(_docMana->GetProjectTree()->GetSelectedItem());
+        if (NULL != pRootItem)
+        {
+            pRootItem->Save();
+        }
+        /*if (NULL != objMana->GetDesignPanel())
+        {
+            objMana->GetDesignPanel()->GetRootElement()->Save();
+        }*/
     }
     else
     {

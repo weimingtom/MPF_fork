@@ -92,7 +92,7 @@ public:
     }
 
     RootItem();
-    RootItem(const String& name, Project* pPrj);
+    RootItem(const String& name);
     virtual ~RootItem();
 
     suic::String GetResXml(const String& offset);
@@ -108,10 +108,7 @@ public:
     String GetFileName() const;
     void SetFileName(const String& name);
 
-    ResourceUri GetResourceUri() const
-    {
-        return _resPath;
-    }
+    ResourceUri GetResourceUri() const;
 
     void SetObjTreeManager(ObjTreeManager* objTree);
     ObjTreeManager* GetObjTreeManager() const;
@@ -142,7 +139,6 @@ protected:
     bool _isModified;
     bool _isLoaded;
 
-    ResourceUri _resPath;
     Project* _project;
     ObjTreeManager* _objTree;
 
@@ -173,6 +169,9 @@ public:
     static SetterNode* SetElementValue(DesignElement* elem, DpProperty* dp, Object* val);
 
     void UpdateRootElement(DesignElement* data);
+
+    void SetStartElement();
+    void RemoveStartElement();
 
     // 根文件是否是一个模版文件
     bool IsTemplate() const;
@@ -249,6 +248,7 @@ public:
 
     ApplicationNode* GetApplicationNode();
     ElementRootItem* GetMainRootItem() const;
+    void SetMainRootItem(ElementRootItem* pRootItem, bool bModified);
 
 protected:
 

@@ -806,7 +806,6 @@ void XamlWalker::ReadXamlApplication(ApplicationNode* dApp, suic::Application* a
 
                     if (NULL != pWnd)
                     {
-                        dApp->SetStartupUri(strValue);
                         dApp->SetMainRootItem(mainRootItem);
                         app->SetMainWindow(pWnd);
                         mainRootItem->SetLoaded();

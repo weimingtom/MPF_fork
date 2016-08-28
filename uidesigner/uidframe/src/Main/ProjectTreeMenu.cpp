@@ -355,8 +355,27 @@ void RootItemCmd::Execute(Object* target, Object* parameter)
         }
         else if (_name.Equals(_U("删除")))
         {
-            item->GetProject()->RemoveRootItem(item);
-            UpdateTreeUI(false);
+            if (suic::InfoBox::Show(suic::String().Format(_U("是否确定删除 '%s'?"), item->GetName().c_str()), _U("提示"), suic::InfoBox::ButtonType::IB_YesNo) == suic::InfoBox::Result::Yes)
+            {
+                item->GetProject()->RemoveRootItem(item);
+                UpdateTreeUI(false);
+            }
+        }
+        else if (_name.Equals(_U("设为启动")))
+        {
+            ElementRootItem* eleRoot = suic::RTTICast<ElementRootItem>(item);
+            if (NULL != eleRoot)
+            {
+                eleRoot->SetStartElement();
+            }
+        }
+        else if (_name.Equals(_U("移除启动")))
+        {
+            ElementRootItem* eleRoot = suic::RTTICast<ElementRootItem>(item);
+            if (NULL != eleRoot)
+            {
+                eleRoot->RemoveStartElement();
+            }
         }
         else if (_name.Equals(_U("打开目录")))
         {

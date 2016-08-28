@@ -278,11 +278,22 @@ void ProjectTree::OnContextMenu(ContextMenuEventArg* e)
             }
             else
             {
-                pItem->SetName(_U("设为启动"));
-                
-                if (rootItem == rootItem->GetProject()->GetMainWindow())
+                ElementRootItem* elemRootItem = suic::RTTICast<ElementRootItem>(rootItem);
+                if (NULL != elemRootItem)
                 {
-                    pDelItem->SetShowItem(false);
+                    pItem->SetEnabled(true);
+                    if (rootItem == rootItem->GetProject()->GetMainWindow())
+                    {
+                        pDelItem->SetShowItem(false);
+                        pItem->SetName(_U("移除启动"));
+                    }
+                    else
+                    {
+                        pItem->SetName(_U("设为启动"));
+                    }
+                }
+                else
+                {
                     pItem->SetEnabled(false);
                 }
             }
