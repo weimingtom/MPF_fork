@@ -23,6 +23,13 @@ private:
     suic::Rect _rect;
 };
 
+enum eMouseAction
+{
+    eMouseMove,
+    eMouseLeftButtonDown,
+    eMouseLeftButtonUp,
+};
+
 class DesignPanel : public IDesignWindow
 {
 public:
@@ -168,6 +175,9 @@ protected:
     bool CheckCanAddElement(DesignElement* delem);
     Rect GetInsertElemMargin(DesignElement* parent, Point curPt);
     int CalcStackPanelPos(StackPanel* parent, Point pt, Size& size);
+
+    void HandleCopyElement(DesignElement* dfocus, suic::IAddChild* mvPanel);
+    DesignElement* GetSameParentElement(DesignElement* dfocus, DesignElement* dMouse);
 
 protected:
 

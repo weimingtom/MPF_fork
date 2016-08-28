@@ -614,7 +614,7 @@ void DesignPanel::MouseMoveInSelectMode(suic::MouseButtonEventArg* e)
         _dragMeta->cursor->SetCursor();
         _dragMouseOver = HitTestElement(e->GetMousePoint());
 
-        _dragMeta->DragMetaAction(*_dragMeta, 0);
+        _dragMeta->DragMetaAction(*_dragMeta, eMouseAction::eMouseMove);
     }
 }
 
@@ -742,7 +742,7 @@ void DesignPanel::OnMouseMove(suic::MouseButtonEventArg* e)
             int iOffsetX = _trackDragPt.x - _startDragPt.x;
             int iOffsetY = _trackDragPt.y - _startDragPt.y;
 
-            if (1||iOffsetX > 0)
+            if (1 || iOffsetX > 0)
             {
                 _margin.left = _startMoveMgr.left + iOffsetX;
             }
@@ -1124,7 +1124,7 @@ void DesignPanel::OnMouseLeftButtonUp(suic::MouseButtonEventArg* e)
     if (_dragMeta)
     {
         _trackDragPt = e->GetMousePoint();
-        _dragMeta->DragMetaAction(*_dragMeta, 1);
+        _dragMeta->DragMetaAction(*_dragMeta, eMouseAction::eMouseLeftButtonUp);
     }
 
     _bIsDown = false;
@@ -1496,6 +1496,75 @@ bool DesignPanel::IsAncestor(DesignElement* child, DesignElement* ancestor)
     }
 }
 
+DesignElement* DesignPanel::GetSameParentElement(DesignElement* dfocus, DesignElement* dMouse)
+{
+    DesignElement* dFocusParent = dfocus->GetParentXamlElement();
+    DesignElement* dMouseParent = dMouse->GetParentXamlElement();
+    DesignElement* dPrevMouse = dMouse;
+
+    while (NULL != dMouseParent)
+    {
+        if (dMouseParent == dFocusParent)
+        {
+            break;
+        }
+
+        dPrevMouse = dMouseParent;
+        dMouseParent = dMouseParent->GetParentXamlElement();
+    }
+
+    return dPrevMouse;
+}
+
+void DesignPanel::HandleCopyElement(DesignElement* dfocus, suic::IAddChild* mvPanel)
+{
+    ///
+    /// 进入设计模式，让内核切换资源等
+    ///
+    DesignHelper::EnterDesignMode();
+
+    ///
+    /// 拷贝一个元素
+    ///
+    ResNodePtr cloneElem;
+    dfocus->CloneNode(cloneElem);
+    DesignElement* pCloneElem = RTTICast<DesignElement>(cloneElem.get());
+    if (NULL != pCloneElem)
+    {
+        pCloneElem->InstantiateDesignElement(_dragMouseOver, NULL, false);
+        _root->AddChileElement(_dragMouseOver, pCloneElem, false);
+        _dragMouseOver->AddXamlElement(pCloneElem);
+
+        suic::Rect rcDraw;
+        suic::Grid* newGrid = dynamic_cast<suic::Grid*>(mvPanel);
+        suic::Canvas* newCanvas = dynamic_cast<suic::Canvas*>(mvPanel);
+
+        // 如果是Grid或Canvas，计算其相对坐标
+        // 其它布局面板直接增加
+        if (NULL != newGrid || NULL != newCanvas)
+        {
+            rcDraw = GetRelativeRect(dfocus->GetUIElement());
+            int x = _trackDragPt.x - _startDragPt.x;
+            int y = _trackDragPt.y - _startDragPt.y;
+            suic::Point ptDesign = PointToScreen(suic::Point());
+            suic::Point ptParent = _dragMouseOver->GetUIElement()->PointToScreen(suic::Point());
+
+            x += ptDesign.x - ptParent.x;
+            y += ptDesign.y - ptParent.y;
+
+            rcDraw.Offset(x, y);
+
+            rcDraw.right = 0;
+            rcDraw.bottom = 0;
+        }
+
+        SetElementMargin(pCloneElem, rcDraw);
+        SetFocusedElement(pCloneElem, true);
+    }
+
+    DesignHelper::ExitDesignMode();
+}
+
 void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
 {
     // 根元素不做移动处理
@@ -1510,13 +1579,13 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
         return;
     }
 
-    // move
-    if (iAction == 0)
+    // 鼠标移动中
+    if (iAction == eMouseAction::eMouseMove)
     {
         InvalidateVisual();
     }
-    // down
-    else if (1 == iAction && NULL != _dragMouseOver)
+    // 释放鼠标左键
+    else if (eMouseAction::eMouseLeftButtonUp == iAction && NULL != _dragMouseOver)
     {
         DesignElement* dfocus(_root->GetFocusElement());
         // 当前焦点元素的父元素
@@ -1529,55 +1598,14 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
         // 当前鼠标所在元素的父元素是否是一个Panel布局面板
         suic::IAddChild* mvParent = NULL;
 
-        suic::TextBlock* overTxtBlock = suic::RTTICast<suic::TextBlock>(_dragMouseOver->GetUIElement());
-        if (NULL != overTxtBlock)
-        {
-            return;
-        }
-
-        if (suic::Keyboard::IsControlDown())
+        ///
+        /// 如果ctrl键压下，做复制元素操作
+        ///
+        if (suic::Keyboard::IsControlDown() && !suic::Keyboard::IsAltDown() && !suic::Keyboard::IsShiftDown())
         {
             if (NULL != mvPanel && dfocus != _dragMouseOver)
             {
-                DesignHelper::EnterDesignMode();
-
-                ResNodePtr cloneElem;
-                dfocus->CloneNode(cloneElem);
-                DesignElement* pCloneElem = RTTICast<DesignElement>(cloneElem.get());
-                if (NULL != pCloneElem)
-                {
-                    pCloneElem->InstantiateDesignElement(_dragMouseOver, NULL, false);
-                    _root->AddChileElement(_dragMouseOver, pCloneElem, false);
-                    _dragMouseOver->AddXamlElement(pCloneElem);
-
-                    suic::Rect rcDraw;
-                    suic::Grid* newGrid = dynamic_cast<suic::Grid*>(mvPanel);
-                    suic::Canvas* newCanvas = dynamic_cast<suic::Canvas*>(mvPanel);
-
-                    // 如果是Grid或Canvas，计算其相对坐标
-                    // 其它布局面板直接增加
-                    if (NULL != newGrid || NULL != newCanvas)
-                    {
-                        rcDraw = GetRelativeRect(dfocus->GetUIElement());
-                        int x = _trackDragPt.x - _startDragPt.x;
-                        int y = _trackDragPt.y - _startDragPt.y;
-                        suic::Point ptDesign = PointToScreen(suic::Point());
-                        suic::Point ptParent = _dragMouseOver->GetUIElement()->PointToScreen(suic::Point());
-
-                        x += ptDesign.x - ptParent.x;
-                        y += ptDesign.y - ptParent.y;
-
-                        rcDraw.Offset(x, y);
-
-                        rcDraw.right = 0;
-                        rcDraw.bottom = 0;
-                    }
-
-                    SetElementMargin(pCloneElem, rcDraw);
-                    SetFocusedElement(pCloneElem, true);
-                }
-
-                DesignHelper::ExitDesignMode();
+                HandleCopyElement(dfocus, mvPanel);
             }
             return;
         }
@@ -1587,86 +1615,109 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
             mvParent = dynamic_cast<suic::IAddChild*>(xamlParent->GetUIElement());
         }
 
-        // 父元素相等，并且焦点元素和当前鼠标所在元素不相等，则把焦点元素插入到当前鼠标所在元素的前面
-        if (xamlParent == dparent && NULL != mvParent && _dragMouseOver != dfocus && NULL == mvPanel)
+        if (suic::Keyboard::IsControlDown() && suic::Keyboard::IsAltDown())
         {
-            xamlParent->MoveElement(dfocus, _dragMouseOver);
-            _docTree->UpdateElementTree();
-            UpdateLayout();
-        }
-        else if ((mvParent != NULL || NULL != mvPanel) && 
-            dparent != _dragMouseOver && !IsAncestor(_dragMouseOver, dfocus))
-        {
-            DesignElement* newParent = _dragMouseOver;
-            suic::IAddChild* newPanel = mvPanel;
-
-            dfocus->ref();
-            dparent->RemoveElement(dfocus);
-            dparent->GetUIElement()->UpdateArrange();
-
-            if (NULL == newPanel)
+            suic::TextBlock* overTxtBlock = suic::RTTICast<suic::TextBlock>(_dragMouseOver->GetUIElement());
+            if (NULL != overTxtBlock)
             {
-                newParent = xamlParent;
-                newPanel = mvParent;
+                return;
             }
 
-            suic::Grid* newGrid = dynamic_cast<suic::Grid*>(newPanel);
-            suic::Canvas* newCanvas = dynamic_cast<suic::Canvas*>(newPanel);
-
-            // 如果是Grid或Canvas，计算其相对坐标
-            // 其它布局面板直接增加
-            if (NULL != newGrid || NULL != newCanvas)
+            if ((mvParent != NULL || NULL != mvPanel) && 
+                dparent != _dragMouseOver && !IsAncestor(_dragMouseOver, dfocus))
             {
-                suic::Rect rcDraw = GetRelativeRect(dfocus->GetUIElement());
-                int x = _trackDragPt.x - _startDragPt.x;
-                int y = _trackDragPt.y - _startDragPt.y;
-                suic::Point ptDesign = PointToScreen(suic::Point());
-                suic::Point ptParent = newParent->GetUIElement()->PointToScreen(suic::Point());
+                DesignElement* newParent = _dragMouseOver;
+                suic::IAddChild* newPanel = mvPanel;
 
-                x += ptDesign.x - ptParent.x;
-                y += ptDesign.y - ptParent.y;
+                dfocus->ref();
+                dparent->RemoveElement(dfocus);
+                dparent->GetUIElement()->UpdateArrange();
 
-                rcDraw.Offset(x, y);
-
-                rcDraw.right = 0;
-                rcDraw.bottom = 0;
-
-                newParent->AddElement(dfocus);
-                SetElementMargin(dfocus, rcDraw);
-            }
-            else
-            {
-                suic::Panel* tmPanel = dynamic_cast<suic::Panel*>(newParent->GetUIElement());
-                if (NULL == tmPanel)
+                if (NULL == newPanel)
                 {
+                    newParent = xamlParent;
+                    newPanel = mvParent;
+                }
+
+                suic::Grid* newGrid = dynamic_cast<suic::Grid*>(newPanel);
+                suic::Canvas* newCanvas = dynamic_cast<suic::Canvas*>(newPanel);
+
+                // 如果是Grid或Canvas，计算其相对坐标
+                // 其它布局面板直接增加
+                if (NULL != newGrid || NULL != newCanvas)
+                {
+                    suic::Rect rcDraw = GetRelativeRect(dfocus->GetUIElement());
+                    int x = _trackDragPt.x - _startDragPt.x;
+                    int y = _trackDragPt.y - _startDragPt.y;
+                    suic::Point ptDesign = PointToScreen(suic::Point());
+                    suic::Point ptParent = newParent->GetUIElement()->PointToScreen(suic::Point());
+
+                    x += ptDesign.x - ptParent.x;
+                    y += ptDesign.y - ptParent.y;
+
+                    rcDraw.Offset(x, y);
+
+                    rcDraw.right = 0;
+                    rcDraw.bottom = 0;
+
                     newParent->AddElement(dfocus);
+                    SetElementMargin(dfocus, rcDraw);
                 }
                 else
                 {
-                    suic::Rect hitRect;
-                    int newIndex = newParent->IndexOf(_trackDragPt, hitRect);
-                    if (-1 == newIndex)
+                    suic::Panel* tmPanel = dynamic_cast<suic::Panel*>(newParent->GetUIElement());
+                    if (NULL == tmPanel)
                     {
                         newParent->AddElement(dfocus);
                     }
                     else
                     {
-                        newParent->InsertElement(newIndex, dfocus);
+                        suic::Rect hitRect;
+                        int newIndex = newParent->IndexOf(_trackDragPt, hitRect);
+                        if (-1 == newIndex)
+                        {
+                            newParent->AddElement(dfocus);
+                        }
+                        else
+                        {
+                            newParent->InsertElement(newIndex, dfocus);
+                        }
                     }
+
+                    SetElementMargin(dfocus, Rect());
                 }
 
-                SetElementMargin(dfocus, Rect());
-            }
-            
-            dfocus->unref();
+                dfocus->unref();
 
-            newParent->GetUIElement()->UpdateLayout();
-            UpdateDElement();
-            _docTree->UpdateElementTree();
+                newParent->GetUIElement()->UpdateLayout();
+                UpdateDElement();
+                _docTree->UpdateElementTree();
+            }
         }
-        else
+        else if (!suic::Keyboard::IsControlDown())
         {
-            DragMoveFinish(dfocus, dparent);
+            DesignElement* dSameMouse = GetSameParentElement(dfocus, _dragMouseOver);
+            // 有相同的父元素
+            if (NULL != dSameMouse)
+            {
+                xamlParent = dSameMouse->GetParentXamlElement();
+                if (NULL != xamlParent)
+                {
+                    suic::Panel* dSamePanel = dynamic_cast<suic::Panel*>(xamlParent->GetUIElement());
+                    if (NULL != dSamePanel)
+                    {
+                        xamlParent->MoveElement(dfocus, dSameMouse);
+                        _docTree->UpdateElementTree();
+                        UpdateLayout();
+                        return;
+                    }
+                }
+            }
+
+            if (_dragMouseOver == dparent)
+            {
+                DragMoveFinish(dfocus, dparent);
+            }
         }
     }
 }
