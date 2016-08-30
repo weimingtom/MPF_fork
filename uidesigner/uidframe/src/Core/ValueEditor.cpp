@@ -640,7 +640,7 @@ void SetterEditor::Reset(DesignElement* resElem, DesignElement* target, bool bSh
     _editTarget = target;
     _resTarget = resElem;
 
-    if (NULL != _editTarget && !_editTarget->IsTemplate())
+    if (NULL != _editTarget)
     {
         SetTargetType(_editTarget->GetRTTIType());
     }
