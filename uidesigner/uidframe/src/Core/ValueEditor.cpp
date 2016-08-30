@@ -642,7 +642,10 @@ void SetterEditor::Reset(DesignElement* resElem, DesignElement* target, bool bSh
 
     if (NULL != _editTarget)
     {
-        SetTargetType(_editTarget->GetRTTIType());
+        if (_editTarget->GetUIElement() != NULL)
+        {
+            SetTargetType(_editTarget->GetUIElement()->GetRTTIType());
+        }
     }
     else if (!bShow)
     {
