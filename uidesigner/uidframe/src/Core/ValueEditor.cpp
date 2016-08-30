@@ -206,9 +206,9 @@ void SetterEditorCmd::EditSelfExprestion(SetterEditor* setterEditor)
         }
     }
 
-    if (NULL != setterEditor->GetTargetElement())
+    if (NULL != setterEditor->GetEditTarget())
     {
-        bFromTemp = setterEditor->GetTargetElement()->IsTemplate();
+        bFromTemp = setterEditor->GetEditTarget()->IsTemplate();
     }
 
     String strName = GetExprestionName(strOldVal, bFromTemp);
@@ -242,7 +242,7 @@ void SetterEditorCmd::EditPropertyBinding(SetterEditor* setterEditor)
     DpProperty* dp = setterEditor->GetProperty();
     EditRootPanel* editPanel = setterEditor->GetEditPanel();
     Project* pPrj = editPanel->GetProject();
-    DesignElement* targetElem = setterEditor->GetTargetElement();
+    DesignElement* targetElem = setterEditor->GetEditTarget();
 
     SetterNode* pSetter = setterEditor->GetSetterNode(false);
     ResNode* resNode = NULL;
@@ -268,6 +268,7 @@ void SetterEditorCmd::EditPropertyBinding(SetterEditor* setterEditor)
     BindingEditorWindow bindingWnd(targetElem, dp, resDicNode, resNode);
     bindingWnd.setAutoDelete(false);
 
+    bindingWnd.SetResourceElement(setterEditor->GetResourceTarget());
     bindingWnd.SetTemplateParent(editPanel->GetTemplateRoot());
 
     suic::Builder::BuildUri(&bindingWnd, "/mpfuid;/resource/uidesign/layout/Editor/BindingEditorWindow.xaml");
@@ -335,7 +336,9 @@ void SetterEditorCmd::SetName(const String& name)
 
 SetterEditor::SetterEditor()
 {
-    _target = NULL;
+    _targetType = NULL;
+    _editTarget = NULL;
+    _resTarget = NULL;
     _childCount = 0;
     _setter = NULL;
     _resetPending = false;
@@ -390,16 +393,24 @@ String SetterEditor::GetPropName()
 
 RTTIOfInfo* SetterEditor::GetTargetType()
 {
-    if (NULL == _target)
-    {
-        return NULL;
-    }
-    return _target->GetUIElement()->GetRTTIType();
+    return _targetType;
 }
 
-DesignElement* SetterEditor::GetTargetElement() const
+DesignElement* SetterEditor::GetEditTarget() const
 {
-    return _target;
+    return _editTarget;
+}
+
+DesignElement* SetterEditor::GetResourceTarget() const
+{
+    if (NULL == _resTarget && _editTarget != NULL)
+    {
+        if (!_editTarget->IsTemplate())
+        {
+            return _editTarget;
+        }
+    }
+    return _resTarget;
 }
 
 void SetterEditor::ResetDpItem()
@@ -602,14 +613,41 @@ void SetterEditor::SetTemplateMode(bool inTemplate)
     _inTemplate = inTemplate;
 }
 
-void SetterEditor::SetTargetElement(DesignElement* target)
+void SetterEditor::SetEditTarget(DesignElement* target)
 {
-    _target = target;
+    _editTarget = target;
 }
 
-void SetterEditor::Reset(DesignElement* target, bool bShow)
+void SetterEditor::ResetTarget()
 {
-    _target = target;
+    _resTarget = NULL;
+    _targetType = NULL;
+    SetEditTarget(NULL);
+}
+
+void SetterEditor::SetResourceTarget(DesignElement* target)
+{
+    _resTarget = target;
+}
+
+void SetterEditor::SetTargetType(RTTIOfInfo* rttiInfo)
+{
+    _targetType = rttiInfo;
+}
+
+void SetterEditor::Reset(DesignElement* resElem, DesignElement* target, bool bShow)
+{
+    _editTarget = target;
+    _resTarget = resElem;
+
+    if (NULL != _editTarget && !_editTarget->IsTemplate())
+    {
+        SetTargetType(_editTarget->GetRTTIType());
+    }
+    else if (!bShow)
+    {
+        SetTargetType(NULL);
+    }
 
     if (bShow)
     {
@@ -739,20 +777,6 @@ void SetterEditor::OnSelectResource(Element* sender, suic::RoutedEventArg* e)
 
     SetterNode* pSetter = GetSetterNode(false);
 
-    if (NULL == _target)// pSetter->GetFromTrigger() != ePropertyType::ePropStyle)
-    {
-        //return;
-    }
-
-    /*FrameworkElement* feTarget = NULL;
-    DpProperty* editDp = NULL;
-
-    BindingEditorWindow bindingWnd(feTarget, editDp);
-    bindingWnd.setAutoDelete(false);
-
-    suic::LoadComponent(NULL, &bindingWnd, "/mpfuid;/resource/uidesign/layout/Editor/BindingEditorWindow.xaml");
-    bindingWnd.ShowDialog();*/
-
     if (NULL == _ctxColl)
     {
         _ctxColl = new suic::ObservableCollection();
@@ -767,12 +791,6 @@ void SetterEditor::OnSelectResource(Element* sender, suic::RoutedEventArg* e)
         _ctxColl->AddItem(new SetterEditorCmd(_U("自定义表达式"), SetterEditorCmd::ctExpresion));
         _ctxColl->AddItem(new Separator());
         _ctxColl->AddItem(new SetterEditorCmd(_U("属性绑定"), SetterEditorCmd::ctPropBinding));
-        /*_ctxColl->AddItem(new SetterEditorCmd(_U("静态资源"), SetterEditorCmd::ctStatic));
-        _ctxColl->AddItem(new SetterEditorCmd(_U("动态资源"), SetterEditorCmd::ctDynamic));
-        _ctxColl->AddItem(new SetterEditorCmd(_U("编辑资源"), SetterEditorCmd::ctEditRes));
-        _ctxColl->AddItem(new Separator());
-        _ctxColl->AddItem(new SetterEditorCmd(_U("数据绑定"), SetterEditorCmd::ctDataBind));
-        _ctxColl->AddItem(new SetterEditorCmd(_U("模版绑定"), SetterEditorCmd::ctTemplateBind));*/
     }
 
     if (NULL != _ctxColl)
@@ -791,17 +809,6 @@ void SetterEditor::OnSelectResource(Element* sender, suic::RoutedEventArg* e)
         {
             propTxt->SetHeader(new OString(GetName()));
         }
-
-        /*setterCmd = dynamic_cast<SetterEditorCmd*>(_ctxColl->GetItem(9));
-
-        if (_target != NULL)
-        {
-            setterCmd->SetEnabled(false);
-        }
-        else
-        {
-            setterCmd->SetEnabled(true);
-        }*/
 
         ctxMenu->SetItemsSource(_ctxColl);
         ctxMenu->SetHorizontalOffset(3);
@@ -2585,7 +2592,7 @@ void BrushResSetterEditor::SetTargetElement(DesignElement* target)
 
     if (NULL != pSetterEditor)
     {
-        pSetterEditor->SetTargetElement(target);
+        pSetterEditor->SetEditTarget(target);
     }
 }
 
@@ -2671,7 +2678,7 @@ void STSetterEditor::NotifySetterChanged()
 
 void STSetterEditor::UpdateDesignPanel()
 {
-    DesignElement* target = GetTargetElement();
+    DesignElement* target = GetEditTarget();
     EditRootPanel* editPanel = FindEditRttoPanel(this);
     if (NULL != target && editPanel != NULL)
     {
@@ -2775,7 +2782,7 @@ RTTIOfInfo* TemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* ownerRtti)
 void TemplateSetterEditor::OnEditClick()
 {
     suic::Control* ctrl = NULL;
-    DesignElement* target = GetTargetElement();
+    DesignElement* target = GetEditTarget();
     if (NULL != target)
     {
         ctrl = RTTICast<suic::Control>(target->GetUIElement());
@@ -2788,7 +2795,7 @@ void TemplateSetterEditor::OnEditClick()
         SetterNode* pSetter = GetSetterNode(false);
         TemplateRootItem* pTemp = RTTICast<TemplateRootItem>(GetSetterNode(true)->GetResNode());
         const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
-        ThemeEditorWindow* themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL, NULL);
+        ThemeEditorWindow* themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL);
 
         if (NULL == pTemp)
         {
@@ -2802,6 +2809,7 @@ void TemplateSetterEditor::OnEditClick()
 
         pTemp->SetTargetType(ownerRtti);
         themeWnd->SetTemplateNode(pTemp);
+        themeWnd->SetResourceElement(target);
         themeWnd->ShowDialog(strPath);
 
         if (pTemp->HasContent())
@@ -2947,7 +2955,7 @@ suic::RTTIOfInfo* StyleSetterEditor::GetStyleTargetRTTIInfo()
 {
     suic::RTTIOfInfo* rttiInfo = NULL;
     suic::FrameworkElement* fe = NULL;
-    DesignElement* target = GetTargetElement();
+    DesignElement* target = GetEditTarget();
     if (NULL != target)
     {
         fe = target->GetUIElement();
@@ -2963,7 +2971,7 @@ suic::RTTIOfInfo* StyleSetterEditor::GetStyleTargetRTTIInfo()
 
 void StyleSetterEditor::OnEditClick()
 {
-    DesignElement* target = GetTargetElement();
+    DesignElement* target = GetEditTarget();
     suic::RTTIOfInfo* rttiInfo = GetStyleTargetRTTIInfo();
 
     if (NULL != rttiInfo && NULL != Project::GetCurrentProject())
@@ -2988,10 +2996,13 @@ void StyleSetterEditor::OnEditClick()
             pStyle->ref();
         }
 
-        themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL, NULL);
+        themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL);
         
         themeWnd->ref();
         themeWnd->SetStyleNode(pStyle);
+        // 设置资源查询的目标元素
+        // 对于模板来说，必须设置模板的模板父元素，系统会用其来查询资源
+        themeWnd->SetResourceElement(target);
 
         // 打开控件样式编辑对话框，进行样式编辑
         themeWnd->ShowDialog(strPath);
@@ -3027,7 +3038,8 @@ suic::RTTIOfInfo* ItemContainerStyleSetterEditor::GetStyleTargetRTTIInfo()
     suic::RTTIOfInfo* rttiInfo = NULL;
     suic::ItemsControl* fe = NULL;
     suic::Element* itemContainer = NULL;
-    DesignElement* target = GetTargetElement();
+    DesignElement* target = GetEditTarget();
+
     if (NULL != target)
     {
         fe = suic::RTTICast<suic::ItemsControl>(target->GetUIElement());

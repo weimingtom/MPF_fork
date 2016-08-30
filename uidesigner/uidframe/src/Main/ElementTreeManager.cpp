@@ -42,7 +42,7 @@ void ObjTreeManager::InitElementTree(FrameworkElement* mainWnd)
     _ctrlWindow.SetSelectNotify(SelectNotifyEventHandler(this, &ObjTreeManager::OnControlNotify));
 }
 
-void ObjTreeManager::SetTargetElement(ElementRootItem* elem)
+void ObjTreeManager::SetTargetElement(DesignElement* resElem, ElementRootItem* elem)
 {
     if (_elemTree == NULL)
     {
@@ -53,7 +53,7 @@ void ObjTreeManager::SetTargetElement(ElementRootItem* elem)
     {
         _elemTree->GetItemsSource()->Clear();
         _designPanel->InitEditPanelInfo(elem);
-        _designPanel->SwitchRootElement(elem);
+        _designPanel->SwitchRootElement(resElem, elem);
     }
     else if (elem->GetRootElement()->GetUIElement() != NULL && 
         elem != _designPanel->GetRootElement())
@@ -65,7 +65,7 @@ void ObjTreeManager::SetTargetElement(ElementRootItem* elem)
 
         // 设置默认资源文件名称
         _designPanel->InitEditPanelInfo(elem);
-        _designPanel->SwitchRootElement(elem);
+        _designPanel->SwitchRootElement(resElem, elem);
 
         if (!elem->GetRootElement()->GetUIElement()->IsInitialized())
         {

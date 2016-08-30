@@ -27,6 +27,7 @@ public:
 
     ResNode* GetResNode() const;
     void SetTemplateParent(TemplateRootItem* tempParent);
+    void SetResourceElement(DesignElement* target);
 
 protected:
 
@@ -52,6 +53,7 @@ private:
 
     DpProperty* _targetDp;
     DesignElement* _target;
+    DesignElement* _resTarget;
 
     TemplateRootItem* _tempParent;
 

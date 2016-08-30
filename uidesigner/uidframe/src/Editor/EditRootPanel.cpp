@@ -216,7 +216,7 @@ void EditRootPanel::EnableDesignWithElementLock(DesignElement* delem)
     }
 }
 
-void EditRootPanel::SwitchCurrentElement(DesignElement* delem)
+void EditRootPanel::SwitchCurrentElement(DesignElement* resElem, DesignElement* delem)
 {
     if (_editElem == delem || NULL == _designPanel || _isSettingElement)
     {
@@ -270,11 +270,11 @@ void EditRootPanel::SwitchCurrentElement(DesignElement* delem)
             {
                 if (rttiInfo == propInfo->target)
                 {
-                    propInfo->valEditor->Reset(delem, true);
+                    propInfo->valEditor->Reset(resElem, delem, true);
                 }
                 else
                 {
-                    propInfo->valEditor->Reset(delem, false);
+                    propInfo->valEditor->Reset(resElem, delem, false);
                 }
             }
             else 
@@ -308,7 +308,7 @@ void EditRootPanel::SwitchCurrentElement(DesignElement* delem)
                         if (dp->GetPropType()->InheritFrom(suic::FrameworkTemplate::RTTIType()))
                         {
                             bHandled = true;
-                            propInfo->valEditor->Reset(delem, false);
+                            propInfo->valEditor->Reset(resElem, delem, false);
                         }
                     }
 
@@ -316,7 +316,7 @@ void EditRootPanel::SwitchCurrentElement(DesignElement* delem)
 
                     if (!bHandled)
                     {
-                        propInfo->valEditor->Reset(delem, true);
+                        propInfo->valEditor->Reset(resElem, delem, true);
                         if (NULL != rttiInfo)
                         {
                             PropMetadata* meta = dp->GetMetadata(rttiInfo);
@@ -326,7 +326,7 @@ void EditRootPanel::SwitchCurrentElement(DesignElement* delem)
                 }
                 else
                 {
-                    propInfo->valEditor->Reset(delem, false);
+                    propInfo->valEditor->Reset(resElem, delem, false);
                 }  
             }
         }

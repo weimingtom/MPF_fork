@@ -106,11 +106,11 @@ suic::FrameworkElement* PropertyWindowOp::GetPropertyWindow(suic::Element* paren
     return _propWindow;
 }
 
-void PropertyWindowOp::SetCurrentElement(DesignElement* delem)
+void PropertyWindowOp::SetCurrentElement(DesignElement* resElem, DesignElement* delem)
 {
     if (NULL != _editPanel)
     {
-        _editPanel->SwitchCurrentElement(delem);
+        _editPanel->SwitchCurrentElement(resElem, delem);
     }
 }
 

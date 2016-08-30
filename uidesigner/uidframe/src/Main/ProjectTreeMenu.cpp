@@ -244,9 +244,10 @@ void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
             if (!item->IsTemplate())
             {
                 const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
-                ThemeEditorWindow* themeWnd = new ThemeEditorWindow(rootItem, item->GetResourceDictionary(), item);
+                ThemeEditorWindow* themeWnd = new ThemeEditorWindow(rootItem, item->GetResourceDictionary());
 
                 themeWnd->ref();
+                themeWnd->SetResourceElement(item);
                 themeWnd->ShowDialog(strPath);
                 themeWnd->unref();
             }
@@ -292,6 +293,16 @@ void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
                     rootItem->ReplacePanel(item, newPanel);
                 }
                 newPanel->unref();
+
+                if (NULL != rootItem->GetProject() && rootItem->GetProject()->GetSlnTreeManager() != NULL)
+                {
+                    ObjTreeManager* objMana = rootItem->GetProject()->GetSlnTreeManager()->GetObjTreeManager();
+
+                    if (NULL != objMana && NULL != objMana->GetDesignPanel())
+                    {
+                        objMana->GetDesignPanel()->UpdateModified();
+                    }
+                }
             }
         }
     }
@@ -637,7 +648,7 @@ void FilterNodeCmd::AddLayoutNode(FilterNode* pNode)
 
         if (NULL != rootElem)
         {
-            pPrj->SwitchRootElement(rootElem);
+            pPrj->SwitchRootElement(NULL, rootElem);
         }
     }
 }

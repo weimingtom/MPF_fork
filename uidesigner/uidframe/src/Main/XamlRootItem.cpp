@@ -545,7 +545,7 @@ bool ElementRootItem::OnLoadFromXml()
 
         if (isCurrent)
         {
-            pPrj->SwitchRootElement(this);
+            pPrj->SwitchRootElement(NULL, this);
         }
 
         return GetRootElement() != NULL;

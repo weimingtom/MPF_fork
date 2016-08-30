@@ -8,11 +8,12 @@
 #include <Core/StyleNode.h>
 #include <Framework/Controls/Rectangle.h>
 
-ThemeEditorWindow::ThemeEditorWindow(RootItem* root, ResourceDictionaryNode* resNode, DesignElement* elem)
+ThemeEditorWindow::ThemeEditorWindow(RootItem* root, ResourceDictionaryNode* resNode)
 {
     _project = root->GetProject();
     _rootItem = root;
-    _editElem = elem;
+    //_editElem = elem;
+    _resTarget = NULL;
     _prevEditCtrl = NULL;
     _resListBox = NULL;
 
@@ -48,9 +49,14 @@ RootItem* ThemeEditorWindow::GetRootItem() const
     return _rootItem;
 }
 
-DesignElement* ThemeEditorWindow::GetEditElem() const
+DesignElement* ThemeEditorWindow::GetResourceElement() const
 {
-    return _editElem;
+    return _resTarget;
+}
+
+void ThemeEditorWindow::SetResourceElement(DesignElement* resTarget)
+{
+    _resTarget = resTarget;
 }
 
 bool ThemeEditorWindow::OnBuild(suic::IXamlNode* pNode, suic::ObjectPtr& obj)

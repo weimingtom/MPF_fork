@@ -47,7 +47,9 @@ public:
     void ResetDesignPanel(bool bAsNull);
 
     void InitEditPanelInfo(ElementRootItem* rootElem);
-    void SwitchRootElement(ElementRootItem* root);
+    void SwitchRootElement(DesignElement* resTarget, ElementRootItem* root);
+
+    DesignElement* GetResourceElement() const;
 
     ElementRootItem* GetRootElement() const;
     void UpdateModified();
@@ -145,7 +147,7 @@ protected:
     bool IsMain() const;
     void LinkDragMetaEvent();
     DragMeta* HittestDragMeta(suic::Point pt);
-
+    
     Rect GetRelativeRect(Element* Other);
 
     void DrawRectOnly(suic::Drawing* drawing, Rect rect, suic::Color clr, int iThickness);
@@ -213,6 +215,8 @@ protected:
     DragBox _dragBox;
 
     DesignElement* _dragMouseOver;
+    DesignElement* _resTarget;
+
     // 当前鼠标点
     suic::Point _trackDragPt;
     suic::Rect _margin;

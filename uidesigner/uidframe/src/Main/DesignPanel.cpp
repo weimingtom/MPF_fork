@@ -38,6 +38,7 @@ DesignPanel::DesignPanel()
     , _isAddSucc(false)
     , _addParent(NULL)
     , _dragMetaCount(10)
+    , _resTarget(NULL)
 {
     _dragMeta = NULL;
 
@@ -71,7 +72,12 @@ void DesignPanel::ResetDesignPanel(bool bAsNull)
     }
 }
 
-void DesignPanel::SwitchRootElement(ElementRootItem* root)
+DesignElement* DesignPanel::GetResourceElement() const
+{
+    return _resTarget;
+}
+
+void DesignPanel::SwitchRootElement(DesignElement* resTarget, ElementRootItem* root)
 {
     if (_root != root)
     {
@@ -80,6 +86,7 @@ void DesignPanel::SwitchRootElement(ElementRootItem* root)
             RemoveVisualChild(_root->GetUIElement());
         }
 
+        _resTarget = resTarget;
         SETREFOBJ(_root, root);
 
         if (root != NULL)
@@ -144,11 +151,6 @@ ElementRootItem* DesignPanel::GetRootElement() const
     return _root;
 }
 
-void DesignPanel::UpdateModified()
-{
-    GetPropWindow()->UpdateModified();
-}
-
 DesignElement* DesignPanel::HitTestElement(Point pt)
 {
     if (!_root)
@@ -195,6 +197,20 @@ void DesignPanel::SetElementMargin(DesignElement* elem, Rect rect)
     }
 }
 
+void DesignPanel::UpdateModified()
+{
+    if (NULL != GetPropWindow())
+    {
+        GetPropWindow()->UpdateModified();
+    }
+
+    if (NULL != _root)
+    {
+        _root->SetModified(true);
+        RefleshDesignPanel();
+    }
+}
+
 void DesignPanel::UpdateElementSetter(DesignElement* elem, SetterNode* pSetter)
 {
     if (NULL != elem)
@@ -203,7 +219,8 @@ void DesignPanel::UpdateElementSetter(DesignElement* elem, SetterNode* pSetter)
         {
             GetPropWindow()->UpdateSetter(pSetter, elem->NeedNotifyChanged());
         }
-        _root->SetModified(true);
+
+        UpdateModified(); 
     }
 }
 
@@ -222,7 +239,7 @@ void DesignPanel::SetFocusedElement(DesignElement* elem, bool bFromDesign)
 
     if (NULL != GetPropWindow())
     {
-        GetPropWindow()->SetCurrentElement(focusElem);
+        GetPropWindow()->SetCurrentElement(GetResourceElement(), focusElem);
     }
 
     if (bFromDesign)
@@ -1708,7 +1725,7 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
                     if (NULL != dSamePanel)
                     {
                         xamlParent->MoveElement(dfocus, dSameMouse);
-                        _root->SetModified(true);
+                        UpdateModified();
                         _docTree->UpdateElementTree();
                         UpdateLayout();
                         return;

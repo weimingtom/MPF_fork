@@ -9,7 +9,7 @@
 GridDefWindow::GridDefWindow(ButtonSetterEditor* btnEditor)
 {
     _btnEditor = btnEditor;
-    _gridElem = RTTICast<DesignGrid>(_btnEditor->GetTargetElement());
+    _gridElem = RTTICast<DesignGrid>(_btnEditor->GetEditTarget());
 
     _rowHei = NULL;
     _rowMinHei = NULL;

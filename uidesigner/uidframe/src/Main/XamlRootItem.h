@@ -348,6 +348,15 @@ public:
         }
         return NULL;
     }
+    
+    void ReplaceRootElement(suic::FrameworkElement* pRoot)
+    {
+        if (NULL != GetRootElement())
+        {
+            GetRootElement()->SetNodeElement(pRoot);
+            SetRootChild(GetUIElement(), pRoot);
+        }
+    }
 
     virtual bool AddElement(DesignElement* elem)
     {
@@ -358,19 +367,8 @@ public:
         FrameworkElement* pCont = GetUIElement();
         FrameworkElement* feElem = elem->GetUIElement();
 
-        if (NULL != feElem)
-        {
-            if (NULL != _targetInfo)
-            {
-                DesignHelper::SetElementParent(pCont, feElem);
-            }
-
-            pCont->SetTemplateChild(elem->GetUIElement());
-        }
-        else
-        {
-            pCont->SetTemplateChild(NULL);
-        }
+        SetRootChild(pCont, feElem);
+        
         return true;
     }
 
@@ -383,6 +381,25 @@ public:
             pCont->SetTemplateChild(NULL);
         }
         return true;
+    }
+
+private:
+    
+    void SetRootChild(FrameworkElement* pCont, FrameworkElement* feElem)
+    {
+        if (NULL != feElem)
+        {
+            if (NULL != _targetInfo)
+            {
+                DesignHelper::SetElementParent(pCont, feElem);
+            }
+
+            pCont->SetTemplateChild(feElem);
+        }
+        else
+        {
+            pCont->SetTemplateChild(NULL);
+        }
     }
 
 private:

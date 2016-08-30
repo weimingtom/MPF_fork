@@ -368,7 +368,7 @@ void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)
         {
             Project* pPrg = pElemItem->GetProject();
             const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
-            ThemeEditorWindow* themeWnd = new ThemeEditorWindow(pElemItem, resRootItem->GetResourceDicNode(), NULL);
+            ThemeEditorWindow* themeWnd = new ThemeEditorWindow(pElemItem, resRootItem->GetResourceDicNode());
 
             e->SetHandled(true);
 
@@ -390,7 +390,7 @@ void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)
         }
         else if (pElemItem->GetRTTIType()->InheritFrom(ElementRootItem::RTTIType()))
         {
-            GetObjTree()->SetTargetElement((ElementRootItem*)pElemItem);
+            GetObjTree()->SetTargetElement(NULL, (ElementRootItem*)pElemItem);
             e->SetHandled(true);
         }
     }

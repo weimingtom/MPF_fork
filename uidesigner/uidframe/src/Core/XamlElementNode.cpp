@@ -868,11 +868,17 @@ bool DesignElement::ReplacePanel(suic::Panel* pPanel)
     suic::ContentControl* pContent = RTTICast<suic::ContentControl>(pParent);
     suic::Panel* pPPanel = RTTICast<suic::Panel>(pParent);
 
+    DesignTemplateRoot* pTempRoot = dynamic_cast<DesignTemplateRoot*>(GetParent());
+
     if (NULL != myPanel && (NULL != pContent || NULL != pPPanel))
     {
         pPanel->GetChildren()->Clear();
 
-        if (pContent != NULL)
+        if (NULL != pTempRoot)
+        {
+            pTempRoot->ReplaceRootElement(pPanel);
+        }
+        else if (pContent != NULL)
         {
             pContent->SetContent(pPanel);
         }

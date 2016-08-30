@@ -92,7 +92,7 @@ void SlnTreeManager::RefleshProject(Project* pPrj)
 {
     if (NULL != pPrj)
     {
-        SwitchToRootElement(pPrj->GetMainWindow());
+        SwitchToRootElement(NULL, pPrj->GetMainWindow());
         UpdateProjectTree(pPrj);
     }
 }
@@ -183,9 +183,9 @@ Project* SlnTreeManager::CreateProject(const suic::String& name, const suic::Str
     return pPrj;
 }
 
-void SlnTreeManager::SwitchToRootElement(ElementRootItem* rootElem)
+void SlnTreeManager::SwitchToRootElement(DesignElement* resElem, ElementRootItem* rootElem)
 {
-    _elemTreeMana->SetTargetElement(rootElem);
+    _elemTreeMana->SetTargetElement(resElem, rootElem);
     _elemTreeMana->UpdateElementTree();
 
     _slnTree->SetSelectedItem(rootElem);

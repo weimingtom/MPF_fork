@@ -128,7 +128,7 @@ class ThemeEditorWindow : public suic::Window
 {
 public:
 
-    ThemeEditorWindow(RootItem* root, ResourceDictionaryNode* resNode, DesignElement* elem);
+    ThemeEditorWindow(RootItem* root, ResourceDictionaryNode* resNode);
     ~ThemeEditorWindow();
 
     void Dispose();
@@ -168,7 +168,12 @@ public:
 
     EditRootPanel* GetEditRootPanel();
     RootItem* GetRootItem() const;
-    DesignElement* GetEditElem() const;
+
+    DesignElement* GetResourceElement() const;
+
+    // 设置资源查询的目标元素
+    // 对于模板来说，必须设置模板的模板父元素，系统会用其来查询资源
+    void SetResourceElement(DesignElement* resTarget);
 
     PropEditorWindow* ShowStylePropEditorWindow();
     PropEditorWindow* ShowTemplatePropEditorWindow();
@@ -232,7 +237,7 @@ protected:
 
     // 当前编辑的资源文件对象（可能是资源，也可能是布局）
     RootItem* _rootItem;
-    DesignElement* _editElem;
+    DesignElement* _resTarget;
 
     suic::ListBox* _resListBox;
     Project* _project;

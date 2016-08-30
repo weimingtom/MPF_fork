@@ -102,7 +102,7 @@ bool Project::CheckAndCloseRootElement(RootItem* rootElem)
 
     if (designPanel->GetRootElement() == rootElem)
     {
-        objTree->SetTargetElement(NULL);
+        objTree->SetTargetElement(NULL, NULL);
         return true;
     }
     else
@@ -111,7 +111,7 @@ bool Project::CheckAndCloseRootElement(RootItem* rootElem)
     }
 }
 
-void Project::SwitchRootElement(ElementRootItem* rootElem)
+void Project::SwitchRootElement(DesignElement* resElem, ElementRootItem* rootElem)
 {
     if (!rootElem->IsLoaded())
     {
@@ -125,7 +125,7 @@ void Project::SwitchRootElement(ElementRootItem* rootElem)
 
         prjTree->SetSelectedItem(rootElem);
         prjTree->ScrollIntoView(rootElem, false);
-        objTree->SetTargetElement(rootElem);
+        objTree->SetTargetElement(resElem, rootElem);
 
         UpdateSlnTree(false);
     }
@@ -450,7 +450,7 @@ void Project::Close()
 
     if (rootItem != NULL && rootItem->GetProject() == this)
     {
-        objTree->SetTargetElement(NULL);
+        objTree->SetTargetElement(NULL, NULL);
     }
 
     if (_appRoot != NULL)

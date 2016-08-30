@@ -32,7 +32,7 @@ public:
     virtual void InitEditPanelInfo(ElementRootItem* rootElem, DesignPanel* design) = 0;
 
     virtual suic::FrameworkElement* GetPropertyWindow(suic::Element* parent) = 0;
-    virtual void SetCurrentElement(DesignElement* delem) = 0;
+    virtual void SetCurrentElement(DesignElement* resElem, DesignElement* delem) = 0;
 
     virtual void UpdateModified() = 0;
     
@@ -84,7 +84,7 @@ public:
     virtual ~IDesignWindow() {}
 
     virtual void SetTreeDoc(IElementTreeDoc* pControl) = 0;
-    virtual void SwitchRootElement(ElementRootItem* root) = 0;
+    virtual void SwitchRootElement(DesignElement* resElem, ElementRootItem* root) = 0;
     virtual ElementRootItem* GetRootElement() const = 0;
 };
 

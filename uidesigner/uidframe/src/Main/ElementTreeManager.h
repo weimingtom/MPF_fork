@@ -43,7 +43,7 @@ public:
     /// <param name="mainWnd">控件对象</param>
     /// <returns>无</returns>
     void InitElementTree(FrameworkElement* mainWnd);
-    void SetTargetElement(ElementRootItem* elem);
+    void SetTargetElement(DesignElement* resElem, ElementRootItem* elem);
 
     void UpdateElementTree();
     void SetSelectedElement(Object* elem);

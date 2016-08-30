@@ -31,7 +31,7 @@ public:
     SetterEditorWindow(ThemeEditorWindow* themeWnd);
     ~SetterEditorWindow();
 
-    SetterNode* SwitchToProperty(DpItem* dpItem, SetterNode* pSetter, String targetName, ePropertyType fromTrigger);
+    SetterNode* SwitchToProperty(RTTIOfInfo* targetType, DpItem* dpItem, SetterNode* pSetter, String targetName, ePropertyType fromTrigger);
     bool OpenPropSelectorWindow(Element* sender, PropSelectorWindow* propWnd, PlacementMode mode);
 
     void ShowSetterNode(SetterNode* resNode, SetterCollectionNode* setterColl, ePropertyType fromTrigger);

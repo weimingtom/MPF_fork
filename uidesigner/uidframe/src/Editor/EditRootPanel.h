@@ -91,7 +91,7 @@ public:
     void UpdateResource(ResNode* setter);
     void UpdateSetterToUI(SetterNode* pSetter);
 
-    void SwitchCurrentElement(DesignElement* delem);
+    void SwitchCurrentElement(DesignElement* resElem, DesignElement* delem);
     void EnableDesignWithElementLock(DesignElement* delem);
 
     void SetDesignPanel(DesignPanel* design);

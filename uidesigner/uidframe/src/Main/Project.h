@@ -36,7 +36,7 @@ public:
     void UpdateSlnTree(bool bUpdateElementTree);
     void RemoveRootItem(RootItem* rootItem);
 
-    void SwitchRootElement(ElementRootItem* rootElem);
+    void SwitchRootElement(DesignElement* resElem, ElementRootItem* rootElem);
     bool EqualCurrentDesignRootElement(RootItem* rootElem);
     bool CheckAndCloseRootElement(RootItem* rootElem);
 

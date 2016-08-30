@@ -48,7 +48,7 @@ public:
 
     void SetDesignPanel(DesignPanel* design);
     void InitEditPanelInfo(ElementRootItem* rootElem, DesignPanel* design);
-    void SetCurrentElement(DesignElement* delem);
+    void SetCurrentElement(DesignElement* resElem, DesignElement* delem);
 
     void UpdateSetter(SetterNode* setter, bool needNotifyChanged);
     void UpdateResource(ResNode* setter);

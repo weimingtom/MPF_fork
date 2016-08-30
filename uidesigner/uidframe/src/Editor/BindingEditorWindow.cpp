@@ -50,6 +50,11 @@ void BindingEditorWindow::SetTemplateParent(TemplateRootItem* tempParent)
     _tempParent = tempParent;
 }
 
+void BindingEditorWindow::SetResourceElement(DesignElement* target)
+{
+    _resTarget = target;
+}
+
 void BindingEditorWindow::ResetStaticResource(suic::ListBox* pListBox)
 {
     if (pListBox->GetCount() > 0)
@@ -411,6 +416,10 @@ void BindingEditorWindow::InitStaticResource()
         if (_target != NULL)
         {
             DesignElement* currElem = _target;
+            if (NULL != _tempParent)
+            {
+                currElem = _resTarget;
+            }
 
             while (currElem != NULL)
             {

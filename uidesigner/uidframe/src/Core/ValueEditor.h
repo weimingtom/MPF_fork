@@ -85,10 +85,16 @@ public:
     void RefleshSetterToDesignUI(bool bForce);
 
     void ResetDpItem();
-    void Reset(DesignElement* target, bool bShow);
+    void Reset(DesignElement* resElem, DesignElement* target, bool bShow);
 
     virtual void SetTemplateMode(bool inTemplate);
-    virtual void SetTargetElement(DesignElement* target);
+    virtual void SetEditTarget(DesignElement* target);
+    
+    // 设置资源查询的目标元素
+    // 对于模板来说，必须设置模板的模板父元素，系统会用其来查询资源
+    void SetResourceTarget(DesignElement* target);
+    void SetTargetType(RTTIOfInfo* rttiInfo);
+    void ResetTarget();
 
     bool IsExtension() const;
     bool IsResetPending() const;
@@ -97,7 +103,9 @@ public:
 
     DpItem* GetDpItem();
     RTTIOfInfo* GetTargetType();
-    DesignElement* GetTargetElement() const;
+    DesignElement* GetEditTarget() const;
+    DesignElement* GetResourceTarget() const;
+
     DpProperty* GetProperty();
     PropMetadata* GetDefaultMeta();
     String GetPropName();
@@ -158,7 +166,9 @@ private:
     bool _resetPending;
 
     DpItem* _dpItem;
-    DesignElement* _target;
+    DesignElement* _resTarget;
+    DesignElement* _editTarget;
+    RTTIOfInfo* _targetType;
     SetterNode* _setter;
     StackPanel* _operPanel;
 

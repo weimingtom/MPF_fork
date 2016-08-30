@@ -46,7 +46,7 @@ public:
     void UpdateSolutionTree();
     void UpdateProjectTree(Project* pPrj);
 
-    void SwitchToRootElement(ElementRootItem* rootElem);
+    void SwitchToRootElement(DesignElement* resElem, ElementRootItem* rootElem);
 
 protected:
 

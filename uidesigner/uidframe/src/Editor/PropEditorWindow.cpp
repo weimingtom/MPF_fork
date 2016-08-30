@@ -34,12 +34,12 @@ void SetterEditorWindow::HandlePrevSetterNode()
     if (NULL != _prevSetterEditor)
     {
         _prevSetterEditor->SetVisibility(Visibility::Collapsed);
-        _prevSetterEditor->SetTargetElement(NULL);
+        _prevSetterEditor->ResetTarget();
         _prevSetterEditor = NULL;
     }
 }
 
-SetterNode* SetterEditorWindow::SwitchToProperty(DpItem* dpItem, SetterNode* pSetter, String targetName, ePropertyType fromTrigger)
+SetterNode* SetterEditorWindow::SwitchToProperty(RTTIOfInfo* targetType, DpItem* dpItem, SetterNode* pSetter, String targetName, ePropertyType fromTrigger)
 {
     HandlePrevSetterNode();
 
@@ -79,7 +79,8 @@ SetterNode* SetterEditorWindow::SwitchToProperty(DpItem* dpItem, SetterNode* pSe
         SelectToSetterNode(pSetterNode);
 
         _prevSetterEditor = setterEditor;
-        setterEditor->SetTargetElement(_themeWnd->GetEditElem());
+        setterEditor->SetTargetType(targetType);
+        setterEditor->SetResourceTarget(_themeWnd->GetResourceElement());
     }
 
     return pSetterNode;
@@ -254,15 +255,13 @@ suic::ComboBox* PropEditorWindow::GetTargetNameControl()
 
 void SetterEditorWindow::ShowSetterNode(SetterNode* resNode, SetterCollectionNode* setterColl, ePropertyType fromTrigger)
 {
-    //_themeWnd->GetEditRootPanel()->SetTemplateParent(NULL);
-
     if (NULL != resNode)
     {
         suic::RTTIOfInfo* ownerRtti = setterColl->GetOwnerType();
         DpItem* dpItem = DpManager::Ins()->FindDpItem(resNode->GetName());
         if (NULL != dpItem)
         {
-            SwitchToProperty(dpItem, resNode, _U(""), fromTrigger);
+            SwitchToProperty(ownerRtti, dpItem, resNode, _U(""), fromTrigger);
         }
     }
 }
@@ -439,7 +438,7 @@ SetterNode* PropEditorWindow::HandlePropItem(SetterEditor* setterEditor, DpItem*
 
 void PropEditorWindow::AddPropertyItem(DpItem* dpItem, String targetName)
 {
-    SwitchToProperty(dpItem, NULL, targetName, _propType);
+    SwitchToProperty(_setterColl->GetOwnerType(), dpItem, NULL, targetName, _propType);
     _themeWnd->SetModified();
 }
 

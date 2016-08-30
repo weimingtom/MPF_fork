@@ -347,7 +347,7 @@ void TriggerEditorWindow::OnAddTriggerButton(Element* sender, RoutedEventArg* e)
 
             _triggers->AddItem(_trigger);
 
-            pSetter = SwitchToProperty(dpItem, NULL, _U(""), GetPropertyType());
+            pSetter = SwitchToProperty(_triggers->GetOwnerType(), dpItem, NULL, _U(""), GetPropertyType());
 
             _trigger->AddSetterNode(pSetter);
 
@@ -386,7 +386,7 @@ void TriggerEditorWindow::OnAddPropButton(Element* sender, RoutedEventArg* e)
 
             if (NULL != dpItem)
             {
-                pSetter = SwitchToProperty(dpItem, NULL, _U(""), GetPropertyType());
+                pSetter = SwitchToProperty(_triggers->GetOwnerType(), dpItem, NULL, _U(""), GetPropertyType());
                 _trigger->AddSetterNode(pSetter);
                 _propCmb->SetSelectedIndex(_propCmb->GetCount() - 1);
                 _trigger->UpdateDisplayName();
@@ -501,6 +501,6 @@ void TriggerEditorWindow::ShowTriggerSetterNode(SetterNode* resNode)
             targetName->SetText(ownerRtti->typeName);
         }
 
-        SwitchToProperty(dpItem, resNode, _U(""), GetPropertyType());
+        SwitchToProperty(ownerRtti, dpItem, resNode, _U(""), GetPropertyType());
     }
 }

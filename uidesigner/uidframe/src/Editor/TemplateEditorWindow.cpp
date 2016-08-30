@@ -77,7 +77,7 @@ void TemplateEditorWindow::SetRootTemplateElement(TemplateRootItem* tempNode)
         }
 
         designWnd->ResetDesignPanel(false);
-        designWnd->SwitchRootElement(NULL);
+        designWnd->SwitchRootElement(NULL, NULL);
 
         tempNode->SetFocusElement(NULL);
         tempNode->SetHotElement(NULL);
@@ -85,7 +85,7 @@ void TemplateEditorWindow::SetRootTemplateElement(TemplateRootItem* tempNode)
         tempNode->SetProject(_themeWnd->GetProject());
 
         // ¼ÓÔØµ½±à¼­Æ÷
-        _objTree->SetTargetElement(tempNode);
+        _objTree->SetTargetElement(_themeWnd->GetResourceElement(), tempNode);
         _objTree->UpdateElementTree();
 
         logicElem->SetWidth(260);
