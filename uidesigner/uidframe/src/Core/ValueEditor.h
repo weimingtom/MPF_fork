@@ -475,6 +475,7 @@ public:
     void OnApplyTemplate();
 
     void NotifySetterChanged();
+    void ClearItems();
     void OnSelItemChanged(suic::Element* sender, suic::SelectionChangedEventArg* e);
 };
 
@@ -568,6 +569,7 @@ public:
 protected:
 
     void OnApplyTemplate();
+    void ClearItems();
     void NotifySetterChanged();
 };
 

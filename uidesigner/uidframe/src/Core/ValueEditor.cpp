@@ -1522,6 +1522,10 @@ CursorSetterEditor::~CursorSetterEditor()
 
 }
 
+void CursorSetterEditor::ClearItems()
+{
+}
+
 void CursorSetterEditor::NotifySetterChanged()
 {
     SetterNode* pSetter = GetSetterNode(false);
@@ -1915,6 +1919,10 @@ FontSizeSetterEditor::FontSizeSetterEditor()
 void FontSizeSetterEditor::NotifySetterChanged()
 {
     ChoiceSetterEditor::NotifySetterChanged();
+}
+
+void FontSizeSetterEditor::ClearItems()
+{
 }
 
 void FontSizeSetterEditor::OnApplyTemplate()

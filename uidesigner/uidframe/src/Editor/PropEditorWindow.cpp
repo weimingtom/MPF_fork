@@ -61,6 +61,9 @@ SetterNode* SetterEditorWindow::SwitchToProperty(RTTIOfInfo* targetType, DpItem*
         Brush* valBrush = RTTICast<Brush>(pSetterNode->GetValue());
         ExtensionResNode* extRes = RTTICast<ExtensionResNode>(pSetterNode->GetResNode());
 
+        setterEditor->SetTargetType(targetType);
+        setterEditor->SetResourceTarget(_themeWnd->GetResourceElement());
+
         if (pSetterNode != NULL && !targetName.Empty())
         {
             pSetterNode->SetTargetName(targetName);
@@ -79,8 +82,7 @@ SetterNode* SetterEditorWindow::SwitchToProperty(RTTIOfInfo* targetType, DpItem*
         SelectToSetterNode(pSetterNode);
 
         _prevSetterEditor = setterEditor;
-        setterEditor->SetTargetType(targetType);
-        setterEditor->SetResourceTarget(_themeWnd->GetResourceElement());
+        
     }
 
     return pSetterNode;
