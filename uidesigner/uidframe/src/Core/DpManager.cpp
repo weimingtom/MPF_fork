@@ -54,6 +54,8 @@ void DpManager::InitDefaultDpItems()
     AddDpItem(new OrientationDpItem(_U("Orientation"), Integer::RTTIType()));
     AddDpItem(new DockDpItem(_U("Dock"), Integer::RTTIType()));
 
+    AddDpItem(new DockDpItem(_U("TabStripPlacement"), Integer::RTTIType()));
+    
     /*AddDpItem(new HoriAlignDpItem(_U("HorizontalAlignment"), Integer::RTTIType()));
     AddDpItem(new VertAlignDpItem(_U("VerticalAlignment"), Integer::RTTIType()));
     AddDpItem(new HoriAlignDpItem(_U("HorizontalContentAlignment"), Integer::RTTIType()));

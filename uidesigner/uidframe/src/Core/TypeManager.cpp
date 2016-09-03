@@ -69,6 +69,7 @@ void TypePool::InitTypeItems()
         _ctrlsTypes->AddItem(new TypeItem(suic::TextBox::RTTIType()));
         _ctrlsTypes->AddItem(new TypeItem(suic::PasswordBox::RTTIType()));
         _ctrlsTypes->AddItem(new TypeItem(ProgressBar::RTTIType()));
+        _ctrlsTypes->AddItem(new TypeItem(TabControl::RTTIType()));
         _ctrlsTypes->AddItem(new TypeItem(TreeView::RTTIType()));
         _ctrlsTypes->AddItem(new TypeItem(ListBox::RTTIType()));
         _ctrlsTypes->AddItem(new TypeItem(ListView::RTTIType()));
@@ -104,6 +105,7 @@ void TypePool::InitTypeItems()
         _otherTypes->AddItem(new TypeItem(suic::ItemsPresenter::RTTIType()));
         //_otherTypes->AddItem(new TypeItem(suic::AdornerDecorator::RTTIType()));
 
+        _otherTypes->AddItem(new TypeItem(TabItem::RTTIType()));
         _otherTypes->AddItem(new TypeItem(TreeViewItem::RTTIType()));
         _otherTypes->AddItem(new TypeItem(ListBoxItem::RTTIType()));
         _otherTypes->AddItem(new TypeItem(ListViewItem::RTTIType()));

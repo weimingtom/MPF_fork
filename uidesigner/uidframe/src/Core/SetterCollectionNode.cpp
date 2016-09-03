@@ -137,26 +137,42 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
         strSetter += strPropName;
         strSetter += _U("\"");
 
+        if (!pSetter->GetTargetName().Empty())
+        {
+            strSetterXml += _U(" TargetName=\"");
+            strSetterXml += pSetter->GetTargetName();
+            strSetterXml += _U("\"");
+        }
+
         if (resNode->IsSingleValue())
         {
             if (resNode->GetValue() != NULL && resNode->GetValue() != DpProperty::UnsetValue())
             {
                 DpItem* dpItem = pSetter->GetDpItem();
-                String strTmp = dpItem->ValueToString(pSetter->GetResNode());
+                String strTmp;
+                
+                if (NULL != dpItem)
+                {
+                    strTmp = dpItem->ValueToString(pSetter->GetResNode());
+                }
+                else
+                {
+                    // tbl
+                    ResNode* sRes = pSetter->GetResNode();
+                    if (NULL != sRes)
+                    {
+                        strTmp = sRes->GetSingleXml();
+                    }
+                }
 
                 if (!strTmp.Empty())
                 {
-                    if (!pSetter->GetTargetName().Empty())
-                    {
-                        strSetterXml += _U(" TargetName=\"");
-                        strSetterXml += pSetter->GetTargetName();
-                        strSetterXml += _U("\"");
-                    }
                     strSetterXml += _U(" Value=\"");
                     strSetterXml += strTmp;
-                    strSetterXml += _U("\" />\n");
                 }
             }
+
+            strSetterXml += _U("\" />\n");
         }
         else
         {
@@ -169,6 +185,10 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
                 strSetterXml += strTmp;
                 strSetterXml += offset + ResNode::OFFSET1 + _U("</Setter.Value>\n");
                 strSetterXml += offset + _U("</Setter>\n");
+            }
+            else
+            {
+                strSetterXml += _U("/>\n");
             }
         }
 

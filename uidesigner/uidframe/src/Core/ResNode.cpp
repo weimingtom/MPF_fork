@@ -22,6 +22,12 @@ ImplementRTTIOfClass(BrushResNode, ResNode)
 ImplementRTTIOfClass(SourceResNode, ResNode)
 ImplementRTTIOfClass(ImageSourceResNode, ResNode)
 
+ImplementRTTIOfClass(TransformResNode, ResNode)
+ImplementRTTIOfClass(SolidColorBrushResNode, BrushResNode)
+ImplementRTTIOfClass(LinearGradientBrushResNode, BrushResNode)
+ImplementRTTIOfClass(RadialGradientBrushResNode, BrushResNode)
+ImplementRTTIOfClass(ImageBrushResNode, BrushResNode)
+
 String ResNode::OFFSET1 = _U("    ");
 String ResNode::OFFSET2 = _U("        ");
 String ResNode::OFFSET3 = _U("            ");
@@ -65,6 +71,10 @@ ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
     else if (suic::RTTICast<OString>(val))
     {
         obj = new StringResNode((suic::OString*)(val));
+    }
+    else if (suic::RTTICast<suic::Transform>(val))
+    {
+        obj = new TransformResNode((suic::Transform*)(val));
     }
     else if (suic::RTTICast<ResNode>(val))
     {
@@ -769,6 +779,96 @@ bool BrushResNode::GetSolidColorBrushResXml(const String& offset, String& strXml
     strXml += _U("\"/>\n");
 
     return true;
+}
+
+//================================================
+// TransformResNode
+
+TransformResNode::TransformResNode()
+{
+    _transform = NULL;
+}
+
+TransformResNode::TransformResNode(Transform* val)
+{
+    _transform = val;
+    if (NULL != _transform)
+    {
+        _transform->ref();
+    }
+}
+
+TransformResNode::~TransformResNode()
+{
+    FREEREFOBJ(_transform);
+}
+
+bool TransformResNode::IsSingleValue()
+{
+    return false;
+}
+
+suic::String TransformResNode::GetSingleXml()
+{
+    return suic::String();
+}
+
+suic::String TransformResNode::GetResXml(const String& offset)
+{
+    suic::String strXml = offset + _U("<");
+
+    suic::ScaleTransform* sTrans = RTTICast<suic::ScaleTransform>(_transform);
+    if (NULL != sTrans)
+    {
+        strXml += _U("ScaleTransform");
+
+        strXml += _U(" CenterX=\"") + String().FromFloat(sTrans->GetCenterX()) + _U("\"");
+        strXml += _U(" CenterY=\"") + String().FromFloat(sTrans->GetCenterY()) + _U("\"");
+
+        strXml += _U(" ScaleX=\"") + String().FromFloat(sTrans->GetScaleX()) + _U("\"");
+        strXml += _U(" ScaleY=\"") + String().FromFloat(sTrans->GetScaleY()) + _U("\"");
+
+        strXml += _U("/>\n");
+
+        return strXml;
+    }
+
+    suic::RotateTransform* rTrans = RTTICast<suic::RotateTransform>(_transform);
+    if (NULL != rTrans)
+    {
+        strXml += _U("RotateTransform");
+
+        strXml += _U(" CenterX=\"") + String().FromFloat(rTrans->GetCenterX()) + _U("\"");
+        strXml += _U(" CenterY=\"") + String().FromFloat(rTrans->GetCenterY()) + _U("\"");
+        strXml += _U(" Angle=\"") + String().FromFloat(rTrans->GetAngle()) + _U("\"");
+
+        strXml += _U("/>\n");
+
+        return strXml;
+    }
+
+    suic::TranslateTransform* tTrans = RTTICast<suic::TranslateTransform>(_transform);
+    if (NULL != tTrans)
+    {
+        strXml += _U("TranslateTransform");
+        strXml += _U(" X=\"") + String().FromFloat(tTrans->GetX()) + _U("\"");
+        strXml += _U(" Y=\"") + String().FromFloat(tTrans->GetY()) + _U("\"");
+        strXml += _U("/>\n");
+        return strXml;
+    }
+
+    suic::Rotate3DTransform* r3dTrans = RTTICast<suic::Rotate3DTransform>(_transform);
+    if (NULL != r3dTrans)
+    {
+        strXml += _U("Rotate3DTransform");
+        strXml += _U(" AngleX=\"") + String().FromFloat(r3dTrans->GetAngleX()) + _U("\"");
+        strXml += _U(" AngleY=\"") + String().FromFloat(r3dTrans->GetAngleY()) + _U("\"");
+        strXml += _U(" AngleZ=\"") + String().FromFloat(r3dTrans->GetAngleZ()) + _U("\"");
+        strXml += _U("/>\n");
+        return strXml;
+    }
+
+    return strXml;
 }
 
 //================================================

@@ -365,6 +365,27 @@ private:
     suic::Brush* _value;
 };
 
+class TransformResNode : public ResNode
+{
+public:
+
+    TransformResNode();
+    TransformResNode(Transform* val);
+
+    virtual ~TransformResNode();
+
+    RTTIOfClass(TransformResNode)
+
+    virtual bool IsSingleValue();
+
+    virtual suic::String GetSingleXml();
+    virtual suic::String GetResXml(const String& offset);
+
+private:
+
+    suic::Transform* _transform;
+};
+
 class SolidColorBrushResNode : public BrushResNode
 {
 public:
@@ -373,6 +394,8 @@ public:
     SolidColorBrushResNode(SolidColorBrush* val);
 
     virtual ~SolidColorBrushResNode();
+
+    RTTIOfClass(SolidColorBrushResNode)
     
     virtual bool IsSingleValue();
 
@@ -389,6 +412,8 @@ public:
 
     virtual ~LinearGradientBrushResNode();
 
+    RTTIOfClass(LinearGradientBrushResNode)
+
     virtual suic::String GetResXml(const String& offset);
 };
 
@@ -401,6 +426,8 @@ public:
 
     virtual ~RadialGradientBrushResNode();
 
+    RTTIOfClass(RadialGradientBrushResNode)
+
     virtual suic::String GetResXml(const String& offset);
 };
 
@@ -411,6 +438,8 @@ public:
     ImageBrushResNode();
     ImageBrushResNode(suic::ImageBrush* val);
     virtual ~ImageBrushResNode();
+
+    RTTIOfClass(ImageBrushResNode)
 
     ResourceUri* GetResPath();
     suic::ImageBrush* GetImageBrush();
