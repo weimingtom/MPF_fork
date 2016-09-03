@@ -1716,7 +1716,7 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
         {
             DesignElement* dSameMouse = GetSameParentElement(dfocus, _dragMouseOver);
             // 有相同的父元素
-            if (NULL != dSameMouse)
+            if (NULL != dSameMouse && dfocus != _dragMouseOver)
             {
                 xamlParent = dSameMouse->GetParentXamlElement();
                 if (NULL != xamlParent)
@@ -1733,7 +1733,7 @@ void DesignPanel::OnDragMove(DragMeta& meta, int iAction)
                 }
             }
 
-            if (_dragMouseOver == dparent)
+            //if (_dragMouseOver == dparent)
             {
                 DragMoveFinish(dfocus, dparent);
             }
