@@ -200,7 +200,10 @@ public:
 public:
 
     String GenerateXKey();
-    void AddResourceItem(ResTypeItem* resItem, TypeItem* ctrlItem);
+    void AddResourceItem(ResTypeItem* resItem, TypeItem* ctrlItem, bool bFromType);
+
+    void CreateStyleNode(ResTypeItem* resItem, TypeItem* ctrlItem, ResNodePtr& resNode);
+    void CreateControlTemplateNode(ResTypeItem* resItem, TypeItem* ctrlItem, ResNodePtr& resNode);
 
     // 响应增加资源按钮
     void OnAddResButton(Element* sender, RoutedEventArg* e);

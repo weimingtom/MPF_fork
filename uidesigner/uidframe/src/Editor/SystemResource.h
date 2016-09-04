@@ -26,6 +26,9 @@ public:
     TemplateRootItem* FindControlTemplate(const suic::String& strType);
     StyleNode* FindStyle(const suic::String& strType);
 
+    bool FindAndCloneStyle(const suic::String& strType, ResNodePtr& resNode);
+    bool FindAndCloneControlTemplate(const suic::String& strType, ResNodePtr& resNode);
+
     bool InitDefaultResDic();
 
 private:

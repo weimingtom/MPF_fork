@@ -5,6 +5,8 @@
 
 #include <Editor/EditRootPanel.h>
 #include <Editor/ThemeEditorWindow.h>
+#include <Editor/SystemResource.h>
+
 #include <Core/StyleNode.h>
 #include <Framework/Controls/Rectangle.h>
 
@@ -478,7 +480,23 @@ void ThemeEditorWindow::OnResItemSelectedChanged(suic::Element* sender, suic::Se
 
 //=================================== 增加资源操作
 
-void ThemeEditorWindow::AddResourceItem(ResTypeItem* resItem, TypeItem* ctrlItem)
+void ThemeEditorWindow::CreateStyleNode(ResTypeItem* resItem, TypeItem* ctrlItem, ResNodePtr& resNode)
+{
+    if (NULL != resItem && resItem->GetType()->InheritFrom(Style::RTTIType()))
+    {
+        SystemResource::Ins()->FindAndCloneStyle(ctrlItem->GetType()->typeName, resNode);
+    }
+}
+
+void ThemeEditorWindow::CreateControlTemplateNode(ResTypeItem* resItem, TypeItem* ctrlItem, ResNodePtr& resNode)
+{
+    if (NULL != resItem && resItem->GetType()->InheritFrom(ControlTemplate::RTTIType()))
+    {
+        SystemResource::Ins()->FindAndCloneControlTemplate(ctrlItem->GetType()->typeName, resNode);
+    }
+}
+
+void ThemeEditorWindow::AddResourceItem(ResTypeItem* resItem, TypeItem* ctrlItem, bool bFromType)
 {
     if (NULL != _prevEditCtrl)
     {
@@ -514,8 +532,21 @@ void ThemeEditorWindow::AddResourceItem(ResTypeItem* resItem, TypeItem* ctrlItem
     {
         ResNodePtr resNode;
         StyleNode* styleNode = NULL;
-        
-        editCtrl->CreateDefaultValue(resNode);
+
+        if (bFromType)
+        {
+            CreateStyleNode(resItem, ctrlItem, resNode);
+            if (NULL == resNode.get())
+            {
+                CreateControlTemplateNode(resItem, ctrlItem, resNode);
+            }
+        }
+
+        if (NULL == resNode.get())
+        {
+            editCtrl->CreateDefaultValue(resNode);
+        }
+
         styleNode = RTTICast<StyleNode>(resNode.get());
 
         SetModified();
@@ -646,7 +677,7 @@ void ThemeEditorWindow::OnAddResButton(Element* sender, RoutedEventArg* e)
 
         if (NULL != resItem)
         {
-            AddResourceItem(resItem, ctrlItem);
+            AddResourceItem(resItem, ctrlItem, resWnd->IsFromTypeChecked());
         }
     }
 }

@@ -52,9 +52,37 @@ TemplateRootItem* SystemResource::FindControlTemplate(const suic::String& strTyp
     return tempRootItem;
 }
 
-StyleNode*  SystemResource::FindStyle(const suic::String& strType)
+StyleNode* SystemResource::FindStyle(const suic::String& strType)
 {
     return suic::RTTICast<StyleNode>(FindResNode(strType));
+}
+
+bool SystemResource::FindAndCloneStyle(const suic::String& strType, ResNodePtr& resNode)
+{
+    StyleNode* styleNode = FindStyle(strType);
+    if (NULL != styleNode)
+    {
+        styleNode->CloneNode(resNode);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SystemResource::FindAndCloneControlTemplate(const suic::String& strType, ResNodePtr& resNode)
+{
+    TemplateRootItem* tempNode = FindControlTemplate(strType);
+    if (NULL != tempNode)
+    {
+        tempNode->CloneNode(resNode);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool  SystemResource::InitDefaultResDic()

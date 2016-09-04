@@ -51,10 +51,13 @@ void ResSelectorWindow::OnSelectedChanged(suic::Element* sender, suic::Selection
     {
         e->SetHandled(true);
         ListBox* pList = FindElem<ListBox>(_U("ctrlList"));
+
+        suic::Element* fromType = FindName(_U("fromType"));
         UniformGrid* pPanel = FindElem<UniformGrid>(_U("gridPanel"));
 
         ResTypeItem* resItem = dynamic_cast<ResTypeItem*>(e->GetAddedItems()->GetItem(0));
-        if (!IsCanClose(resItem))
+        int iTargetType = IsCanClose(resItem);
+        if (iTargetType > 0)
         {
             pPanel->SetColumns(2);
             pList->SetVisibility(Visibility::Visible);
@@ -64,7 +67,20 @@ void ResSelectorWindow::OnSelectedChanged(suic::Element* sender, suic::Selection
             pPanel->SetColumns(1);
             pList->SetVisibility(Visibility::Collapsed);
         }
-        pPanel->UpdateLayout();
+
+        // Style»òControlTemplate
+        if (iTargetType == 1)
+        {
+            pPanel->SetMargin(suic::Rect(5, 5, 0, 27));
+            fromType->SetVisibility(suic::Visibility::Visible);
+        }
+        else
+        {
+            pPanel->SetMargin(suic::Rect(5, 5, 0, 0));
+            fromType->SetVisibility(suic::Visibility::Hidden);
+        }
+
+        pPanel->GetParent()->UpdateLayout();
     }
 }
 
@@ -95,6 +111,19 @@ void ResSelectorWindow::OnCtrlListDbClick(Element* sender, MouseButtonEventArg* 
 
     _isDbClicked = true;
     AsyncClose();
+}
+
+bool ResSelectorWindow::IsFromTypeChecked()
+{
+    suic::CheckBox* fromType = FindElem<suic::CheckBox>(_U("fromType"));
+    if (NULL != fromType)
+    {
+        return (fromType->IsChecked());
+    }
+    else
+    {
+        return false;
+    }
 }
 
 ResTypeItem* ResSelectorWindow::GetSelectedItem()
@@ -137,17 +166,20 @@ ResTypeItem* ResSelectorWindow::GetCurrentSelItem()
     }
 }
 
-bool ResSelectorWindow::IsCanClose(ResTypeItem* resItem)
+int ResSelectorWindow::IsCanClose(ResTypeItem* resItem)
 {
     RTTIOfInfo* rttiInfo = resItem->GetType();
-    if (rttiInfo->InheritFrom(FrameworkTemplate::RTTIType()) || 
-        rttiInfo->InheritFrom(Style::RTTIType()) || 
-        rttiInfo->InheritFrom(Element::RTTIType()))
+    if (rttiInfo->InheritFrom(ControlTemplate::RTTIType()) || 
+        rttiInfo->InheritFrom(Style::RTTIType()))
     {
-        return false;
+        return 1;
+    }
+    else if (rttiInfo->InheritFrom(Element::RTTIType()))
+    {
+        return 2;
     }
     else
     {
-        return true;
+        return 0;
     }
 }

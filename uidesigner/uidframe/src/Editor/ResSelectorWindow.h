@@ -28,6 +28,8 @@ public:
     ResTypeItem* GetSelectedItem();
     TypeItem* GetSelectedControl();
 
+    bool IsFromTypeChecked();
+
     void OnDbListClick(Element* sender, MouseButtonEventArg* e);
     void OnCtrlListDbClick(Element* sender, MouseButtonEventArg* e);
 
@@ -37,7 +39,7 @@ protected:
 
     void InitTreeDoc();
 
-    bool IsCanClose(ResTypeItem* resItem);
+    int IsCanClose(ResTypeItem* resItem);
     ResTypeItem* GetCurrentSelItem();
 
     void OnInitialized(EventArg* e);
