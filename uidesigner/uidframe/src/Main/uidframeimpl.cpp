@@ -14,6 +14,8 @@
 
 #include <main/Encrypt.h>
 #include <Core/ValueEditor.h>
+#include <Editor/SystemResource.h>
+
 #include "uidframeimpl.h"
 #include "MainWindow.h"
 
@@ -22,6 +24,8 @@ void InitDControls();
 UIDFrameImpl::UIDFrameImpl()
 {
     InitDControls();
+
+    SystemResource::Ins()->InitDefaultResDic();
 }
 
 UIDFrameImpl::~UIDFrameImpl()

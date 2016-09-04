@@ -13,6 +13,15 @@ CreateStyleWindow::CreateStyleWindow(bool fromStyle)
 {
 }
 
+CreateStyleWindow::CreateStyleWindow(bool fromStyle, const suic::String& strTitle)
+    : _fromStyle(fromStyle)
+    , _fromBlank(true)
+    , _rBlank(NULL)
+    , _rBackup(NULL)
+    , _title(strTitle)
+{
+}
+
 CreateStyleWindow::~CreateStyleWindow()
 {
 }

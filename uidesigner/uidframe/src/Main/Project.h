@@ -67,7 +67,7 @@ public:
     ElementRootItem* AddRootElement(FilterNode* pParent, const String& fileName);
     void RemoveRootElement(ElementRootItem* dmain);
 
-    ResNode* FindResItem(const String& strName);
+    //ResNode* FindResItem(const String& strName);
     RootItem* FindRootItem(const String& strPath);
     // 根据文件路径返回对应节点，如果没有就创建
     //XamlRootItem* FindAndCreateRootItem(const String& strPath);
@@ -83,7 +83,8 @@ public:
 protected:
 
     void CreateBackup();
-    suic::String GetBackupDir(); 
+    suic::String GetBackupDir();
+    suic::String GeDefaultResPath();
 
     void InitEditNodes();
     bool InternalLoadPrj();

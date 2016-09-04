@@ -10,6 +10,20 @@
 
 Project* Project::_currentProject = NULL;
 
+static suic::String SYSBACKUPDIR = _U(".backup\\");
+static suic::String DEFAULTRESPATH = _U(".system\\default.xaml");
+
+static suic::String TARGET_APP_NAME = _U("Application.xaml");
+static suic::String TARGET_THEME_NAME = _U("theme.xaml");
+static suic::String TARGET_IMAGES_NAME = _U("images");
+static suic::String TARGET_MAINWINDOW_NAME = _U("MainWindow.xaml");
+
+static suic::String TEMPLATE_APP_PATH = _U("resource\\uidesign\\Template\\Application.xaml");
+static suic::String TEMPLATE_IMAGES_PATH = _U("resource\\uidesign\\Template\\images");
+static suic::String TEMPLATE_THEME_PATH = _U("resource\\uidesign\\Template\\theme.xaml");
+static suic::String TEMPLATE_WINDOW_PATH = _U("resource\\uidesign\\Template\\Window.xaml");
+
+
 ImplementRTTIOfClass(Project, FilterNode)
 
 Project::Project()
@@ -270,12 +284,15 @@ bool Project::ReadFilterFromDir(const String& strDir, const String& strExt, Filt
                 strFilename.Trim();
 
                 {
-                    FilterNode* newNode = new FilterNode();
-                    parent->AddItem(newNode);
-                    newNode->SetName(strFilename);
+                    if (strFilename.IndexOf(_U(".")) == -1)
+                    {
+                        FilterNode* newNode = new FilterNode();
+                        parent->AddItem(newNode);
+                        newNode->SetName(strFilename);
 
-                    // 读取子目录
-                    ReadFilterFromDir(RelativePathNewDirFound, strExt, newNode);
+                        // 读取子目录
+                        ReadFilterFromDir(RelativePathNewDirFound, strExt, newNode);
+                    }
                 }
             }
             else
@@ -290,7 +307,7 @@ bool Project::ReadFilterFromDir(const String& strDir, const String& strExt, Filt
 
                     fileExt.ToLower();
 
-                    if (fileExt.Equals(_U(".xaml")))
+                    if (fileExt.Equals(_U(".xaml")) || fileExt.Equals(_U(".xml")))
                     {
                         String strFullPath = parent->GetFullPath() + strFilename;
                         String strNodeName = Utils::CheckUIXmlRoot(strFullPath);
@@ -482,7 +499,13 @@ bool Project::LoadProject(const String& path)
 
 suic::String Project::GetBackupDir()
 {
-    suic::String strPath = _prjDir + _U("backup\\");
+    suic::String strPath = _prjDir + SYSBACKUPDIR;
+    return strPath;
+}
+
+suic::String Project::GeDefaultResPath()
+{
+    suic::String strPath = _prjDir + DEFAULTRESPATH;
     return strPath;
 }
 
@@ -572,44 +595,52 @@ bool Project::CopyTemplateFile(const String& tempPath, const String& shortPath)
     }
 }
 
+//void CreateDefaultTheme(const suic::String& strSucDir)
+//{
+//    suic::String tempFile = FileDir::CalculatePath(TEMPLATE_THEME_PATH);
+//    if (!CopyTemplateFile(tempFile, strSucDir))
+//    {
+//        return false;
+//    }
+//}
+
 bool Project::InitDefaultProject()
 {
     String tempFile;
     String destFile;
-
     String strPath;
 
-    String strFilename = _U("Application.xaml");
+    //String strFilename = _U("Application.xaml");
 
     _prjPath.Format(_U("%s%s.uiproj"), _prjDir.c_str(), _prjName.c_str());
 
     // 拷贝Application.xml文件
-    tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\Application.xaml"));
-    destFile = _U("Application.xaml");
+    tempFile = FileDir::CalculatePath(TEMPLATE_APP_PATH);
+    destFile = TARGET_APP_NAME;//_U("Application.xaml");
     if (!CopyTemplateFile(tempFile, destFile))
     {
         return false;
     }
 
     // 拷贝Window.xml文件
-    tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\Window.xaml"));
-    destFile = _U("MainWindow.xaml");
+    tempFile = FileDir::CalculatePath(TEMPLATE_WINDOW_PATH);
+    destFile = TARGET_MAINWINDOW_NAME;// _U("MainWindow.xaml");
     if (!CopyTemplateFile(tempFile, destFile))
     {
         return false;
     }
 
     // 拷贝default.xml文件
-    tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\theme.xaml"));
-    destFile = _U("theme\\default.xaml");
+    /*tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\theme.xaml"));
+    destFile = DEFAULTRESPATH;
     if (!CopyTemplateFile(tempFile, destFile))
     {
         return false;
-    }
+    }*/
 
     // 拷贝images目录
-    tempFile = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\images"));
-    destFile.Format(_U("%simages\\"), _prjDir.c_str());
+    tempFile = FileDir::CalculatePath(TEMPLATE_IMAGES_PATH);
+    destFile.Format(_U("%s%s\\"), _prjDir.c_str(), TARGET_IMAGES_NAME.c_str());
     FileDir::DupCreateDir(destFile);
     CopyFilesUnderDir(tempFile, destFile, RES_FILTER, true);
 
@@ -900,7 +931,7 @@ bool Project::OpenRootElement(ElementRootItem* mainElem)
     }
 }
 
-ResNode* Project::FindResItem(const String& strName)
+/*ResNode* Project::FindResItem(const String& strName)
 {
     ResNode* resNode = NULL;
     if (NULL != _appRoot)
@@ -908,7 +939,7 @@ ResNode* Project::FindResItem(const String& strName)
         resNode = _appRoot->GetApplicationNode()->GetResourceDictionary()->SearchResItem(strName);
     }
     return resNode;
-}
+}*/
 
 RootItem* Project::FindRootItem(const String& strPath)
 {

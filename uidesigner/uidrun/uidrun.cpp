@@ -14,6 +14,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     // 初始化MPF环境
     //
     suic::InitUIWgx();
+    suic::InitUILogLevel(suic::LogLevel::Trace);
 
     UIDFramePtr frame;
 

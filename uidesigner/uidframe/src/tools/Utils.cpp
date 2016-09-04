@@ -152,9 +152,14 @@ void Utils::ZipFileFolder(XRZip* pZip, const String& strRoot, const String& strP
             if (fileFinder.IsDir())
             {
                 String strSubPath;
+                String strFilename(fileFinder.GetFileName());
+                strFilename.Trim();
 
-                strSubPath.Format(_U("%s%s\\"), strPath.c_str(), fileFinder.GetFileName().c_str());
-                ZipFileFolder(pZip, strRoot, strSubPath, zipExt);
+                if (strFilename.IndexOf(_U(".")) == -1)
+                {
+                    strSubPath.Format(_U("%s%s\\"), strPath.c_str(), strFilename.c_str());
+                    ZipFileFolder(pZip, strRoot, strSubPath, zipExt);
+                }
             }
             else
             {

@@ -784,7 +784,7 @@ protected:
     void OnEditClick();
 
     virtual bool IsSetterEmpty(SetterNode* pSetter);
-    virtual RTTIOfInfo* CreateFrameworkTemplate(RTTIOfInfo* ownerRtti);
+    virtual TemplateRootItem* CreateFrameworkTemplate(RTTIOfInfo* ownerRtti);
 };
 
 class ControlTemplateSetterEditor : public TemplateSetterEditor
@@ -799,7 +799,7 @@ public:
 
 protected:
     
-    RTTIOfInfo* CreateFrameworkTemplate(RTTIOfInfo* ownerRtti);
+    TemplateRootItem* CreateFrameworkTemplate(RTTIOfInfo* ownerRtti);
 };
 
 class DataTemplateSetterEditor : public TemplateSetterEditor
@@ -814,7 +814,7 @@ public:
 
 protected:
 
-    RTTIOfInfo* CreateFrameworkTemplate(RTTIOfInfo* ownerRtti);
+    TemplateRootItem* CreateFrameworkTemplate(RTTIOfInfo* ownerRtti);
 };
 
 //

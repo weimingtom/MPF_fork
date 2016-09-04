@@ -12,7 +12,7 @@
 
 #include <Main/AddNameWindow.h>
 #include <Main/ImageSelectorWindow.h>
-
+#include <Editor/SystemResource.h>
 #include <Editor/ThemeEditorWindow.h>
 
 #include <System/Tools/ResourceParser.h>
@@ -2785,7 +2785,7 @@ void TemplateSetterEditor::ResetSetter()
     }*/
 }
 
-RTTIOfInfo* TemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* ownerRtti)
+TemplateRootItem* TemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* ownerRtti)
 {
     return NULL;
 }
@@ -2810,12 +2810,17 @@ void TemplateSetterEditor::OnEditClick()
 
         if (NULL == pTemp)
         {
-            RTTIOfInfo* ft = CreateFrameworkTemplate(ownerRtti);
-            pTemp = new TemplateRootItem();
-            pTemp->SetTemplateType(ft);
+            pTemp = CreateFrameworkTemplate(ownerRtti);
+            if (NULL == pTemp)
+            {
+                return ;
+            }
+        }
+        else
+        {
+            pTemp->ref();
         }
 
-        pTemp->ref();
         themeWnd->ref();
 
         pTemp->SetTargetType(ownerRtti);
@@ -2853,9 +2858,38 @@ void ControlTemplateSetterEditor::NotifySetterChanged()
     STSetterEditor::NotifySetterChanged();
 }
 
-RTTIOfInfo* ControlTemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* ownerRtti)
+TemplateRootItem* ControlTemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* ownerRtti)
 {
-    return ControlTemplate::RTTIType();
+    TemplateRootItem* pTemp = NULL;
+    CreateStyleWindow tempWnd(false);
+    const String strPath = "/mpfuid;/resource/uidesign/layout/Editor/CreateStyleWindow.xaml";
+
+    tempWnd.setAutoDelete(false);
+
+    if (0 == tempWnd.ShowDialog(strPath))
+    {
+        if (!tempWnd.IsFromBlank())
+        {
+            TemplateRootItem* tempNode = SystemResource::Ins()->FindControlTemplate(ownerRtti->typeName);
+            if (NULL != tempNode)
+            {
+                ResNodePtr resNode;
+                tempNode->CloneNode(resNode);
+                pTemp = suic::RTTICast<TemplateRootItem>(resNode.get());
+                pTemp->ref();
+            }
+        }
+
+        if (NULL == pTemp)
+        {
+            pTemp = new TemplateRootItem();
+            pTemp->ref();
+        }
+
+        pTemp->SetTemplateType(ControlTemplate::RTTIType());
+    }
+
+    return pTemp;
 }
 
 //==============================================
@@ -2870,9 +2904,13 @@ void DataTemplateSetterEditor::NotifySetterChanged()
     STSetterEditor::NotifySetterChanged();
 }
 
-RTTIOfInfo* DataTemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* ownerRtti)
+TemplateRootItem* DataTemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* ownerRtti)
 {
-    return DataTemplate::RTTIType();
+    TemplateRootItem* pTemp = new TemplateRootItem();
+
+    pTemp->ref();
+    pTemp->SetTemplateType(DataTemplate::RTTIType());
+    return pTemp;
 }
 
 //==============================================
@@ -2885,11 +2923,6 @@ StyleSetterEditor::StyleSetterEditor()
 void StyleSetterEditor::ResetSetter()
 {
     STSetterEditor::ResetSetter();
-    /*suic::FrameworkElement* fe = GetTargetElement()->GetUIElement();
-    if (NULL != fe)
-    {
-        fe->InvalidateStyle();
-    }*/
 }
 
 void StyleSetterEditor::NotifySetterChanged()
@@ -2939,8 +2972,7 @@ StyleNode* StyleSetterEditor::CreateNewStyle(suic::RTTIOfInfo* targetRtti)
     {
         if (!styleWnd.IsFromBlank())
         {
-            ResNode* resNode = Project::GetCurrentProject()->FindResItem(targetRtti->typeName);
-            StyleNode* tempSty = suic::RTTICast<StyleNode>(resNode);
+            StyleNode* tempSty = SystemResource::Ins()->FindStyle(targetRtti->typeName);
             if (NULL != tempSty)
             {
                 ResNodePtr resStyle;

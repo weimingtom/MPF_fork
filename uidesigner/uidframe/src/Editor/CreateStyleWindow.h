@@ -25,6 +25,7 @@ public:
     EndRoutedEvent()
 
     CreateStyleWindow(bool fromStyle);
+    CreateStyleWindow(bool fromStyle, const suic::String& strTitle);
     ~CreateStyleWindow();
 
     bool IsFromBlank() const
@@ -44,6 +45,8 @@ private:
 
     bool _fromStyle;
     bool _fromBlank;
+
+    suic::String _title;
     suic::RadioButton* _rBlank;
     suic::RadioButton* _rBackup;
 };

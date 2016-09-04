@@ -330,7 +330,7 @@ ResNode* ResourceDictionaryNode::SearchResItem(const String& key)
         {
             resNode = _resSource->GetResourceDicNode()->SearchResItem(key);
         }
-        if (NULL == resNode)
+        if (NULL == resNode && NULL != _mergedDics)
         {
             resNode = _mergedDics->SearchResItem(key);
         }

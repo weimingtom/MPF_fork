@@ -970,22 +970,25 @@ void XamlWalker::ReadMergedDictionaries(suic::FrameworkElement* fe, DResourceDic
                     RootItem* dicRoot = _project->FindRootItem(strSource);
                     ResourceDicRootItem* resRootItem = RTTICast<ResourceDicRootItem>(dicRoot);
 
-                    resRootItem->Reset();
-
-                    // 根据Source路径从缓存中查找是否已经读入
-                    ResourceDictionaryNode* mergedRes = resRootItem->GetResourceDicNode();
-
-                    if (!dicRoot->IsLoaded() || NULL == mergedRes)
+                    if (NULL != resRootItem)
                     {
-                        ReadMergedResourceDictionaryFromUri(resInfo, strSource); // 按路径读取
-                    }
-                    else
-                    {
-                        //resInfo->resDic->AddMergedDictionary(mergedRes);
-                        resInfo->dResDic->AddMergedDictionary(mergedRes);
-                    }
+                        resRootItem->Reset();
 
-                    resRootItem->SetLoaded();
+                        // 根据Source路径从缓存中查找是否已经读入
+                        ResourceDictionaryNode* mergedRes = resRootItem->GetResourceDicNode();
+
+                        if (!dicRoot->IsLoaded() || NULL == mergedRes)
+                        {
+                            ReadMergedResourceDictionaryFromUri(resInfo, strSource); // 按路径读取
+                        }
+                        else
+                        {
+                            //resInfo->resDic->AddMergedDictionary(mergedRes);
+                            resInfo->dResDic->AddMergedDictionary(mergedRes);
+                        }
+
+                        resRootItem->SetLoaded();
+                    }
                 }
             }
             else
