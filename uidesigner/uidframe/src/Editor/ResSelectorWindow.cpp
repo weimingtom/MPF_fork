@@ -93,7 +93,7 @@ void ResSelectorWindow::OnDbListClick(Element* sender, MouseButtonEventArg* e)
 
     e->SetHandled(true);
 
-    if (IsCanClose(GetCurrentSelItem()))
+    if (IsCanClose(GetCurrentSelItem()) <= 0)
     {
         _isDbClicked = true;
         AsyncClose();
