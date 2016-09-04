@@ -11,6 +11,7 @@
 #include <tools/Utils.h>
 #include <System/Tools/EventHelper.h>
 
+#include <Editor/CreateStyleWindow.h>
 #include <Editor/ThemeEditorWindow.h>
 #include <Main/ImageSelectorWindow.h>
 
@@ -337,6 +338,17 @@ bool RootItemCmd::CanExecute(Object* target, Object* parameter)
     return true;
 }
 
+void RootItemCmd::ApplyResourceTo(ResourceDicRootItem* resRoot)
+{
+    CreateStyleWindow tempWnd(false);
+    const String strPath = "/mpfuid;/resource/uidesign/layout/Editor/CreateStyleWindow.xaml";
+    tempWnd.setAutoDelete(false);
+
+    if (0 == tempWnd.ShowDialog(strPath))
+    {
+    }
+}
+
 void RootItemCmd::Execute(Object* target, Object* parameter)
 {
     RootItem* item = NULL;
@@ -386,6 +398,14 @@ void RootItemCmd::Execute(Object* target, Object* parameter)
             if (NULL != eleRoot)
             {
                 eleRoot->RemoveStartElement();
+            }
+        }
+        else if (_name.Equals(_U("应用资源")))
+        {
+            ResourceDicRootItem* resRoot = suic::RTTICast<ResourceDicRootItem>(item);
+            if (NULL != resRoot)
+            {
+                //ApplyResourceTo(resRoot);
             }
         }
         else if (_name.Equals(_U("打开目录")))
@@ -683,31 +703,28 @@ void FilterNodeCmd::AddSubFilter(FilterNode* pNode)
 
 void FilterNodeCmd::AddThemeNode(FilterNode* pNode)
 {
-    String strPath = GetAddName(_U("增加主题"), _U("名称："));
-    if (!strPath.Empty())
+    String strFilename = GetAddName(_U("增加主题"), _U("名称："));
+    if (!strFilename.Empty())
     {
-        strPath.Trim();
+        strFilename.Trim();
 
-        if (!CheckPath(strPath))
+        if (!CheckPath(strFilename))
         {
             suic::InfoBox::Show(_U("名称必须为英文字符和数字组合且首字必须为字符！"), _U("提示"));
             return;
         }
 
-        if (pNode->FindItemOnChild(strPath) != NULL)
+        if (pNode->FindItemOnChild(strFilename) != NULL)
         {
             suic::InfoBox::Show(_U("主题已经存在，请重新输入！"), _U("提示"));
             return;
         }
 
-        ResourceDicRootItem* resElem = new ResourceDicRootItem();
-        String strFilename = strPath + _U(".xaml");
-
-        //resElem->SetProject(_tree->GetProject());
-        resElem->SetFileName(strFilename);
-
-        pNode->AddItem(resElem);
-        resElem->Save();
+        Project* pPrj = pNode->GetProject();
+        ResourceDicRootItem* resElem = pPrj->AddResourceDicRootElement(pNode, strFilename);
+        if (NULL != resElem)
+        {
+        }
     }
 }
 

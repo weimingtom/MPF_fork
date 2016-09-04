@@ -86,6 +86,8 @@ public:
     bool CanExecute(Object* target, Object* parameter);
     void Execute(Object* target, Object* parameter);
 
+    void ApplyResourceTo(ResourceDicRootItem* resRoot);
+
     String ToString();
 
     void SetName(String name)

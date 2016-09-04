@@ -18,11 +18,10 @@ static suic::String TARGET_THEME_NAME = _U("theme.xaml");
 static suic::String TARGET_IMAGES_NAME = _U("images");
 static suic::String TARGET_MAINWINDOW_NAME = _U("MainWindow.xaml");
 
-static suic::String TEMPLATE_APP_PATH = _U("resource\\uidesign\\Template\\Application.xaml");
+static suic::String TEMPLATE_APP_PATH = _U("resource\\uidesign\\Template\\Application.template");
 static suic::String TEMPLATE_IMAGES_PATH = _U("resource\\uidesign\\Template\\images");
-static suic::String TEMPLATE_THEME_PATH = _U("resource\\uidesign\\Template\\theme.xaml");
-static suic::String TEMPLATE_WINDOW_PATH = _U("resource\\uidesign\\Template\\Window.xaml");
-
+static suic::String TEMPLATE_WINDOW_PATH = _U("resource\\uidesign\\Template\\Window.template");
+static suic::String TEMPLATE_THEME_PATH = _U("resource\\uidesign\\Template\\theme.template");
 
 ImplementRTTIOfClass(Project, FilterNode)
 
@@ -993,11 +992,30 @@ ElementRootItem* Project::AddRootElement(FilterNode* pParent, const String& file
 {
     String strName = fileName + _U(".xaml");
     String strPath = pParent->GetFullPath() + strName;
-    String strOriPath = FileDir::CalculatePath(_U("resource\\uidesign\\Template\\Window.xaml"));
+    String strOriPath = FileDir::CalculatePath(TEMPLATE_WINDOW_PATH);
 
     FileDir::CopyFileTo(strOriPath, strPath, true);
 
     ElementRootItem* rootItem = new ElementRootItem(new DesignElement());
+
+    rootItem->SetFileName(strName);
+    pParent->AddItem(rootItem);
+
+    // 保存到备份目录
+    BackupRootItem(rootItem);
+
+    return rootItem;
+}
+
+ResourceDicRootItem* Project::AddResourceDicRootElement(FilterNode* pParent, const String& fileName)
+{
+    String strName = fileName + _U(".xaml");
+    String strPath = pParent->GetFullPath() + strName;
+    String strOriPath = FileDir::CalculatePath(TEMPLATE_THEME_PATH);
+
+    FileDir::CopyFileTo(strOriPath, strPath, true);
+
+    ResourceDicRootItem* rootItem = new ResourceDicRootItem();
 
     rootItem->SetFileName(strName);
     pParent->AddItem(rootItem);

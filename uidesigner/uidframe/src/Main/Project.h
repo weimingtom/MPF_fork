@@ -65,6 +65,8 @@ public:
     void SwitchToCurrent();
 
     ElementRootItem* AddRootElement(FilterNode* pParent, const String& fileName);
+    ResourceDicRootItem* AddResourceDicRootElement(FilterNode* pParent, const String& fileName);
+
     void RemoveRootElement(ElementRootItem* dmain);
 
     //ResNode* FindResItem(const String& strName);
