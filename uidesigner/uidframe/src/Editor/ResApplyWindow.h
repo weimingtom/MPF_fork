@@ -88,6 +88,7 @@ private:
     FileRootItem* _rootItem;
     suic::ListBox* _listBox;
     suic::ListBox* _listBoxApply;
+    ResourceDictionaryNode* _resDicNode;
 
 };
 

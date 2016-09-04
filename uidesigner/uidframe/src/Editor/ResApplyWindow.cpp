@@ -12,6 +12,7 @@ ResApplyWindow::ResApplyWindow(FileRootItem* rootItem)
     _rootItem = rootItem;
     _listBox = NULL;
     _listBoxApply = NULL;
+    _resDicNode = NULL;
 }
 
 ResApplyWindow::~ResApplyWindow()
@@ -59,24 +60,23 @@ bool ResApplyWindow::ExistResourceDicRootItem(ResourceDicRootItem* dicRootItem)
 
 void ResApplyWindow::InitAppliedResource()
 {
-    ResourceDictionaryNode* resDicNode = NULL;
     ElementRootItem* elemRootItem = suic::RTTICast<ElementRootItem>(_rootItem);
     if (NULL != elemRootItem)
     {
-        resDicNode = elemRootItem->GetRootElement()->GetResourceDictionary();
+        _resDicNode = elemRootItem->GetRootElement()->GetResourceDictionary();
     }
     else
     {
         ApplicationRootItem* appRootItem = suic::RTTICast<ApplicationRootItem>(_rootItem);
         if (NULL != appRootItem)
         {
-            resDicNode = appRootItem->GetApplicationNode()->GetResourceDictionary();
+            _resDicNode = appRootItem->GetApplicationNode()->GetResourceDictionary();
         }
     }
 
-    if (NULL != resDicNode)
+    if (NULL != _resDicNode)
     {
-        MergedDictionariesNode* mergedDic = resDicNode->GetMergedDictionariesNode();
+        MergedDictionariesNode* mergedDic = _resDicNode->GetMergedDictionariesNode();
         if (NULL != mergedDic)
         {
             for (int i = 0; i < mergedDic->GetCount(); ++i)
@@ -128,6 +128,25 @@ void ResApplyWindow::OnDownMoveButtonClick(suic::DpObject* sender, suic::RoutedE
 
 void ResApplyWindow::OnOkButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
 {
+    e->SetHandled(true);
+    MergedDictionariesNode* mergedDic = _resDicNode->GetMergedDictionariesNode();
+    if (NULL != mergedDic)
+    {
+        mergedDic->Clear();
+    }
+    suic::ItemCollection* itemColl = _listBoxApply->GetItemsSource();
+    for (int i = 0; i < itemColl->GetCount(); ++i)
+    {
+        ResApplyItem* resItem = dynamic_cast<ResApplyItem*>(itemColl->GetItem(i));
+        if (resItem->GetResourceDicRootItem() != NULL)
+        {
+            ResourceDictionaryNode* pResNode = new ResourceDictionaryNode();
+            pResNode->SetSourceResource(resItem->GetResourceDicRootItem());
+            _resDicNode->AddMergedDictionary(pResNode);
+        }
+    }
+    _rootItem->SetModified(true);
+    AsyncClose();
 }
 
 void ResApplyWindow::OnCancelButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)

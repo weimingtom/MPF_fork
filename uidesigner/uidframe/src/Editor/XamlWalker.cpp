@@ -911,7 +911,7 @@ bool XamlWalker::ReadResourceDictionaryFromUri(const suic::String& strSource, DR
         rootItem->SetLoaded();
 
         targetDic->SetSourceResource(resRootItem);
-        targetDic->SetResourceSourceUri(strSource);
+        //targetDic->SetResourceSourceUri(strSource);
         bSucc = true;
     }
 

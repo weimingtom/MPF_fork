@@ -280,15 +280,15 @@ void ResourceDictionaryNode::SetResourceDictionary(ResourceDictionary* res)
     SETREFOBJ(_value, res);
 }
 
-void ResourceDictionaryNode::SetResourceSourceUri(const String& strSource)
-{
-    _resSourceUri.Parse(strSource);
-}
-
-ResourceUri ResourceDictionaryNode::GetResourceSourceUri() const
-{
-    return _resSourceUri;
-}
+//void ResourceDictionaryNode::SetResourceSourceUri(const String& strSource)
+//{
+//    _resSourceUri.Parse(strSource);
+//}
+//
+//ResourceUri ResourceDictionaryNode::GetResourceSourceUri() const
+//{
+//    return _resSourceUri;
+//}
 
 ResourceDictionary* ResourceDictionaryNode::GetResourceDictionary() const
 {
@@ -423,10 +423,10 @@ bool ResourceDictionaryNode::IsOnlyResItem()
     }
 }
 
-ResourceUri* ResourceDictionaryNode::GetResPath()
-{
-    return (&_resSourceUri);
-}
+//ResourceUri* ResourceDictionaryNode::GetResPath()
+//{
+//    return (&_resSourceUri);
+//}
 
 String ResourceDictionaryNode::GetResItemsXml(const String& offset)
 {
@@ -445,7 +445,7 @@ void ResourceDictionaryNode::CloneNode(ResNodePtr& obj)
 
 void ResourceDictionaryNode::CloneResourceDic(ResourceDictionaryNode* pDicNode)
 {
-    pDicNode->_resSourceUri = _resSourceUri;
+    //pDicNode->_resSourceUri = _resSourceUri;
     SETREFOBJ(pDicNode->_value, _value);
 
     pDicNode->_mergedDics = NULL;
@@ -479,8 +479,10 @@ String ResourceDictionaryNode::GetResXml(const String& offset)
 
     if (_resSource != NULL)
     {
+        ResourceUri resUri = _resSource->GetResourceUri();
+
         strXml += offset + _U("<ResourceDictionary Source=\"");
-        strXml += _resSourceUri.ToString();
+        strXml += resUri.ToString();
 
         if (strChild.Empty())
         {

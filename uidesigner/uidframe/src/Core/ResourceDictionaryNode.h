@@ -33,7 +33,7 @@ public:
     bool IsOnlyResItem();
     String GetResItemsXml(const String& offset);
 
-    ResourceUri* GetResPath();
+    //ResourceUri* GetResPath();
 
     void ClearRes();
     void Clear();
@@ -41,9 +41,6 @@ public:
 
     ItemCollection* GetResourceCollection() const;
     ResourceCollectionNode* GetResourceCollectionNode() const;
-
-    void SetResourceSourceUri(const String& strSource);
-    ResourceUri GetResourceSourceUri() const;
 
     void SetResourceDictionary(ResourceDictionary* res);
     ResourceDictionary* GetResourceDictionary() const;
@@ -66,7 +63,6 @@ public:
 
 private:
 
-    ResourceUri _resSourceUri;
     ResourceDictionary* _value;
 
     MergedDictionariesNode* _mergedDics;
