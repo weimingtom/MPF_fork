@@ -11,6 +11,7 @@
 #include <tools/Utils.h>
 #include <System/Tools/EventHelper.h>
 
+#include <Editor/ResApplyWindow.h>
 #include <Editor/CreateStyleWindow.h>
 #include <Editor/ThemeEditorWindow.h>
 #include <Main/ImageSelectorWindow.h>
@@ -90,7 +91,9 @@ void PrjTreeMenu::Initialize(SlnTreeManager* stm, TreeView* tv)
         rootElem->AddItem(new RootItemCmd(this, _U("关闭")));
         rootElem->AddItem(new RootItemCmd(this, _U("删除")));
         rootElem->AddItem(new RootItemCmd(this, _U("重命名")));
+        
         rootElem->AddItem(new RootItemCmd(this, _U("设为启动")));
+        rootElem->AddItem(new RootItemCmd(this, _U("应用资源")));
 
         rootElem->AddItem(new suic::Separator());
         rootElem->AddItem(new RootItemCmd(this, _U("打开目录")));
@@ -338,10 +341,10 @@ bool RootItemCmd::CanExecute(Object* target, Object* parameter)
     return true;
 }
 
-void RootItemCmd::ApplyResourceTo(ResourceDicRootItem* resRoot)
+void RootItemCmd::ApplyResourceTo(FileRootItem* resRoot)
 {
-    CreateStyleWindow tempWnd(false);
-    const String strPath = "/mpfuid;/resource/uidesign/layout/Editor/CreateStyleWindow.xaml";
+    ResApplyWindow tempWnd(resRoot);
+    const String strPath = "/mpfuid;/resource/uidesign/layout/Editor/ApplyResWindow.xaml";
     tempWnd.setAutoDelete(false);
 
     if (0 == tempWnd.ShowDialog(strPath))
@@ -402,10 +405,10 @@ void RootItemCmd::Execute(Object* target, Object* parameter)
         }
         else if (_name.Equals(_U("应用资源")))
         {
-            ResourceDicRootItem* resRoot = suic::RTTICast<ResourceDicRootItem>(item);
+            FileRootItem* resRoot = suic::RTTICast<FileRootItem>(item);
             if (NULL != resRoot)
             {
-                //ApplyResourceTo(resRoot);
+                ApplyResourceTo(resRoot);
             }
         }
         else if (_name.Equals(_U("打开目录")))

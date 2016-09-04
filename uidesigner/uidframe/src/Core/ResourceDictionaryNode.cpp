@@ -85,6 +85,12 @@ void MergedDictionariesNode::AddMergedResource(ResourceDictionaryNode* mergedRes
     AddItem(mergedRes);
 }
 
+ResourceDictionaryNode* MergedDictionariesNode::GetResourceDictionaryNode(int index)
+{
+    ResourceDictionaryNode* pResDic = RTTICast<ResourceDictionaryNode>(GetItem(index));
+    return pResDic;
+}
+
 ResNode* MergedDictionariesNode::SearchResItem(const String& key)
 {
     ResNode* resNode = NULL;
@@ -364,6 +370,11 @@ bool ResourceDictionaryNode::ResInItemCollection(ItemCollection* itemColl, ResNo
         }
     }
     return bExist;
+}
+
+MergedDictionariesNode* ResourceDictionaryNode::GetMergedDictionariesNode()
+{
+    return _mergedDics;
 }
 
 void ResourceDictionaryNode::FillResByResType(ItemCollection* itemColl, RTTIOfInfo* targetType, ResNode* breakNode)

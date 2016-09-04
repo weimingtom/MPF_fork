@@ -64,6 +64,8 @@ public:
 
     void SwitchToCurrent();
 
+    void FindAllResourceDicRootItems(suic::Array<ResourceDicRootItem*>& resRootItems);
+
     ElementRootItem* AddRootElement(FilterNode* pParent, const String& fileName);
     ResourceDicRootItem* AddResourceDicRootElement(FilterNode* pParent, const String& fileName);
 
@@ -100,6 +102,7 @@ protected:
     void ReadThemeNodeFromDir();
 
     void CopyFilesUnderDir(const String& oriDir, const String& destDir, const String& fileExt, bool bFailIfExist);
+    void FindAllResourceDicRootItems(FilterNode* pParent, suic::Array<ResourceDicRootItem*>& resRootItems);
 
     bool ReadFilterFromDir(const String& strDir, const String& strExt, FilterNode* parent);
 

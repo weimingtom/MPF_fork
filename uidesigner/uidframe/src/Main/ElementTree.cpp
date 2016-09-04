@@ -259,22 +259,37 @@ void ProjectTree::OnContextMenu(ContextMenuEventArg* e)
     // .xml节点，需要读取
     else if (rootItem != NULL)
     {
-        if (!filterNode->GetRTTIType()->InheritFrom(ApplicationRootItem::RTTIType()))
+        bool bFromApp = filterNode->GetRTTIType()->InheritFrom(ApplicationRootItem::RTTIType());
+        if (1)
         {
             pMenu = _prjTreeMenu->rootElem;
+
+            RootItemCmd* pResItem = DynamicCast<RootItemCmd>(pMenu->GetItem(5));
             RootItemCmd* pItem = DynamicCast<RootItemCmd>(pMenu->GetItem(4));
             RootItemCmd* pDelItem = DynamicCast<RootItemCmd>(pMenu->GetItem(2));
 
             pDelItem->SetShowItem(true);
             pItem->SetEnabled(true);
 
+            pResItem->SetShowItem(bFromApp);
+
+            for (int i = 0; i < 5; ++i)
+            {
+                RootItemCmd* pRootItem = DynamicCast<RootItemCmd>(pMenu->GetItem(i));
+                if (NULL != pRootItem)
+                {
+                    pRootItem->SetShowItem(!bFromApp);
+                }
+            }
+
             ResourceDicRootItem* resRootItem = RTTICast<ResourceDicRootItem>(rootItem);
 
             // 这是资源，隐藏此菜单项
             if (resRootItem != NULL)
             {
-                pItem->SetName(_U("应用资源"));
+                //pItem->SetName(_U("应用资源"));
                 pDelItem->SetShowItem(false);
+                pItem->SetShowItem(false);
             }
             else
             {
@@ -282,6 +297,10 @@ void ProjectTree::OnContextMenu(ContextMenuEventArg* e)
                 if (NULL != elemRootItem)
                 {
                     pItem->SetEnabled(true);
+
+                    pItem->SetShowItem(true);
+                    pResItem->SetShowItem(true);
+
                     if (rootItem == rootItem->GetProject()->GetMainWindow())
                     {
                         pDelItem->SetShowItem(false);

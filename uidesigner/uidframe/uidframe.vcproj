@@ -547,6 +547,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Editor\ResApplyWindow.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Editor\ResApplyWindow.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Editor\ResSelectorWindow.cpp"
 					>
 				</File>

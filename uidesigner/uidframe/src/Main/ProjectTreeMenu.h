@@ -86,7 +86,7 @@ public:
     bool CanExecute(Object* target, Object* parameter);
     void Execute(Object* target, Object* parameter);
 
-    void ApplyResourceTo(ResourceDicRootItem* resRoot);
+    void ApplyResourceTo(FileRootItem* resRoot);
 
     String ToString();
 

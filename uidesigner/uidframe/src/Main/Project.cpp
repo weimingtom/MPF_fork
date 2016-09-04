@@ -988,6 +988,31 @@ RootItem* Project::FindRootItem(const String& strPath)
     }
 }*/
 
+void Project::FindAllResourceDicRootItems(suic::Array<ResourceDicRootItem*>& resRootItems)
+{
+    FindAllResourceDicRootItems(this, resRootItems);
+}
+
+void Project::FindAllResourceDicRootItems(FilterNode* pParent, suic::Array<ResourceDicRootItem*>& resRootItems)
+{
+    for (int i = 0; i < pParent->GetCount(); ++i)
+    {
+        FilterNode* filterNode = RTTICast<FilterNode>(pParent->GetItem(i));
+        if (NULL != filterNode)
+        {
+            ResourceDicRootItem* resRootItem = suic::RTTICast<ResourceDicRootItem>(filterNode);
+            if (NULL != resRootItem)
+            {
+                resRootItems.Add(resRootItem);
+            }
+            else
+            {
+                FindAllResourceDicRootItems(filterNode, resRootItems);
+            }
+        }
+    }
+}
+
 ElementRootItem* Project::AddRootElement(FilterNode* pParent, const String& fileName)
 {
     String strName = fileName + _U(".xaml");

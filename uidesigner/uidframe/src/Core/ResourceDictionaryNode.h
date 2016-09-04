@@ -58,6 +58,8 @@ public:
     void AddInternalresItem(ResNode* pResNode);
     ResNode* SearchResItem(const String& key);
 
+    MergedDictionariesNode* GetMergedDictionariesNode();
+
     void FillResByResType(ItemCollection* itemColl, RTTIOfInfo* targetType, ResNode* breakNode);
 
     static bool ResInItemCollection(ItemCollection* itemColl, ResNode* resItem);
@@ -92,6 +94,8 @@ public:
     String GetResXml(const String& offset);
     void AddMergedResource(ResourceDictionaryNode* mergedRes);
     ResNode* SearchResItem(const String& key);
+
+    ResourceDictionaryNode* GetResourceDictionaryNode(int index);
 
     void FillResByResType(ItemCollection* itemColl, RTTIOfInfo* targetType, ResNode* breakNode);
 };
