@@ -295,6 +295,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Core\HoldItem.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Core\HoldItem.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Core\IRedoUndo.h"
 					>
 				</File>
@@ -344,6 +352,14 @@
 				</File>
 				<File
 					RelativePath=".\src\Core\SetterNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Core\SingleUndefined.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Core\SingleUndefined.h"
 					>
 				</File>
 				<File

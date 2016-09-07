@@ -32,7 +32,7 @@ ResNode* SystemResource::FindResNode(const suic::String& strName)
 TemplateRootItem* SystemResource::FindControlTemplate(const suic::String& strType)
 {
     TemplateRootItem* tempRootItem = NULL;
-    suic::String strName = strType + _U("Template");
+    suic::String strName = _U("sys") + strType + _U("Template");
     tempRootItem = suic::RTTICast<TemplateRootItem>(FindResNode(strName));
 
     if (NULL == tempRootItem)
@@ -44,7 +44,17 @@ TemplateRootItem* SystemResource::FindControlTemplate(const suic::String& strTyp
             setterNode = styleNode->GetSetterCollection()->FindSetter(_U("Template"));
             if (NULL != setterNode)
             {
-                tempRootItem = suic::RTTICast<TemplateRootItem>(setterNode->GetResNode());
+                ResNode* resNode = setterNode->GetResNode();
+                ExtensionResNode* extResNode = suic::RTTICast<ExtensionResNode>(resNode);
+
+                if (NULL == extResNode || extResNode->GetResourceKey().Empty())
+                {
+                    tempRootItem = suic::RTTICast<TemplateRootItem>(resNode);
+                }
+                else
+                {
+                    tempRootItem = suic::RTTICast<TemplateRootItem>(FindResNode(extResNode->GetResourceKey()));
+                }
             }
         }
     }

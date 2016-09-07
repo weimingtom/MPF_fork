@@ -1986,7 +1986,7 @@ UserDesignElement::UserDesignElement()
 
 UserDesignElement::UserDesignElement(suic::IXamlNode* pNode)
 {
-    InitNode(pNode);
+    _holdItem.InitNode(pNode);
 }
 
 UserDesignElement::~UserDesignElement()
@@ -2001,7 +2001,7 @@ bool UserDesignElement::IsLocked() const
 
 suic::String UserDesignElement::GetTypeName()
 {
-    return _holdItem.name;
+    return _holdItem.GetName();
 }
 
 bool UserDesignElement::GetLockElement()
@@ -2024,7 +2024,7 @@ String UserDesignElement::ToString()
         if (elem->GetName().Empty())
         {
             strName = _U("[");
-            strName += _holdItem.name;
+            strName += _holdItem.GetName();
             strName += _U("]");
         }
         else
@@ -2047,57 +2047,11 @@ String UserDesignElement::ToString()
     }
 }
 
-void UserDesignElement::InitNode(suic::IXamlNode* pNode)
-{
-    pNode->Reset();
-    InitNode(&_holdItem, pNode);
-    //_holdItem.attrs.Clear();
-}
 
-void UserDesignElement::InitNode(HoldItem* pHold, suic::IXamlNode* pNode)
-{
-    pHold->name = pNode->GetName();
-    suic::IXamlAttris* pAttris = pNode->GetAttris();
-    if (NULL != pAttris)
-    {
-        while (pAttris->HasNext())
-        {
-            StringPair pair(pAttris->GetName(), pAttris->GetValue());
-            pHold->attrs.Add(pair);
-        }
-    }
-
-    while (pNode->HasNext())
-    {
-        suic::IXamlNode* childNode = pNode->Current();
-        if (NULL != childNode)
-        {
-            HoldItem* pChildItem = new HoldItem();
-
-            pHold->children.Add(pChildItem);
-            InitNode(pChildItem, childNode);
-        }
-    }
-}
 
 void UserDesignElement::Clear()
 {
-    for (int i = 0; i < _holdItem.children.GetCount(); ++i)
-    {
-        Clear(_holdItem.children.GetItem(i));
-    }
-
-    _holdItem.attrs.Clear();
-    _holdItem.children.Clear();
-}
-
-void UserDesignElement::Clear(HoldItem* pHold)
-{
-    for (int i = 0; i < pHold->children.GetCount(); ++i)
-    {
-        Clear(pHold->children.GetItem(i));
-    }
-    delete pHold;
+    _holdItem.Clear();
 }
 
 String UserDesignElement::GetResXml(const String& offset)
@@ -2106,23 +2060,19 @@ String UserDesignElement::GetResXml(const String& offset)
     String strProp;
     String strChildProp;
     String strXml = "";
+    String strItems = "";
 
-    strXml += offset + _U("<") + _holdItem.name;
+    strXml += offset + _U("<") + GetName();
     GetElementSetterXml(offset, iCurrSerial, strProp, strChildProp);
     strXml += _U(" ") + strProp;
 
-    if (_holdItem.children.GetCount() > 0)
+    strItems = _holdItem.GetResXml(offset);
+
+    if (!strItems.Empty())
     {
         strXml += _U(">\n");
-
-        String strChild;
-        for (int j = 0; j < _holdItem.children.GetCount(); ++j)
-        {
-            strChild += GetResXml(&_holdItem, offset);
-        }
-
-        strXml += strChild;
-        strXml += offset + _U("</") + _holdItem.name + _U(">");
+        strXml += strItems;
+        strXml += offset + _U("</") + GetName() + _U(">");
     }
     else
     {
@@ -2134,38 +2084,6 @@ String UserDesignElement::GetResXml(const String& offset)
     return strXml;
 }
 
-String UserDesignElement::GetResXml(HoldItem* pHold, const String& offset)
-{
-    String strXml;
-
-    strXml += offset + _U("<") + pHold->name;
-    for (int i = 0; i < pHold->attrs.GetCount(); ++i)
-    {
-        StringPair& pair = pHold->attrs.GetItem(i);
-        strXml += _U(" ") + pair.GetKey() + _U("=\"") + pair.GetValue() + _U("\"");
-    }
-
-    if (pHold->children.GetCount() > 0)
-    {
-        strXml += _U("\n");
-        
-        String strChild;
-        for (int j = 0; j < pHold->children.GetCount(); ++j)
-        {
-            String strTemp;
-            HoldItem* pChildHold = pHold->children.GetItem(j);
-            strTemp = GetResXml(pChildHold, offset + OFFSET1);
-            strChild += strTemp;
-            strChild += _U("\n");
-        }
-        strXml += _U("</") + pHold->name + _U(">\n");
-    }
-    else
-    {
-        strXml += _U(" />\n");
-    }
-    return strXml;
-}
 
 //====================================================
 // BaseRedoUndo

@@ -80,18 +80,6 @@ private:
     FILE* _f;
 };
 
-//struct ResPath
-//{
-//    suic::String resPath;
-//    // 资源ID
-//    suic::String resFlag;
-//    // 资源类型(res,res+,auto,file)
-//    suic::String resType;
-//
-//    void SetPath(const String& path);
-//    String GetXml(const String& resId);
-//};
-
 class ResNode : public XamlNodeItem
 {
 public:
@@ -155,6 +143,22 @@ public:
 private:
 
     suic::String _key;
+};
+
+class ResNodePool
+{
+public:
+
+    static ResNodePool* Ins();
+
+    ResNodePool();
+    ~ResNodePool();
+
+    bool FindResNode(suic::Object* val, ResNodePtr& obj);
+
+private:
+
+    suic::StringDic<suic::RTTIOfInfo*> _resNodes;
 };
 
 class NullResNode : public ResNode
@@ -234,8 +238,15 @@ public:
 
     virtual suic::String GetSingleXml();
     virtual suic::String GetResXml(const String& offset);
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
 };
 
+/**
+ * @brief String类型资源
+ *
+ */
 class StringResNode : public SingleResNode
 {
 public:
@@ -246,11 +257,177 @@ public:
     StringResNode(suic::OString* val);
     virtual ~StringResNode();
 
-    virtual suic::String GetSingleXml();
-    virtual suic::String GetResXml(const String& offset);
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
 };
 
-class BaseResNode : public SingleResNode
+/**
+ * @brief Integer类型资源
+ *
+ */
+class IntegerResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(IntegerResNode)
+
+    IntegerResNode();
+    IntegerResNode(suic::Integer* val);
+    virtual ~IntegerResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+/**
+ * @brief Integer类型资源
+ *
+ */
+class WHIntegerResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(WHIntegerResNode)
+
+    WHIntegerResNode();
+    WHIntegerResNode(suic::Integer* val);
+    virtual ~WHIntegerResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+/**
+ * @brief Double类型资源
+ *
+ */
+class DoubleResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(DoubleResNode)
+
+    DoubleResNode();
+    DoubleResNode(suic::OFloat* val);
+    virtual ~DoubleResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+/**
+ * @brief ORect类型资源
+ *
+ */
+class RectResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(RectResNode)
+
+    RectResNode();
+    RectResNode(suic::ORect* val);
+    virtual ~RectResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+/**
+ * @brief OSize类型资源
+ *
+ */
+class SizeResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(SizeResNode)
+
+    SizeResNode();
+    SizeResNode(suic::OSize* val);
+    virtual ~SizeResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+
+/**
+ * @brief OPoint类型资源
+ *
+ */
+class PointResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(PointResNode)
+
+    PointResNode();
+    PointResNode(suic::OPoint* val);
+    virtual ~PointResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+
+/**
+ * @brief OfRect类型资源
+ *
+ */
+class fRectResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(fRectResNode)
+
+    fRectResNode();
+    fRectResNode(suic::OfRect* val);
+    virtual ~fRectResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+/**
+ * @brief OfSize类型资源
+ *
+ */
+class fSizeResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(fSizeResNode)
+
+    fSizeResNode();
+    fSizeResNode(suic::OfSize* val);
+    virtual ~fSizeResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+
+/**
+ * @brief OfPoint类型资源
+ *
+ */
+class fPointResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(fPointResNode)
+
+    fPointResNode();
+    fPointResNode(suic::OfPoint* val);
+    virtual ~fPointResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+
+/*class BaseResNode : public SingleResNode
 {
 public:
 
@@ -262,7 +439,7 @@ public:
 
     virtual suic::String GetSingleXml();
     virtual suic::String GetResXml(const String& offset);
-};
+};*/
 
 class CursorResNode : public ResNode
 {
@@ -304,6 +481,8 @@ public:
 
     virtual suic::String GetSingleXml();
     virtual suic::String GetResXml(const String& offset);
+
+    suic::String GetResourceKey();
 
 protected:
 

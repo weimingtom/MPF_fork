@@ -9,6 +9,7 @@
 #ifndef _XAMLELEMENTNODE_H
 #define _XAMLELEMENTNODE_H
 
+#include <Core/HoldItem.h>
 #include <Core/SetterCollectionNode.h>
 #include <Core/TriggerCollectionNode.h>
 #include <Core/ResourceDictionaryNode.h>
@@ -283,17 +284,6 @@ protected:
     DesignElement* _thumb;
 };
 
-typedef suic::KeyValuePair<suic::String, suic::String> StringPair;
-
-class HoldItem
-{
-public:
-
-    suic::String name;
-    suic::Array<StringPair> attrs;
-    suic::Array<HoldItem*> children;
-};
-
 /// <Summary>
 ///  处理用户自定义节点（这种情况主要是用户没有把自定义控件注册到设计器中）
 /// </Summary>
@@ -322,11 +312,6 @@ public:
 protected:
 
     void Clear();
-    void Clear(HoldItem* pHold);
-    void InitNode(suic::IXamlNode* pNode);
-    void InitNode(HoldItem* pHold, suic::IXamlNode* pNode);
-    String GetResXml(HoldItem* pHold, const String& offset);
-
     String GetResXml(const String& offset);
 
 private:

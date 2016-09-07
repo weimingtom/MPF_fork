@@ -15,7 +15,17 @@ ImplementRTTIOfClass(NullResNode, ResNode)
 ImplementRTTIOfClass(ResValueNode, ResNode)
 ImplementRTTIOfClass(SingleResNode, ResNode)
 ImplementRTTIOfClass(StringResNode, SingleResNode)
-ImplementRTTIOfClass(BaseResNode, SingleResNode)
+
+ImplementRTTIOfClass(IntegerResNode, SingleResNode)
+ImplementRTTIOfClass(WHIntegerResNode, SingleResNode)
+ImplementRTTIOfClass(DoubleResNode, SingleResNode)
+ImplementRTTIOfClass(RectResNode, SingleResNode)
+ImplementRTTIOfClass(SizeResNode, SingleResNode)
+ImplementRTTIOfClass(PointResNode, SingleResNode)
+ImplementRTTIOfClass(fRectResNode, SingleResNode)
+ImplementRTTIOfClass(fSizeResNode, SingleResNode)
+ImplementRTTIOfClass(fPointResNode, SingleResNode)
+
 ImplementRTTIOfClass(CursorResNode, ResNode)
 ImplementRTTIOfClass(ExtensionResNode, ResNode)
 ImplementRTTIOfClass(BrushResNode, ResNode)
@@ -33,6 +43,37 @@ String ResNode::OFFSET2 = _U("        ");
 String ResNode::OFFSET3 = _U("            ");
 
 NullResNode* NullResNode::Value = new NullResNode();
+
+ResNodePool* ResNodePool::Ins()
+{
+    static ResNodePool _ins;
+    return &_ins;
+}
+
+ResNodePool::ResNodePool()
+{
+    _resNodes.Add(_U("GridView"), GridViewResNode::RTTIType());
+    _resNodes.Add(suic::OString::RTTIName(), StringResNode::RTTIType());
+}
+
+ResNodePool::~ResNodePool()
+{
+}
+
+bool ResNodePool::FindResNode(suic::Object* val, ResNodePtr& obj)
+{
+    suic::RTTIOfInfo* rttiInfo = NULL;
+    if (_resNodes.TryGetValue(val->GetRTTIType()->typeName, rttiInfo))
+    {
+        obj = rttiInfo->Create();
+        obj->SetValue(val);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
 {
@@ -148,12 +189,8 @@ SingleResNode::~SingleResNode()
 {
 }
 
-suic::String SingleResNode::GetSingleXml()
+suic::String SingleResNode::GetFormatValue()
 {
-    if (NULL == GetValue())
-    {
-        return suic::String();
-    }
     suic::OfRect* fObj = RTTICast<suic::OfRect>(GetValue());
     if (NULL != fObj)
     {
@@ -172,8 +209,38 @@ suic::String SingleResNode::GetSingleXml()
     {
         return suic::String().Format(_U("%g"), flObj->ToFloat());
     }
+    return suic::String();
+}
 
-    return GetValue()->ToString();
+suic::String SingleResNode::GetNodeName()
+{
+    suic::String strNodeName;
+
+    if (NULL != GetValue())
+    {
+        strNodeName = _U("sys:");
+        strNodeName += GetValue()->GetRTTIType()->typeName;
+    }
+    return strNodeName;
+}
+
+suic::String SingleResNode::GetSingleXml()
+{
+    suic::String strVal;
+
+    if (NULL == GetValue())
+    {
+        return strVal;
+    }
+
+    strVal = GetFormatValue();
+
+    if (strVal.Empty())
+    {
+        strVal = GetValue()->ToString();
+    }
+
+    return strVal;
 }
 
 suic::String SingleResNode::GetResXml(const String& offset)
@@ -183,8 +250,7 @@ suic::String SingleResNode::GetResXml(const String& offset)
     
     if (NULL != GetValue())
     {
-        strTypeName = _U("sys:");
-        strTypeName += GetValue()->GetRTTIType()->typeName;
+        strTypeName = GetNodeName();
 
         strXml = offset + _U("<");
         strXml += strTypeName;
@@ -225,42 +291,336 @@ StringResNode::~StringResNode()
 
 }
 
-suic::String StringResNode::GetSingleXml()
+suic::String StringResNode::GetFormatValue()
 {
+    suic::String strVal;
     if (NULL != GetValue())
     {
-        return GetValue()->ToString();
+        strVal = GetValue()->ToString();
     }
-    return suic::String();
+    return strVal;
 }
 
-suic::String StringResNode::GetResXml(const String& offset)
+suic::String StringResNode::GetNodeName()
 {
-    suic::String strXml;
+    return _U("sys:String");
+}
 
+//====================================================
+// IntegerResNode
+
+IntegerResNode::IntegerResNode()
+{
+}
+
+IntegerResNode::IntegerResNode(suic::Integer* val)
+    : SingleResNode(val)
+{
+
+}
+
+IntegerResNode::~IntegerResNode()
+{
+
+}
+
+suic::String IntegerResNode::GetFormatValue()
+{
+    suic::String strVal;
     if (NULL != GetValue())
     {
-        strXml = offset + _U("<sys:String ");
+        strVal = GetValue()->ToString();
+    }
+    return strVal;
+}
 
-        if (!GetKey().Empty())
+suic::String IntegerResNode::GetNodeName()
+{
+    return _U("sys:Int32");
+}
+
+//====================================================
+// WHIntegerResNode
+
+WHIntegerResNode::WHIntegerResNode()
+{
+}
+
+WHIntegerResNode::WHIntegerResNode(suic::Integer* val)
+    : SingleResNode(val)
+{
+
+}
+
+WHIntegerResNode::~WHIntegerResNode()
+{
+
+}
+
+suic::String WHIntegerResNode::GetFormatValue()
+{
+    suic::String strVal;
+    if (NULL != GetValue())
+    {
+        int iVal = GetValue()->ToInt();
+        if (iVal < 0)
         {
-            strXml += _U("x:Key=\"");
-            strXml += GetKey();
-            strXml += _U("\"");
+            strVal = _U("Auto");
         }
+        else
+        {
+            strVal = GetValue()->ToString();
+        }
+    }
+    return strVal;
+}
 
-        strXml += _U(">");
-        strXml += GetValue()->ToString();
-        strXml += _U("</sys:String>\n");
-    }   
+suic::String WHIntegerResNode::GetNodeName()
+{
+    return _U("sys:Int32");
+}
 
-    return strXml;
+//====================================================
+// DoubleResNode
+
+DoubleResNode::DoubleResNode()
+{
+}
+
+DoubleResNode::DoubleResNode(suic::OFloat* val)
+    : SingleResNode(val)
+{
+
+}
+
+DoubleResNode::~DoubleResNode()
+{
+
+}
+
+suic::String DoubleResNode::GetFormatValue()
+{
+    suic::String strVal;
+    if (NULL != GetValue())
+    {
+        strVal.Format(_U("%g"), GetValue()->ToFloat());
+    }
+    return strVal;
+}
+
+suic::String DoubleResNode::GetNodeName()
+{
+    return _U("sys:Float");
+}
+
+//====================================================
+// RectResNode
+
+RectResNode::RectResNode()
+{
+}
+
+RectResNode::RectResNode(suic::ORect* val)
+    : SingleResNode(val)
+{
+
+}
+
+RectResNode::~RectResNode()
+{
+
+}
+
+suic::String RectResNode::GetFormatValue()
+{
+    suic::String strVal;
+    suic::ORect* oRect = dynamic_cast<suic::ORect*>(GetValue());
+    if (NULL != oRect)
+    {
+        strVal = oRect->ToString();
+    }
+    return strVal;
+}
+
+suic::String RectResNode::GetNodeName()
+{
+    return _U("sys:Rect");
+}
+
+//====================================================
+// SizeResNode
+
+SizeResNode::SizeResNode()
+{
+}
+
+SizeResNode::SizeResNode(suic::OSize* val)
+    : SingleResNode(val)
+{
+
+}
+
+SizeResNode::~SizeResNode()
+{
+
+}
+
+suic::String SizeResNode::GetFormatValue()
+{
+    suic::String strVal;
+    suic::OSize* oSize = dynamic_cast<suic::OSize*>(GetValue());
+    if (NULL != oSize)
+    {
+        strVal = oSize->ToString();
+    }
+    return strVal;
+}
+
+suic::String SizeResNode::GetNodeName()
+{
+    return _U("sys:Size");
+}
+
+//====================================================
+// PointResNode
+
+PointResNode::PointResNode()
+{
+}
+
+PointResNode::PointResNode(suic::OPoint* val)
+    : SingleResNode(val)
+{
+
+}
+
+PointResNode::~PointResNode()
+{
+
+}
+
+suic::String PointResNode::GetFormatValue()
+{
+    suic::String strVal;
+    suic::OPoint* oPoint = dynamic_cast<suic::OPoint*>(GetValue());
+    if (NULL != oPoint)
+    {
+        strVal = oPoint->ToString();
+    }
+    return strVal;
+}
+
+suic::String PointResNode::GetNodeName()
+{
+    return _U("sys:Point");
+}
+
+//====================================================
+// fRectResNode
+
+fRectResNode::fRectResNode()
+{
+}
+
+fRectResNode::fRectResNode(suic::OfRect* val)
+    : SingleResNode(val)
+{
+
+}
+
+fRectResNode::~fRectResNode()
+{
+
+}
+
+suic::String fRectResNode::GetFormatValue()
+{
+    suic::String strVal;
+    suic::OfRect* oRect = dynamic_cast<suic::OfRect*>(GetValue());
+    if (NULL != oRect)
+    {
+        strVal = oRect->ToString();
+    }
+    return strVal;
+}
+
+suic::String fRectResNode::GetNodeName()
+{
+    return _U("sys:fRect");
+}
+
+//====================================================
+// fSizeResNode
+
+fSizeResNode::fSizeResNode()
+{
+}
+
+fSizeResNode::fSizeResNode(suic::OfSize* val)
+    : SingleResNode(val)
+{
+
+}
+
+fSizeResNode::~fSizeResNode()
+{
+
+}
+
+suic::String fSizeResNode::GetFormatValue()
+{
+    suic::String strVal;
+    suic::OfSize* oSize = dynamic_cast<suic::OfSize*>(GetValue());
+    if (NULL != oSize)
+    {
+        strVal = oSize->ToString();
+    }
+    return strVal;
+}
+
+suic::String fSizeResNode::GetNodeName()
+{
+    return _U("sys:fSize");
+}
+
+//====================================================
+// fPointResNode
+
+fPointResNode::fPointResNode()
+{
+}
+
+fPointResNode::fPointResNode(suic::OfPoint* val)
+    : SingleResNode(val)
+{
+
+}
+
+fPointResNode::~fPointResNode()
+{
+
+}
+
+suic::String fPointResNode::GetFormatValue()
+{
+    suic::String strVal;
+    suic::OfPoint* oPoint = dynamic_cast<suic::OfPoint*>(GetValue());
+    if (NULL != oPoint)
+    {
+        strVal = oPoint->ToString();
+    }
+    return strVal;
+}
+
+suic::String fPointResNode::GetNodeName()
+{
+    return _U("sys:fPoint");
 }
 
 //====================================================
 // BaseResNode
 
-BaseResNode::BaseResNode()
+/*BaseResNode::BaseResNode()
 {
 }
 
@@ -300,7 +660,7 @@ suic::String BaseResNode::GetResXml(const String& offset)
     strXml += _U(" />\n");
 
     return strXml;
-}
+}*/
 
 //================================================
 // CursorResNode
@@ -669,6 +1029,23 @@ suic::String ExtensionResNode::GetSingleXml()
 suic::String ExtensionResNode::GetResXml(const String& offset)
 {
     return suic::String();
+}
+
+suic::String ExtensionResNode::GetResourceKey()
+{
+    suic::SRExtension* staticRes = suic::RTTICast<suic::SRExtension>(GetValue());
+    if (NULL != staticRes)
+    {
+        return staticRes->GetResourceKey();
+    }
+
+    suic::DRExtension* dynamicRes = suic::RTTICast<suic::DRExtension>(GetValue());
+    if (NULL != dynamicRes)
+    {
+        return dynamicRes->GetResourceKey();
+    }
+
+    return _U("");
 }
 
 //================================================
