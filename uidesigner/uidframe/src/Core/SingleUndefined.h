@@ -83,6 +83,8 @@ public:
     RTTIOfClass(SingleUndefinedResNode)
 
     SingleUndefinedResNode();
+    SingleUndefinedResNode(SingleUndefined* val);
+
     virtual ~SingleUndefinedResNode();
 
     virtual void CloneNode(ResNodePtr& obj);
@@ -105,6 +107,8 @@ public:
     RTTIOfClass(NodeUndefinedResNode)
 
     NodeUndefinedResNode();
+    NodeUndefinedResNode(NodeUndefined* val);
+
     virtual ~NodeUndefinedResNode();
 
     virtual void CloneNode(ResNodePtr& obj);

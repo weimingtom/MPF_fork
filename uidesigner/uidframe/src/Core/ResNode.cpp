@@ -4,6 +4,7 @@
 #include <Core/ResNode.h>
 #include <Core/TypeManager.h>
 #include <Core/XamlElementNode.h>
+#include <Core/SingleUndefined.h>
 
 #include <System/Resources/StaticResource.h>
 #include <System/Resources/DynamicResource.h>
@@ -29,7 +30,6 @@ ImplementRTTIOfClass(fPointResNode, SingleResNode)
 ImplementRTTIOfClass(CursorResNode, ResNode)
 ImplementRTTIOfClass(ExtensionResNode, ResNode)
 ImplementRTTIOfClass(BrushResNode, ResNode)
-ImplementRTTIOfClass(SourceResNode, ResNode)
 ImplementRTTIOfClass(ImageSourceResNode, ResNode)
 
 ImplementRTTIOfClass(TransformResNode, ResNode)
@@ -52,8 +52,30 @@ ResNodePool* ResNodePool::Ins()
 
 ResNodePool::ResNodePool()
 {
-    _resNodes.Add(_U("GridView"), GridViewResNode::RTTIType());
-    _resNodes.Add(suic::OString::RTTIName(), StringResNode::RTTIType());
+    _resNodes.Add(suic::GridView::RTTIType(), GridViewResNode::RTTIType());
+
+    _resNodes.Add(suic::OString::RTTIType(), StringResNode::RTTIType());
+    _resNodes.Add(suic::ORect::RTTIType(), RectResNode::RTTIType());
+    _resNodes.Add(suic::OSize::RTTIType(), SizeResNode::RTTIType());
+    _resNodes.Add(suic::OPoint::RTTIType(), PointResNode::RTTIType());
+    _resNodes.Add(suic::OfRect::RTTIType(), fRectResNode::RTTIType());
+    _resNodes.Add(suic::OfSize::RTTIType(), fSizeResNode::RTTIType());
+    _resNodes.Add(suic::OfPoint::RTTIType(), fPointResNode::RTTIType());
+
+    _resNodes.Add(suic::ImageBrush::RTTIType(), ImageBrushResNode::RTTIType());
+    _resNodes.Add(suic::SolidColorBrush::RTTIType(), SolidColorBrushResNode::RTTIType());
+    
+   
+    _resNodes.Add(suic::LinearGradientBrush::RTTIType(), LinearGradientBrushResNode::RTTIType());
+    _resNodes.Add(suic::RadialGradientBrush::RTTIType(), RadialGradientBrushResNode::RTTIType());
+    _resNodes.Add(suic::Extension::RTTIType(), ExtensionResNode::RTTIType());
+    _resNodes.Add(suic::OCursor::RTTIType(), CursorResNode::RTTIType());
+
+    _resNodes.Add(suic::ImageSource::RTTIType(), ImageSourceResNode::RTTIType());
+    _resNodes.Add(suic::Transform::RTTIType(), CursorResNode::RTTIType());
+    _resNodes.Add(NodeUndefined::RTTIType(), NodeUndefinedResNode::RTTIType());
+    _resNodes.Add(SingleUndefined::RTTIType(), SingleUndefinedResNode::RTTIType());
+    
 }
 
 ResNodePool::~ResNodePool()
@@ -63,16 +85,18 @@ ResNodePool::~ResNodePool()
 bool ResNodePool::FindResNode(suic::Object* val, ResNodePtr& obj)
 {
     suic::RTTIOfInfo* rttiInfo = NULL;
-    if (_resNodes.TryGetValue(val->GetRTTIType()->typeName, rttiInfo))
+    suic::RTTIOfInfo* rttiTmp = val->GetRTTIType();
+    while (rttiTmp != NULL)
     {
-        obj = rttiInfo->Create();
-        obj->SetValue(val);
-        return true;
+        if (_resNodes.TryGetValue(rttiTmp, rttiInfo))
+        {
+            obj = rttiInfo->Create();
+            obj->SetValue(val);
+            return true;
+        }
+        rttiTmp = rttiTmp->BaseType();
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
@@ -107,7 +131,7 @@ ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
     }
     else if (suic::RTTICast<ImageSource>(val))
     {
-        obj = new SourceResNode((suic::ImageSource*)(val));
+        obj = new ImageSourceResNode((suic::ImageSource*)(val));
     }
     else if (suic::RTTICast<OString>(val))
     {
@@ -116,6 +140,14 @@ ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
     else if (suic::RTTICast<suic::Transform>(val))
     {
         obj = new TransformResNode((suic::Transform*)(val));
+    }
+    else if (suic::RTTICast<NodeUndefined>(val))
+    {
+        obj = new NodeUndefinedResNode((NodeUndefined*)(val));
+    }
+    else if (suic::RTTICast<SingleUndefined>(val))
+    {
+        obj = new SingleUndefinedResNode((SingleUndefined*)(val));
     }
     else if (suic::RTTICast<ResNode>(val))
     {
@@ -813,7 +845,15 @@ bool ExtensionResNode::IsSingleValue()
 
 void ExtensionResNode::SetValue(suic::Object* val)
 {
+    if (NULL != val)
+    {
+        val->ref();
+    }
     SETREFOBJ(_value, suic::RTTICast<suic::Extension>(val));
+    if (NULL != val)
+    {
+        val->unref();
+    }
 }
 
 suic::Object* ExtensionResNode::GetValue()
@@ -1636,52 +1676,52 @@ suic::String ImageBrushResNode::GetResXml(const String& offset)
 
 //==========================================
 
-SourceResNode::SourceResNode()
+ImageSourceResNode::ImageSourceResNode()
 {
     _source = NULL;
 }
 
-SourceResNode::SourceResNode(suic::ImageSource* val)
+ImageSourceResNode::ImageSourceResNode(suic::ImageSource* val)
 {
     _source = val;
     ADDREFOBJ(_source);
 }
 
-SourceResNode::~SourceResNode()
+ImageSourceResNode::~ImageSourceResNode()
 {
     FREEREFOBJ(_source);
 }
 
-void SourceResNode::CloneNode(ResNodePtr& obj)
+void ImageSourceResNode::CloneNode(ResNodePtr& obj)
 {
     if (NULL != _source)
     {
         suic::ImageSource* src = new suic::ImageSource();
         src->SetUri(_source->GetUri());
-        obj = new SourceResNode(src);
+        obj = new ImageSourceResNode(src);
     }
     else
     {
-        obj = new SourceResNode();
+        obj = new ImageSourceResNode();
     }
 }
 
-bool SourceResNode::IsSingleValue()
+bool ImageSourceResNode::IsSingleValue()
 {
     return true;
 }
 
-suic::Object* SourceResNode::GetValue()
+suic::Object* ImageSourceResNode::GetValue()
 {
     return _source;
 }
 
-void SourceResNode::SetValue(suic::Object* val)
+void ImageSourceResNode::SetValue(suic::Object* val)
 {
 
 }
 
-suic::String SourceResNode::GetSingleXml()
+suic::String ImageSourceResNode::GetSingleXml()
 {
     if (NULL != _source)
     {
@@ -1690,7 +1730,7 @@ suic::String SourceResNode::GetSingleXml()
     return suic::String();
 }
 
-suic::String SourceResNode::GetResXml(const String& offset)
+suic::String ImageSourceResNode::GetResXml(const String& offset)
 {
     suic::String strXml;
     strXml = offset + _U("<ImageSource x:Key=\"");
@@ -1708,7 +1748,7 @@ suic::String SourceResNode::GetResXml(const String& offset)
     return strXml;
 }
 
-ImageSource* SourceResNode::GetImageSource()
+ImageSource* ImageSourceResNode::GetImageSource()
 {
     if (NULL == _source)
     {
@@ -1718,95 +1758,16 @@ ImageSource* SourceResNode::GetImageSource()
     return _source;
 }
 
-void SourceResNode::ParseResPath(const String& path)
+void ImageSourceResNode::ParseResPath(const String& path)
 {
     GetImageSource()->SetUri(path);
 }
 
-void SourceResNode::SetResPath(const String& comp, const String& path)
+void ImageSourceResNode::SetResPath(const String& comp, const String& path)
 {
     ResourceUri uri;
     
     uri.SetComponent(comp);
     uri.SetResourcePath(path);
     GetImageSource()->SetUri(uri);
-}
-
-//===================================================================
-// ImageSourceResNode
-
-ImageSourceResNode::ImageSourceResNode()
-{
-    _value = NULL;
-}
-
-ImageSourceResNode::ImageSourceResNode(suic::ImageSource* val, const suic::String& strVal)
-{
-    _value = val;
-    if (_value != NULL)
-    {
-        _value->ref();
-    }
-    _resPath.Parse(strVal);
-}
-
-ImageSourceResNode::~ImageSourceResNode()
-{
-
-}
-
-bool ImageSourceResNode::IsSingleValue()
-{
-    return true;
-}
-
-void ImageSourceResNode::SetValue(suic::Object* val)
-{
-    if (val != NULL)
-    {
-        val->ref();
-    }
-
-    if (_value != NULL)
-    {
-        _value->unref();
-    }
-
-    _value = RTTICast<suic::ImageSource>(val);
-
-    if (_value != NULL)
-    {
-        _value->ref();
-    }
-
-    if (val != NULL)
-    {
-        val->unref();
-    }
-}
-
-suic::Object* ImageSourceResNode::GetValue()
-{
-    return _value;
-}
-
-suic::String ImageSourceResNode::GetSingleXml()
-{
-    suic::String strXml;
-
-    return strXml;
-}
-
-suic::String ImageSourceResNode::GetResXml(const String& offset)
-{
-    suic::String strXml;
-    
-    strXml = offset;
-    strXml += _U("<ImageSource x:Key=\"");
-    strXml += GetKey();
-    strXml += _U("\" Source=\"");
-    strXml += _resPath.ToString();
-    strXml += _U("\" />\n");
-
-    return strXml;
 }

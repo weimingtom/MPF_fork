@@ -158,7 +158,7 @@ public:
 
 private:
 
-    suic::StringDic<suic::RTTIOfInfo*> _resNodes;
+    suic::PointerDic<suic::RTTIOfInfo*, suic::RTTIOfInfo*> _resNodes;
 };
 
 class NullResNode : public ResNode
@@ -426,21 +426,6 @@ public:
     virtual suic::String GetFormatValue();
 };
 
-
-/*class BaseResNode : public SingleResNode
-{
-public:
-
-    RTTIOfClass(BaseResNode)
-
-    BaseResNode();
-    BaseResNode(suic::Object* val);
-    virtual ~BaseResNode();
-
-    virtual suic::String GetSingleXml();
-    virtual suic::String GetResXml(const String& offset);
-};*/
-
 class CursorResNode : public ResNode
 {
 public:
@@ -634,15 +619,15 @@ private:
     suic::ResourceUri _resPath;
 };
 
-class SourceResNode : public ResNode
+class ImageSourceResNode : public ResNode
 {
 public:
 
-    RTTIOfClass(SourceResNode)
+    RTTIOfClass(ImageSourceResNode)
 
-    SourceResNode();
-    SourceResNode(suic::ImageSource* val);
-    virtual ~SourceResNode();
+    ImageSourceResNode();
+    ImageSourceResNode(suic::ImageSource* val);
+    virtual ~ImageSourceResNode();
 
     virtual void CloneNode(ResNodePtr& obj);
 
@@ -659,30 +644,6 @@ public:
 private:
 
     suic::ImageSource* _source;
-};
-
-class ImageSourceResNode : public ResNode
-{
-public:
-
-    RTTIOfClass(ImageSourceResNode)
-
-    ImageSourceResNode();
-    ImageSourceResNode(suic::ImageSource* val, const suic::String& strVal);
-
-    virtual ~ImageSourceResNode();
-
-    virtual bool IsSingleValue();
-    virtual void SetValue(suic::Object* val);
-    virtual suic::Object* GetValue();
-
-    virtual suic::String GetSingleXml();
-    virtual suic::String GetResXml(const String& offset);
-
-private:
-
-    suic::ImageSource* _value;
-    suic::ResourceUri _resPath;
 };
 
 #endif

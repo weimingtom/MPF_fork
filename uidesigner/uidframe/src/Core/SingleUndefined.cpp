@@ -19,6 +19,15 @@ SingleUndefinedResNode::SingleUndefinedResNode()
     _value = NULL;
 }
 
+SingleUndefinedResNode::SingleUndefinedResNode(SingleUndefined* val)
+{
+    _value = val;
+    if (NULL != _value)
+    {
+        _value->ref();
+    }
+}
+
 SingleUndefinedResNode::~SingleUndefinedResNode()
 {
     FREEREFOBJ(_value)
@@ -70,6 +79,12 @@ suic::String SingleUndefinedResNode::GetResXml(const String& offset)
 NodeUndefinedResNode::NodeUndefinedResNode()
 {
     _value = new NodeUndefined();
+    _value->ref();
+}
+
+NodeUndefinedResNode::NodeUndefinedResNode(NodeUndefined* val)
+{
+    _value = val;
     _value->ref();
 }
 

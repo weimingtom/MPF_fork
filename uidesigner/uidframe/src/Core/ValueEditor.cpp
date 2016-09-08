@@ -3114,7 +3114,7 @@ void SourceSetterEditor::UpateSource()
     SetterNode* pSetter = GetSetterNode(false);
     if (NULL != pSetter && NULL != _info)
     {
-        SourceResNode* sourceRes = RTTICast<SourceResNode>(pSetter->GetResNode());
+        ImageSourceResNode* sourceRes = RTTICast<ImageSourceResNode>(pSetter->GetResNode());
         if (NULL != sourceRes)
         {
             _info->SetText(sourceRes->GetImageSource()->GetUri().ToString());
@@ -3151,10 +3151,10 @@ void SourceSetterEditor::OnEditClick()
     if (!imgSource.Empty())
     {
         SetterNode* pSetter = GetSetterNode(true);
-        SourceResNode* sourceRes = RTTICast<SourceResNode>(pSetter->GetResNode());
+        ImageSourceResNode* sourceRes = RTTICast<ImageSourceResNode>(pSetter->GetResNode());
         if (NULL == sourceRes)
         {
-            sourceRes = new SourceResNode(NULL);
+            sourceRes = new ImageSourceResNode(NULL);
             pSetter->SetResNode(sourceRes);
         }
 
