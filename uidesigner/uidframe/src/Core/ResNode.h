@@ -154,7 +154,7 @@ public:
     ResNodePool();
     ~ResNodePool();
 
-    bool FindResNode(suic::Object* val, ResNodePtr& obj);
+    bool CreateResNode(suic::DpProperty* dp, suic::Object* val, ResNodePtr& obj);
 
 private:
 
@@ -310,6 +310,24 @@ public:
     DoubleResNode();
     DoubleResNode(suic::OFloat* val);
     virtual ~DoubleResNode();
+
+    virtual suic::String GetNodeName();
+    virtual suic::String GetFormatValue();
+};
+
+/**
+ * @brief Boolean类型资源
+ *
+ */
+class BooleanResNode : public SingleResNode
+{
+public:
+
+    RTTIOfClass(BooleanResNode)
+
+    BooleanResNode();
+    BooleanResNode(suic::Boolean* val);
+    virtual ~BooleanResNode();
 
     virtual suic::String GetNodeName();
     virtual suic::String GetFormatValue();
@@ -541,6 +559,7 @@ public:
     RTTIOfClass(TransformResNode)
 
     virtual bool IsSingleValue();
+    virtual void SetValue(suic::Object* val);
 
     virtual suic::String GetSingleXml();
     virtual suic::String GetResXml(const String& offset);

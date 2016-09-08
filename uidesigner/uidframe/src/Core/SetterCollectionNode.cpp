@@ -96,16 +96,7 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
         strPropName = pSetter->GetName();
         dp = pSetter->GetProperty();
 
-        if (dp == NULL)
-        {
-            strSetter += strPropName;
-            strSetter += _U("\" Value=\"");
-            strSetter += pSetter->GetValue()->ToString();
-            strSetter += _U("\" />\n");
-            strXml += strSetterXml;
-            continue;
-        }
-        else if (dp == suic::Element::NameProperty)
+        if (dp == suic::Element::NameProperty)
         {
             suic::String tmpName = pSetter->GetValue()->ToString();
             tmpName.Trim();
@@ -115,23 +106,27 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
             }
         }
 
-        propMeta = dp->GetMetadata(ownerType);
-
-        if (NULL == propMeta)
-        {
-            propMeta = dp->GetDefaultMetadata();
-        }
-
         ResNode* resNode = pSetter->GetResNode();
-        int iDotPos = strPropName.IndexOf(_U("."));
 
-        if (iDotPos == -1 && 
-            dp->IsAttached() && 
-            !ownerType->InheritFrom(dp->GetOwnerType()) && 
-            !ownerType->InheritFrom(propMeta->GetType()))
+        if (dp != NULL)
         {
-            strSetter += dp->GetOwnerType()->typeName;
-            strSetter += _U(".");
+            propMeta = dp->GetMetadata(ownerType);
+
+            if (NULL == propMeta)
+            {
+                propMeta = dp->GetDefaultMetadata();
+            }
+
+            int iDotPos = strPropName.IndexOf(_U("."));
+
+            if (iDotPos == -1 && 
+                dp->IsAttached() && 
+                !ownerType->InheritFrom(dp->GetOwnerType()) && 
+                !ownerType->InheritFrom(propMeta->GetType()))
+            {
+                strSetter += dp->GetOwnerType()->typeName;
+                strSetter += _U(".");
+            }
         }
 
         strSetter += strPropName;

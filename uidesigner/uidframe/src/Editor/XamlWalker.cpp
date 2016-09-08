@@ -1036,6 +1036,7 @@ void XamlWalker::ReadSetter(suic::RTTIOfInfo* targetType, suic::FrameworkElement
     suic::String strTargetName = pNode->FindAttri(VisualState::lbTargetName);
     suic::DpProperty* dp = NULL;
     suic::Setter* pSetter = NULL;
+    DResourceItem resSetter;
 
     strTargetName.Trim();
 
@@ -1049,7 +1050,6 @@ void XamlWalker::ReadSetter(suic::RTTIOfInfo* targetType, suic::FrameworkElement
 
     if (NULL != dp)
     {
-        DResourceItem resSetter;
         if (pNode->HasNext())
         {
             IXamlNode* pSetterValue = pNode->Current();
@@ -1063,49 +1063,36 @@ void XamlWalker::ReadSetter(suic::RTTIOfInfo* targetType, suic::FrameworkElement
                     pSetter = new suic::Setter();
                     pSetter->SetValue(resSetter.resItem.res.get());
                 }
-                else
-                {
-                    // 属性没有读取成功，按未定义处理
-                    NodeUndefined* undefinedNode = new NodeUndefined(resNode);
-                    resSetter.resItem.res = undefinedNode;
-                }
             }
         }
         else
         {
             ObjectPtr resVal;
-            ResourceItem resItem;
             suic::String strVal = pNode->FindAttri(VisualState::lbValue);
-            ResourceParserOp::ReadResource(NULL == ft ? NULL : targetType, dp, strVal, resItem);
-            resSetter.dItem = resItem.res;
+            ResourceParserOp::ReadResource(NULL == ft ? NULL : targetType, dp, strVal, resSetter.resItem);
+            resSetter.dItem = resSetter.resItem.res;
 
-            if (resItem.type >= Resource::ResType::resExtension)
+            if (resSetter.resItem.type >= Resource::ResType::resExtension)
             {
-                if (resItem.type == Resource::ResType::resStaticResource)
+                if (resSetter.resItem.type == Resource::ResType::resStaticResource)
                 {
-                    resVal = DoStaticResource(fe, resItem);
+                    resVal = DoStaticResource(fe, resSetter.resItem);
                 }
                 else
                 {
-                    suic::Extension* ext = (suic::Extension*)(resItem.res.get());
+                    suic::Extension* ext = (suic::Extension*)(resSetter.resItem.res.get());
                     ext->ProvideValue(fe, dp, resVal);
                 }
             }
             else
             {
-                resVal = resItem.res;
+                resVal = resSetter.resItem.res;
             }
 
             if (resVal.get() != DpProperty::UnsetValue())
             {
                 pSetter = new suic::Setter();
                 pSetter->SetValue(resVal.get());
-            }
-            else
-            {
-                // 属性没有读取成功，按未定义处理
-                SingleUndefined* undefinedNode = new SingleUndefined(strProp, strVal);
-                resSetter.resItem.res = undefinedNode;
             }
         }
 
@@ -1115,11 +1102,35 @@ void XamlWalker::ReadSetter(suic::RTTIOfInfo* targetType, suic::FrameworkElement
             pSetter->SetTargetName(strTargetName);
             setterColl->setColl->AddSetter(pSetter);
         }
-
-        SetterNode* pSetterNode = new SetterNode(strProp, dp, resSetter.dItem.get());
-        pSetterNode->SetTargetName(strTargetName);
-        setterColl->dSetColl->AddSetter(pSetterNode);
     }
+    
+    if (resSetter.dItem.get() == NULL || resSetter.dItem.get() == suic::DpProperty::UnsetValue())
+    {
+        pNode->Reset();
+
+        if (pNode->HasNext())
+        {
+            IXamlNode* pSetterValue = pNode->Current();
+            if (NULL != pSetterValue && pSetterValue->HasNext())
+            {
+                IXamlNode* resNode = pSetterValue->Current();
+                // 属性没有读取成功，按未定义处理
+                NodeUndefined* undefinedNode = new NodeUndefined(resNode);
+                resSetter.dItem = undefinedNode;
+            }
+        }
+        else
+        {
+            // 属性没有读取成功，按未定义处理
+            suic::String strVal = pNode->FindAttri(VisualState::lbValue);
+            SingleUndefined* undefinedNode = new SingleUndefined(strProp, strVal);
+            resSetter.dItem = undefinedNode;
+        }
+    }
+
+    SetterNode* pSetterNode = new SetterNode(strProp, dp, resSetter.dItem.get());
+    pSetterNode->SetTargetName(strTargetName);
+    setterColl->dSetColl->AddSetter(pSetterNode);
 }
 
 void XamlWalker::ReadTrigger(suic::RTTIOfInfo* targetType, suic::FrameworkElement* fe, DTriggerColl* trgInfo, IXamlNode* pNode, FrameworkTemplate* ft)

@@ -20,6 +20,7 @@ ImplementRTTIOfClass(StringResNode, SingleResNode)
 ImplementRTTIOfClass(IntegerResNode, SingleResNode)
 ImplementRTTIOfClass(WHIntegerResNode, SingleResNode)
 ImplementRTTIOfClass(DoubleResNode, SingleResNode)
+ImplementRTTIOfClass(BooleanResNode, SingleResNode)
 ImplementRTTIOfClass(RectResNode, SingleResNode)
 ImplementRTTIOfClass(SizeResNode, SingleResNode)
 ImplementRTTIOfClass(PointResNode, SingleResNode)
@@ -55,37 +56,52 @@ ResNodePool::ResNodePool()
     _resNodes.Add(suic::GridView::RTTIType(), GridViewResNode::RTTIType());
 
     _resNodes.Add(suic::OString::RTTIType(), StringResNode::RTTIType());
+    _resNodes.Add(suic::Integer::RTTIType(), IntegerResNode::RTTIType());
     _resNodes.Add(suic::ORect::RTTIType(), RectResNode::RTTIType());
     _resNodes.Add(suic::OSize::RTTIType(), SizeResNode::RTTIType());
     _resNodes.Add(suic::OPoint::RTTIType(), PointResNode::RTTIType());
     _resNodes.Add(suic::OfRect::RTTIType(), fRectResNode::RTTIType());
     _resNodes.Add(suic::OfSize::RTTIType(), fSizeResNode::RTTIType());
     _resNodes.Add(suic::OfPoint::RTTIType(), fPointResNode::RTTIType());
+    _resNodes.Add(suic::Boolean::RTTIType(), BooleanResNode::RTTIType());
+    _resNodes.Add(suic::OCursor::RTTIType(), CursorResNode::RTTIType());
 
     _resNodes.Add(suic::ImageBrush::RTTIType(), ImageBrushResNode::RTTIType());
     _resNodes.Add(suic::SolidColorBrush::RTTIType(), SolidColorBrushResNode::RTTIType());
-    
-   
     _resNodes.Add(suic::LinearGradientBrush::RTTIType(), LinearGradientBrushResNode::RTTIType());
     _resNodes.Add(suic::RadialGradientBrush::RTTIType(), RadialGradientBrushResNode::RTTIType());
-    _resNodes.Add(suic::Extension::RTTIType(), ExtensionResNode::RTTIType());
-    _resNodes.Add(suic::OCursor::RTTIType(), CursorResNode::RTTIType());
 
+    _resNodes.Add(suic::Extension::RTTIType(), ExtensionResNode::RTTIType());
     _resNodes.Add(suic::ImageSource::RTTIType(), ImageSourceResNode::RTTIType());
     _resNodes.Add(suic::Transform::RTTIType(), CursorResNode::RTTIType());
+
     _resNodes.Add(NodeUndefined::RTTIType(), NodeUndefinedResNode::RTTIType());
     _resNodes.Add(SingleUndefined::RTTIType(), SingleUndefinedResNode::RTTIType());
-    
 }
 
 ResNodePool::~ResNodePool()
 {
 }
 
-bool ResNodePool::FindResNode(suic::Object* val, ResNodePtr& obj)
+bool ResNodePool::CreateResNode(suic::DpProperty* dp, suic::Object* val, ResNodePtr& obj)
 {
+    if (val == NULL)
+    {
+        obj = NullResNode::Value;
+        return true;
+    }
+    else
+    {
+        obj = val;
+        if (NULL != obj.get())
+        {
+            return true;
+        }
+    }
+
     suic::RTTIOfInfo* rttiInfo = NULL;
     suic::RTTIOfInfo* rttiTmp = val->GetRTTIType();
+
     while (rttiTmp != NULL)
     {
         if (_resNodes.TryGetValue(rttiTmp, rttiInfo))
@@ -96,10 +112,17 @@ bool ResNodePool::FindResNode(suic::Object* val, ResNodePtr& obj)
         }
         rttiTmp = rttiTmp->BaseType();
     }
-    return false;
+    obj = new SingleResNode(val); 
+    return true;
 }
 
 ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
+{
+    ResNodePool::Ins()->CreateResNode(NULL, val, obj);
+    return obj.get();
+}
+
+/*ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
 {
     if (suic::RTTICast<suic::ImageBrush>(val))
     {
@@ -159,7 +182,7 @@ ResNode* ResNode::CreateResNode(suic::Object* val, ResNodePtr& obj)
     }
 
     return obj.get();
-}
+}*/
 
 void ResNode::CloneNode(ResNodePtr& obj)
 {
@@ -443,6 +466,47 @@ suic::String DoubleResNode::GetFormatValue()
 suic::String DoubleResNode::GetNodeName()
 {
     return _U("sys:Float");
+}
+
+//====================================================
+// BooleanResNode
+
+BooleanResNode::BooleanResNode()
+{
+}
+
+BooleanResNode::BooleanResNode(suic::Boolean* val)
+    : SingleResNode(val)
+{
+
+}
+
+BooleanResNode::~BooleanResNode()
+{
+
+}
+
+suic::String BooleanResNode::GetFormatValue()
+{
+    suic::String strVal;
+    if (suic::Boolean::True == GetValue())
+    {
+        strVal = _U("True");
+    }
+    else if (suic::Boolean::False == GetValue())
+    {
+        strVal = _U("False");
+    }
+    else
+    {
+        strVal = _U("x:Null");
+    }
+    return strVal;
+}
+
+suic::String BooleanResNode::GetNodeName()
+{
+    return _U("sys:Boolean");
 }
 
 //====================================================
@@ -1155,7 +1219,16 @@ bool BrushResNode::IsSingleValue()
 
 void BrushResNode::SetValue(suic::Object* val)
 {
-    SETREFOBJ(_value, suic::RTTICast<suic::Brush>(val));
+    if (NULL != val)
+    {
+        val->ref();
+        SETREFOBJ(_value, suic::RTTICast<suic::Brush>(val));
+        val->unref();
+    }
+    else
+    {
+        SETREFOBJ(_value, NULL);
+    }
 }
 
 suic::Object* BrushResNode::GetValue()
@@ -1218,6 +1291,20 @@ TransformResNode::TransformResNode(Transform* val)
 TransformResNode::~TransformResNode()
 {
     FREEREFOBJ(_transform);
+}
+
+void TransformResNode::SetValue(suic::Object* val)
+{
+    if (NULL != val)
+    {
+        val->ref();
+        SETREFOBJ(_transform, suic::RTTICast<Transform>(val));
+        val->unref();
+    }
+    else
+    {
+        SETREFOBJ(_transform, NULL);
+    }
 }
 
 bool TransformResNode::IsSingleValue()
@@ -1718,7 +1805,16 @@ suic::Object* ImageSourceResNode::GetValue()
 
 void ImageSourceResNode::SetValue(suic::Object* val)
 {
-
+    if (NULL != val)
+    {
+        val->ref();
+        SETREFOBJ(_source, suic::RTTICast<suic::ImageSource>(val));
+        val->unref();
+    }
+    else
+    {
+        SETREFOBJ(_source, NULL);
+    }
 }
 
 suic::String ImageSourceResNode::GetSingleXml()

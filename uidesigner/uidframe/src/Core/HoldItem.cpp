@@ -26,6 +26,17 @@ String HoldItem::GetResXml(const String& offset)
     return strChild;
 }
 
+String HoldItem::GetChildResXml(const String& offset)
+{
+    String strChild;
+    for (int j = 0; j < children.GetCount(); ++j)
+    {
+        HoldItem* pChild = children.GetItem(j);
+        strChild += GetResXml(pChild, offset);
+    }
+    return strChild;
+}
+
 void HoldItem::CloneTo(HoldItem* Other)
 {
     Other->Clear();
@@ -94,18 +105,17 @@ String HoldItem::GetResXml(HoldItem* pHold, const String& offset)
 
     if (pHold->children.GetCount() > 0)
     {
-        strXml += _U("\n");
+        strXml += _U(">\n");
 
         String strChild;
         for (int j = 0; j < pHold->children.GetCount(); ++j)
         {
-            String strTemp;
             HoldItem* pChildHold = pHold->children.GetItem(j);
-            strTemp = GetResXml(pChildHold, offset + ResNode::OFFSET1);
-            strChild += strTemp;
-            strChild += _U("\n");
+            strChild += GetResXml(pChildHold, offset + ResNode::OFFSET1);
         }
-        strXml += _U("</") + pHold->name + _U(">\n");
+
+        strXml += strChild;
+        strXml += offset + _U("</") + pHold->name + _U(">\n");
     }
     else
     {

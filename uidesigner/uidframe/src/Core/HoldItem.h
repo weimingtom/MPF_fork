@@ -27,6 +27,7 @@ public:
     void InitNode(suic::IXamlNode* pNode);
     void Clear();
     String GetResXml(const String& offset);
+    String GetChildResXml(const String& offset);
 
     void CloneTo(HoldItem* Other);
 

@@ -131,7 +131,7 @@ suic::String NodeUndefinedResNode::GetSingleXml()
 
 suic::String NodeUndefinedResNode::GetResXml(const String& offset)
 {
-    if (NULL != _value)
+    if (NULL == _value)
     {
         return suic::String();
     }

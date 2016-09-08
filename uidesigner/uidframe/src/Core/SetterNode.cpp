@@ -18,7 +18,7 @@ SetterNode::SetterNode()
 SetterNode::SetterNode(const String& name, DpProperty* dp, Object* val)
 {
     int iDotPos = name.IndexOf(_U("."));
-    if (-1 == iDotPos)
+    if (-1 == iDotPos || dp == NULL)
     {
         _name = name;
     }

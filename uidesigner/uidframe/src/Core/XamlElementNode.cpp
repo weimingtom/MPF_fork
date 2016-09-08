@@ -2047,8 +2047,6 @@ String UserDesignElement::ToString()
     }
 }
 
-
-
 void UserDesignElement::Clear()
 {
     _holdItem.Clear();
@@ -2062,17 +2060,17 @@ String UserDesignElement::GetResXml(const String& offset)
     String strXml = "";
     String strItems = "";
 
-    strXml += offset + _U("<") + GetName();
+    strXml += offset + _U("<") + _holdItem.GetName();
     GetElementSetterXml(offset, iCurrSerial, strProp, strChildProp);
     strXml += _U(" ") + strProp;
 
-    strItems = _holdItem.GetResXml(offset);
+    strItems = _holdItem.GetChildResXml(offset + ResNode::OFFSET1);
 
     if (!strItems.Empty())
     {
         strXml += _U(">\n");
         strXml += strItems;
-        strXml += offset + _U("</") + GetName() + _U(">");
+        strXml += offset + _U("</") + _holdItem.GetName() + _U(">");
     }
     else
     {
