@@ -4,6 +4,8 @@
 #include <Editor/XamlWalker.h>
 
 #include <Core/StyleNode.h>
+#include <Core/SingleUndefined.h>
+
 #include <Main/Project.h>
 #include <Main/XamlRootItem.h>
 
@@ -503,7 +505,7 @@ void XamlWalker::WalkXamlElement(DesignElement* dElem, suic::FrameworkElement* f
         {
             strName.Trim();
 
-            // 可能是资源或属性
+            // 可能是资源或控件元素属性
             if (iPos >= 0)
             {
                 suic::String strProp = strName.Substring(namePrefix.Length());
@@ -517,7 +519,8 @@ void XamlWalker::WalkXamlElement(DesignElement* dElem, suic::FrameworkElement* f
                 else
                 {
                     if (pChildNode->HasNext())
-                    {                    
+                    {
+                        bool bCanRegProp = false;                    
                         // 查询属性
                         suic::DpProperty* dp = DpProperty::Lookup(strProp, rCtx.d->GetRTTIType());
                         IXamlNode* xamlChild = pChildNode->Current();
@@ -534,12 +537,22 @@ void XamlWalker::WalkXamlElement(DesignElement* dElem, suic::FrameworkElement* f
                                     rCtx.d->SetValue(dp, dResItem.resItem.res.get());
                                     // 记录元素属性
                                     dElem->AddSetter(strProp, dp, dResItem.dItem.get());
+                                    bCanRegProp = true;
                                 }
                                 else
                                 {
                                     throw InvalidValueException(_U("not extension for property of element"), __FILELINE__);
                                 }
                             }
+                        }
+
+                        // 属性没有读取成功，按未定义处理
+                        if (!bCanRegProp) 
+                        {
+                            NodeUndefined* undefinedNode = new NodeUndefined(pChildNode);
+                            undefinedNode->ref();
+                            dElem->AddSetter(strProp, dp, undefinedNode);
+                            undefinedNode->unref();
                         }
                     }
                 }
@@ -1526,6 +1539,14 @@ void XamlWalker::ReadBaseMetaResource(suic::RTTIOfInfo* trInfo, suic::FrameworkE
 
                 WalkXamlElement(dElem, fe, rElem, pNode);
             }
+        }
+        else
+        {
+            // 当成未定义资源读取
+            //NodeUndefined* undefinedNode = new NodeUndefined(pNode);
+            //undefinedNode->ref();
+            //dElem->AddSetter(strProp, dp, undefinedNode);
+            //undefinedNode->unref();
         }
     }
 }

@@ -8,6 +8,12 @@ ImplementRTTIOfClass(NodeUndefined, suic::Object)
 ImplementRTTIOfClass(SingleUndefinedResNode, ResNode)
 ImplementRTTIOfClass(NodeUndefinedResNode, ResNode)
 
+void NodeUndefined::CloneTo(NodeUndefined* obj)
+{
+    obj->_holdItem.Clear();
+    _holdItem.CloneTo(&(obj->_holdItem));
+}
+
 SingleUndefinedResNode::SingleUndefinedResNode()
 {
     _value = NULL;
@@ -58,11 +64,28 @@ suic::String SingleUndefinedResNode::GetResXml(const String& offset)
     return strXml;
 }
 
+//==================================================================
+// NodeUndefinedResNode
+
+NodeUndefinedResNode::NodeUndefinedResNode()
+{
+    _value = new NodeUndefined();
+    _value->ref();
+}
+
+NodeUndefinedResNode::~NodeUndefinedResNode()
+{
+    FREEREFOBJ(_value)
+}
+
 void NodeUndefinedResNode::CloneNode(ResNodePtr& obj)
 {
-    NodeUndefinedResNode* pNode = new NodeUndefinedResNode();
-    obj = pNode;
-    _holdItem.CloneTo(&(pNode->_holdItem));
+    if (NULL != _value)
+    {
+        NodeUndefinedResNode* pNode = new NodeUndefinedResNode();
+        obj = pNode;
+        _value->CloneTo(pNode->_value);
+    }
 }
 
 bool NodeUndefinedResNode::IsSingleValue()
@@ -72,11 +95,18 @@ bool NodeUndefinedResNode::IsSingleValue()
 
 void NodeUndefinedResNode::SetValue(suic::Object* val)
 {
+    if (NULL != val)
+    {
+        val->ref();
+        NodeUndefined* pVal = suic::RTTICast<NodeUndefined>(val);
+        SETREFOBJ(_value, pVal);
+        val->unref();
+    }
 }
 
 suic::Object* NodeUndefinedResNode::GetValue()
 {
-    return NULL;
+    return _value;
 }
 
 suic::String NodeUndefinedResNode::GetSingleXml()
@@ -86,11 +116,9 @@ suic::String NodeUndefinedResNode::GetSingleXml()
 
 suic::String NodeUndefinedResNode::GetResXml(const String& offset)
 {
-    return _holdItem.GetResXml(offset);
-}
-
-void NodeUndefinedResNode::InitResNode(suic::IXamlNode* pNode)
-{
-    _holdItem.Clear();
-    _holdItem.InitNode(pNode);
+    if (NULL != _value)
+    {
+        return suic::String();
+    }
+    return _value->GetResXml(offset);
 }

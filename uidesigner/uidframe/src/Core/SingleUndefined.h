@@ -59,6 +59,8 @@ public:
         _holdItem.InitNode(pNode);
     }
 
+    void CloneTo(NodeUndefined* obj);
+
     suic::String GetName()
     {
         return _holdItem.GetName();
@@ -102,6 +104,9 @@ public:
 
     RTTIOfClass(NodeUndefinedResNode)
 
+    NodeUndefinedResNode();
+    virtual ~NodeUndefinedResNode();
+
     virtual void CloneNode(ResNodePtr& obj);
     virtual bool IsSingleValue();
     virtual void SetValue(suic::Object* val);
@@ -110,11 +115,9 @@ public:
     virtual suic::String GetSingleXml();
     virtual suic::String GetResXml(const String& offset);
 
-    void InitResNode(suic::IXamlNode* pNode);
-
 private:
 
-    HoldItem _holdItem;
+    NodeUndefined* _value;
 };
 
 
