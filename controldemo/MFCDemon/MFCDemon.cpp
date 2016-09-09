@@ -91,7 +91,7 @@ void CMFCDemonApp::InitMPF()
     // 初始化MPF环境
     suic::InitUIWgx();
 
-    suic::ResourceHelper::SetSystemRes("default.sres", "wr");
+    suic::ThemeOp::SetSystemTheme("default.sres", "wr");
     suic::String strApp = _T("ControlDemo/MFCDemon/Application.xml");
 
     // 载入全局资源

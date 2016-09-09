@@ -20,7 +20,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     {
         suic::InitUIWgx();
 
-        suic::ResourceHelper::AddDir(vecCmd[0], vecCmd[1]);
+        suic::ThemeOp::AddDir(vecCmd[0], vecCmd[1]);
         suic::Builder::BuildUri(NULL, vecCmd[2].c_str());
 
         if (suic::Application::Current())
@@ -28,7 +28,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
             suic::WindowPtr mainWnd = new MainWindow();
             if (suic::Builder::BuildUri(mainWnd.get(), vecCmd[3].c_str()).get() != NULL)
             {
-                //suic::Application::Current()->SetMainWindow(mainWnd.get());
                 suic::Application::Current()->Run(mainWnd.get());
             }
         }

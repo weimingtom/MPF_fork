@@ -16,7 +16,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     try
     {
         // 加载资源文件
-        suic::ResourceHelper::SetSystemRes("default.sres", "wr");
+        suic::ThemeOp::SetSystemTheme("default.sres", "wr");
         suic::String strApp = _T("ControlDemo/EventDemon/Application.xml");
 
         // 载入布局资源并运行系统

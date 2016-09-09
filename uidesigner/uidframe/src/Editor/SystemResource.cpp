@@ -99,13 +99,15 @@ bool  SystemResource::InitDefaultResDic()
 {
     if (NULL == _resRootItem)
     {
-        static suic::String strDefRes(_U("resource/uidesign/Template/theme.xaml"));
-
-        suic::String strPath = suic::FileDir::CalculatePath(strDefRes);
+        //static suic::String strDefRes(_U("resource/uidesign/Template/theme.xaml"));
+        //suic::String strPath = suic::FileDir::CalculatePath(strDefRes);
+        suic::Mulstr data;
+        DesignHelper::ReadDefaultThemeData(data);
         XamlLoader xamlLoader;
         _resRootItem = new ResourceDicRootItem();
         _resRootItem->ref();
-        return xamlLoader.LoadResourceDicRootXaml(_resRootItem, strPath);
+        return xamlLoader.LoadResourceDicRootXamlFromMemory(_resRootItem, data);
+        //return xamlLoader.LoadResourceDicRootXaml(_resRootItem, strPath);
     }
     return (NULL != _resRootItem);
 }

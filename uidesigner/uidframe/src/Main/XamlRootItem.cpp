@@ -922,7 +922,7 @@ bool ApplicationRootItem::OnLoadApp(bool onlyReadAppRes)
     String prjDir = pPrj->GetProjectDir();
     String strFilename = GetFileName();
 
-    suic::ResourceHelper::AddDir(pPrj->GetProjectName(), prjDir);
+    suic::ThemeOp::AddDir(pPrj->GetProjectName(), prjDir);
 
     return InternalAppOpen(strPath, strFilename, onlyReadAppRes);
 }

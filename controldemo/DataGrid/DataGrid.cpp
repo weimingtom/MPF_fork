@@ -91,7 +91,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     try
     {
         // 加载资源文件
-        suic::ResourceHelper::SetSystemRes("default.sres", "wr");
+        suic::ThemeOp::SetSystemTheme("default.sres", "wr");
         suic::String strApp = _T("ControlDemo/DataGrid/Application.xml");
         suic::Builder::BuildUri(wnd.get(), strApp.c_str());
 

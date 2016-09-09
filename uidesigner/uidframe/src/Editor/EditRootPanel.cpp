@@ -180,7 +180,7 @@ void EditRootPanel::InitEditPanelInfo(RootItem* rootElem, DesignPanel* design)
             _tempParent = tempRoot->GetTemplateType();
         }*/
 
-        suic::ResourceHelper::AddDir(_resName, _resDir);
+        suic::ThemeOp::AddDir(_resName, _resDir);
         if (suic::Application::Current() != NULL)
         {
             suic::String strTitle;

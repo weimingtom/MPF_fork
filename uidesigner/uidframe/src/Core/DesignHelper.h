@@ -26,6 +26,8 @@ public:
     static void SetElementParent(Element* parent, FrameworkElement* child);
     static void SetTemplateParent(DpObject* parent, FrameworkElement* child);
     static void SetTemplateDesignMode(FrameworkElement* child);
+
+    static void ReadDefaultThemeData(suic::Mulstr& data);
 };
 
 }
