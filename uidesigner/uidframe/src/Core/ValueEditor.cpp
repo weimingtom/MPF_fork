@@ -89,7 +89,7 @@ static EditRootPanel* FindEditRttoPanel(suic::FrameworkElement* elem)
     while (parent)
     {
         editPanel = suic::DynamicCast<EditRootPanel>(parent);
-        if (NULL != editPanel)
+        if (NULL != editPanel && editPanel->IsVisible())
         {
             break;
         }

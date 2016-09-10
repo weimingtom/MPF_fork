@@ -14,6 +14,8 @@
 #include <Editor/ResApplyWindow.h>
 #include <Editor/CreateStyleWindow.h>
 #include <Editor/ThemeEditorWindow.h>
+
+#include <Main/MainWindow.h>
 #include <Main/ImageSelectorWindow.h>
 
 #pragma comment(lib, "Shell32.lib")
@@ -251,9 +253,20 @@ void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
                 ThemeEditorWindow* themeWnd = new ThemeEditorWindow(rootItem, item->GetResourceDictionary());
 
                 themeWnd->ref();
+                themeWnd->SetHideMainReturnButton();
                 themeWnd->SetResourceElement(item);
                 themeWnd->ShowDialog(strPath);
                 themeWnd->unref();
+
+                /*MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
+                if (NULL != mainWnd)
+                {
+                    ThemeEditorWindow* themeWnd = new ThemeEditorWindow(rootItem, item->GetResourceDictionary());
+                    themeWnd->ref();
+                    themeWnd->SetResourceElement(item);
+                    mainWnd->SwitchToThemeView(themeWnd);
+                    themeWnd->unref();
+                }*/
             }
         }
         else if (!_name.Equals(_U("更改布局类型")))

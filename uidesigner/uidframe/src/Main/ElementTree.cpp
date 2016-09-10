@@ -12,6 +12,7 @@
 #include <System/Tools/EventHelper.h>
 
 #include <Editor/ThemeEditorWindow.h>
+#include <Main/MainWindow.h>
 #include <Main/ImageSelectorWindow.h>
 
 #pragma comment(lib, "Shell32.lib")
@@ -385,7 +386,7 @@ void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)
         // 资源节点
         if (resRootItem != NULL)
         {
-            Project* pPrg = pElemItem->GetProject();
+            /*Project* pPrg = pElemItem->GetProject();
             const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
             ThemeEditorWindow* themeWnd = new ThemeEditorWindow(pElemItem, resRootItem->GetResourceDicNode());
 
@@ -405,7 +406,18 @@ void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)
                 pElemItem->GetProject()->Reflesh(true);
             }
 
-            DesignHelper::ExitDesignMode();
+            DesignHelper::ExitDesignMode();*/
+
+            e->SetHandled(true);
+
+            MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
+            if (NULL != mainWnd)
+            {
+                ThemeEditorWindow* themeWnd = new ThemeEditorWindow(pElemItem, resRootItem->GetResourceDicNode());
+                themeWnd->ref();
+                mainWnd->SwitchToThemeView(themeWnd);
+                themeWnd->unref();
+            }
         }
         else if (pElemItem->GetRTTIType()->InheritFrom(ElementRootItem::RTTIType()))
         {

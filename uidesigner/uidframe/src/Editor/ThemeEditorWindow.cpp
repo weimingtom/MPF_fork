@@ -7,6 +7,8 @@
 #include <Editor/ThemeEditorWindow.h>
 #include <Editor/SystemResource.h>
 
+#include <Main/MainWindow.h>
+
 #include <Core/StyleNode.h>
 #include <Framework/Controls/Rectangle.h>
 
@@ -30,6 +32,7 @@ ThemeEditorWindow::ThemeEditorWindow(RootItem* root, ResourceDictionaryNode* res
     _styleNode = NULL;
     _templateNode = NULL;
     _resourceNode = resNode;
+    _hideMainReturnButton = false;
 }
 
 ThemeEditorWindow::~ThemeEditorWindow()
@@ -59,6 +62,11 @@ DesignElement* ThemeEditorWindow::GetResourceElement() const
 void ThemeEditorWindow::SetResourceElement(DesignElement* resTarget)
 {
     _resTarget = resTarget;
+}
+
+void ThemeEditorWindow::SetHideMainReturnButton()
+{
+    _hideMainReturnButton = true;
 }
 
 bool ThemeEditorWindow::OnBuild(suic::IXamlNode* pNode, suic::ObjectPtr& obj)
@@ -148,6 +156,8 @@ void ThemeEditorWindow::OnInitialized(EventArg* e)
         RefleshEditPanel(_U("StyleTriggersPanel"), _U("编辑样式"), _U(""));
 
         _styleTrgEditorWnd->FindName(_U("TriggersPanel_Return"))->SetVisibility(suic::Visibility::Collapsed);
+        //_styleTrgEditorWnd->FindName(_U("MainWindow_Return_FromStyle"))->SetVisibility(suic::Visibility::Visible);
+        
         _styleTrgEditorWnd->SetSetterColl(_styleNode->GetSetterCollection());
         _styleTrgEditorWnd->SetTriggerCollectionNode(NULL, _styleNode->GetTriggerCollection());
         _styleTrgEditorWnd->Reflesh();
@@ -157,6 +167,7 @@ void ThemeEditorWindow::OnInitialized(EventArg* e)
         _tempEditorWnd->SetRootTemplateElement(_templateNode);
         RefleshEditPanel(_U("TemplatePanel"), _U("编辑模版"), _U(""));
         _tempEditorWnd->FindName(_U("TemplatePanel_Return"))->SetVisibility(suic::Visibility::Collapsed);
+        //_tempEditorWnd->FindName(_U("MainWindow_Return_FromTemplate"))->SetVisibility(suic::Visibility::Visible);
     }
 
     // 注册快捷键
@@ -276,6 +287,29 @@ void ThemeEditorWindow::OnLoaded(suic::LoadedEventArg* e)
         pReturn->AddClick(new ClickEventHandler(this, &ThemeEditorWindow::OnReturnPrePanel));
     }
 
+
+    pReturn = FindElem<suic::Button>(_U("MainWindow_Return"));
+    if (NULL != pReturn)
+    {
+        if (_hideMainReturnButton)
+        {
+            pReturn->SetVisibility(suic::Visibility::Collapsed);
+        }
+        pReturn->AddClick(new ClickEventHandler(this, &ThemeEditorWindow::OnReturnMainPanel));
+    }
+
+    pReturn = FindElem<suic::Button>(_U("MainWindow_Return_FromStyle"));
+    if (NULL != pReturn)
+    {
+        pReturn->AddClick(new ClickEventHandler(this, &ThemeEditorWindow::OnReturnMainPanel));
+    }
+
+    pReturn = FindElem<suic::Button>(_U("MainWindow_Return_FromTemplate"));
+    if (NULL != pReturn)
+    {
+        pReturn->AddClick(new ClickEventHandler(this, &ThemeEditorWindow::OnReturnMainPanel));
+    }
+
     // 响应增加资源按钮
     suic::Button* pAddRes = FindElem<suic::Button>(_U("AddResBtn"));
     if (NULL != pAddRes)
@@ -316,6 +350,27 @@ void ThemeEditorWindow::OnReturnPrePanel(Element* sender, RoutedEventArg* e)
 {
     e->SetHandled(true);
     RefleshStackShow();
+}
+
+void ThemeEditorWindow::OnReturnMainPanel(Element* sender, RoutedEventArg* e)
+{
+    e->SetHandled(true);
+    MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
+    if (NULL != mainWnd)
+    {
+        mainWnd->SwitchToMainView();
+
+        DesignHelper::EnterDesignMode();
+
+        if (_rootItem != NULL && _rootItem->IsModified())
+        {
+            _rootItem->Save();
+            _rootItem->Close();
+            _rootItem->GetProject()->Reflesh(true);
+        }
+
+        DesignHelper::ExitDesignMode();
+    }
 }
 
 void ThemeEditorWindow::OnAccessKey(suic::AccessKeyEventArg* e)

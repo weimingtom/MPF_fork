@@ -174,6 +174,7 @@ public:
     // 设置资源查询的目标元素
     // 对于模板来说，必须设置模板的模板父元素，系统会用其来查询资源
     void SetResourceElement(DesignElement* resTarget);
+    void SetHideMainReturnButton();
 
     PropEditorWindow* ShowStylePropEditorWindow();
     PropEditorWindow* ShowTemplatePropEditorWindow();
@@ -193,6 +194,7 @@ public:
 
     // 返回前一个编辑界面
     void OnReturnPrePanel(Element* sender, RoutedEventArg* e);
+    void OnReturnMainPanel(Element* sender, RoutedEventArg* e);
 
     void OnAccessKey(suic::AccessKeyEventArg* e);
 
@@ -241,6 +243,8 @@ protected:
     // 当前编辑的资源文件对象（可能是资源，也可能是布局）
     RootItem* _rootItem;
     DesignElement* _resTarget;
+
+    bool _hideMainReturnButton;
 
     suic::ListBox* _resListBox;
     Project* _project;

@@ -139,6 +139,8 @@ void MainWindow::OnInitialized(EventArg* e)
     g_lockshow->ref();
     g_lockshow->Init(this);
 
+    SwitchToMainView();
+
     AddHandler(suic::MenuItem::ClickEvent, new suic::RoutedEventHandler(this, &MainWindow::OnMainMenuClick));
 
     // ×¢²á¿ì½Ý¼ü£¨ctrl+zºÍctrl+y£©
@@ -175,6 +177,44 @@ void MainWindow::OnMainMenuClick(suic::DpObject* sender, suic::RoutedEventArg* e
         }
 
         e->SetHandled(true);
+    }
+}
+
+void MainWindow::SwitchToThemeView(suic::FrameworkElement* themeElem)
+{
+    suic::Panel* mainView = FindElem<suic::Panel>(_U("mainGridView"));
+    suic::Panel* themeView = FindElem<suic::Panel>(_U("mainThemeView"));
+    const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
+
+    if (mainView != NULL && themeView != NULL)
+    {
+        mainView->SetVisibility(suic::Visibility::Collapsed);
+        themeView->SetVisibility(suic::Visibility::Visible);
+
+        suic::XamlReader xamlRead;
+        themeElem->ref();
+        xamlRead.LoadUri(NULL, themeElem, strPath);
+
+        themeView->GetChildren()->Clear();
+        themeView->AddChild(themeElem);
+
+        themeElem->SetWidth(-1);
+        themeElem->SetHeight(-1);
+        themeElem->FindName(_U("ThemeCap"))->SetVisibility(suic::Visibility::Collapsed);
+
+        themeElem->unref();
+    }
+}
+
+void MainWindow::SwitchToMainView()
+{
+    suic::Panel* mainView = FindElem<suic::Panel>(_U("mainGridView"));
+    suic::Panel* themeView = FindElem<suic::Panel>(_U("mainThemeView"));
+
+    if (mainView != NULL && themeView != NULL)
+    {
+        mainView->SetVisibility(suic::Visibility::Visible);
+        themeView->SetVisibility(suic::Visibility::Collapsed);
     }
 }
 

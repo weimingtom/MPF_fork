@@ -112,6 +112,9 @@ public:
 
     void ShowStartWindow();
 
+    void SwitchToThemeView(suic::FrameworkElement* themeElem);
+    void SwitchToMainView();
+
 protected:
 
     void OnMainMenuClick(suic::DpObject* sender, suic::RoutedEventArg* e);
