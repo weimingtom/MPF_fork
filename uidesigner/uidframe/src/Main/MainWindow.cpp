@@ -180,7 +180,7 @@ void MainWindow::OnMainMenuClick(suic::DpObject* sender, suic::RoutedEventArg* e
     }
 }
 
-void MainWindow::SwitchToThemeView(suic::FrameworkElement* themeElem)
+void MainWindow::SwitchToThemeView(suic::Window* themeElem)
 {
     suic::Panel* mainView = FindElem<suic::Panel>(_U("mainGridView"));
     suic::Panel* themeView = FindElem<suic::Panel>(_U("mainThemeView"));
@@ -194,12 +194,18 @@ void MainWindow::SwitchToThemeView(suic::FrameworkElement* themeElem)
         suic::XamlReader xamlRead;
         themeElem->ref();
         xamlRead.LoadUri(NULL, themeElem, strPath);
+        suic::FrameworkElement* fe = themeElem->FindElem<suic::FrameworkElement>(_U("editRootPanel"));
+
+        //fe->SetMargin(suic::Rect());
 
         themeView->GetChildren()->Clear();
         themeView->AddChild(themeElem);
 
+        themeElem->SetBorderThickness(suic::Rect());
+
         themeElem->SetWidth(-1);
         themeElem->SetHeight(-1);
+        
         themeElem->FindName(_U("ThemeCap"))->SetVisibility(suic::Visibility::Collapsed);
 
         themeElem->unref();

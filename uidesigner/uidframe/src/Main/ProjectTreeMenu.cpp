@@ -250,13 +250,17 @@ void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
             if (!item->IsTemplate())
             {
                 const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
-                ThemeEditorWindow* themeWnd = new ThemeEditorWindow(rootItem, item->GetResourceDictionary());
 
-                themeWnd->ref();
-                themeWnd->SetHideMainReturnButton();
-                themeWnd->SetResourceElement(item);
-                themeWnd->ShowDialog(strPath);
-                themeWnd->unref();
+                if (NULL != rootItem && !rootItem->GetRootElement()->IsLocked())
+                {
+                    ThemeEditorWindow* themeWnd = new ThemeEditorWindow(rootItem, item->GetResourceDictionary());
+
+                    themeWnd->ref();
+                    themeWnd->SetHideMainReturnButton();
+                    themeWnd->SetResourceElement(item);
+                    themeWnd->ShowDialog(strPath);
+                    themeWnd->unref();
+                }
 
                 /*MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
                 if (NULL != mainWnd)

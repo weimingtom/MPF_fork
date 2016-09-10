@@ -112,7 +112,7 @@ public:
 
     void ShowStartWindow();
 
-    void SwitchToThemeView(suic::FrameworkElement* themeElem);
+    void SwitchToThemeView(suic::Window* themeElem);
     void SwitchToMainView();
 
 protected:
