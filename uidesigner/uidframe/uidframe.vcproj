@@ -878,6 +878,14 @@
 					RelativePath=".\src\controls\TextBoxRange.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\Controls\UserFrameworkElement.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Controls\UserFrameworkElement.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<File

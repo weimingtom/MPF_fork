@@ -15,6 +15,8 @@
 #include <Extend/Controls/TabControl.h>
 #include <Extend/Controls/GridSplitter.h>
 
+#include <Controls/UserFrameworkElement.h>
+
 #ifdef _MANAGED
 #pragma managed(push, off)
 #endif
@@ -190,6 +192,8 @@ void InitDControls()
     
     suic::BuildFactory::Ins()->Add(ColorSelector::RTTIType());
     suic::BuildFactory::Ins()->Add(ColorButton::RTTIType());
+
+    suic::BuildFactory::Ins()->Add(UserFrameworkElement::RTTIType());
     
     BrushEditor::StaticInit();
 }

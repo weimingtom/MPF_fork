@@ -5,6 +5,7 @@
 
 #include <Core/StyleNode.h>
 #include <Core/SingleUndefined.h>
+#include <Controls/UserFrameworkElement.h>
 
 #include <Main/Project.h>
 #include <Main/XamlRootItem.h>
@@ -642,7 +643,7 @@ void XamlWalker::WalkXamlElement(DesignElement* dElem, suic::FrameworkElement* f
 
 void XamlWalker::WalkUserXamlElement(DesignElement* parent, ReadContext& rParentCtx, IXamlNode* pNode)
 {
-    FrameworkElement* userElem = new FrameworkElement();
+    UserFrameworkElement* userElem = new UserFrameworkElement();
     SetInDesignMode(userElem);
     UserDesignElement* dChild = new UserDesignElement(pNode);
     ReadContext rCtx;
