@@ -366,6 +366,7 @@ void ProjectTree::OnSelectedItemChanged(RoutedPropChangedEventArg* e)
 void ProjectTree::OnMainReturnClick(suic::Object* sender, suic::EventArg* e)
 {
     DesignHelper::EnterDesignMode();
+
     ThemeEditorWindow* themeWnd = (ThemeEditorWindow*)sender;
     RootItem* rootItem = themeWnd->GetRootItem();
 
