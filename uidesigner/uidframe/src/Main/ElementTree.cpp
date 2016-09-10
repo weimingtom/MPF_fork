@@ -363,6 +363,22 @@ void ProjectTree::OnSelectedItemChanged(RoutedPropChangedEventArg* e)
     //GetProject()->SwitchToCurrent();
 }
 
+void ProjectTree::OnMainReturnClick(suic::Object* sender, suic::EventArg* e)
+{
+    DesignHelper::EnterDesignMode();
+    ThemeEditorWindow* themeWnd = (ThemeEditorWindow*)sender;
+    RootItem* rootItem = themeWnd->GetRootItem();
+
+    if (rootItem != NULL && rootItem->IsModified())
+    {
+        rootItem->Save();
+        rootItem->Close();
+        rootItem->GetProject()->Reflesh(true);
+    }
+
+    DesignHelper::ExitDesignMode();
+}
+
 void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)
 {
     suic::Element* elem = suic::RTTICast<suic::Element>(e->GetOriginalSource());
@@ -415,6 +431,7 @@ void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)
             {
                 ThemeEditorWindow* themeWnd = new ThemeEditorWindow(pElemItem, resRootItem->GetResourceDicNode());
                 themeWnd->ref();
+                themeWnd->SetMainReturnEvent(suic::EventHandler(this, &ProjectTree::OnMainReturnClick));
                 mainWnd->SwitchToThemeView(themeWnd);
                 themeWnd->unref();
             }

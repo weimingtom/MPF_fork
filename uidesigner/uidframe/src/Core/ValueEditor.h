@@ -749,6 +749,8 @@ public:
     void NotifySetterChanged();
     void OnEditStyleTemplateClick(suic::Element* sender, suic::RoutedEventArg* e);
 
+    void OnMainReturnEventClick(suic::Object* sender, suic::EventArg* e);
+
 protected:
 
     void OnApplyTemplate();
@@ -756,10 +758,13 @@ protected:
     void UpdateShow();
     void UpdateDesignPanel();
 
+    void GetMainReturnEvent(suic::EventHandler& h);
+
     suic::Button* GetEditButton();
 
     virtual bool IsSetterEmpty(SetterNode* pSetter);
     virtual void OnEditClick();
+    virtual void OnMainReturnClick(suic::Object* sender);
 
 protected:
 
@@ -782,6 +787,7 @@ public:
 protected:
 
     void OnEditClick();
+    void OnMainReturnClick(suic::Object* sender);
 
     virtual bool IsSetterEmpty(SetterNode* pSetter);
     virtual TemplateRootItem* CreateFrameworkTemplate(RTTIOfInfo* ownerRtti);
@@ -837,6 +843,8 @@ public:
 protected:
 
     void OnEditClick();
+    void OnMainReturnClick(suic::Object* sender);
+
     StyleNode* CreateNewStyle(suic::RTTIOfInfo* targetRtti);
 
     virtual bool IsSetterEmpty(SetterNode* pSetter);

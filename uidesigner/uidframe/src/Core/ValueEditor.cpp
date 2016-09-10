@@ -11,6 +11,8 @@
 #include <Editor/EditTemplateBinding.h>
 
 #include <Main/AddNameWindow.h>
+
+#include <Main/MainWindow.h>
 #include <Main/ImageSelectorWindow.h>
 #include <Editor/SystemResource.h>
 #include <Editor/ThemeEditorWindow.h>
@@ -2736,6 +2738,20 @@ void STSetterEditor::OnEditClick()
 
 }
 
+void STSetterEditor::GetMainReturnEvent(suic::EventHandler& h)
+{
+    h += suic::EventHandler(this, &STSetterEditor::OnMainReturnEventClick);
+}
+
+void STSetterEditor::OnMainReturnEventClick(suic::Object* sender, suic::EventArg* e)
+{
+    OnMainReturnClick(sender);
+}
+
+void STSetterEditor::OnMainReturnClick(suic::Object* sender)
+{
+}
+
 //==============================================
 // TemplateSetterEditor
 
@@ -2790,9 +2806,33 @@ TemplateRootItem* TemplateSetterEditor::CreateFrameworkTemplate(RTTIOfInfo* owne
     return NULL;
 }
 
+void TemplateSetterEditor::OnMainReturnClick(suic::Object* sender)
+{
+    ThemeEditorWindow* themeWnd = (ThemeEditorWindow*)sender;
+    TemplateRootItem* pTemp = themeWnd->GetTemplateNode();
+    EditRootPanel* editPanel = FindEditRttoPanel(this);
+    DesignElement* target = themeWnd->GetResourceElement();
+
+    if (pTemp->HasContent())
+    {
+        SetterNode* pSetter = GetSetterNode(false);
+        suic::Control* ctrl = RTTICast<suic::Control>(target->GetUIElement());
+
+        if (NULL == pSetter)
+        {
+            pSetter = GetSetterNode(true);
+        }
+        pSetter->SetResNode(pTemp);
+        ctrl->SetTemplate(NULL);
+    }
+
+    RefleshSetterToDesignUI();
+    editPanel->UpdateDesignPanel(target);
+}
+
 void TemplateSetterEditor::OnEditClick()
 {
-    suic::Control* ctrl = NULL;
+    /*suic::Control* ctrl = NULL;
     DesignElement* target = GetEditTarget();
     if (NULL != target)
     {
@@ -2840,6 +2880,52 @@ void TemplateSetterEditor::OnEditClick()
 
         RefleshSetterToDesignUI();
         editPanel->UpdateDesignPanel(target);
+
+        pTemp->unref();
+        themeWnd->unref();
+    }*/
+
+    suic::Control* ctrl = NULL;
+    DesignElement* target = GetEditTarget();
+    if (NULL != target)
+    {
+        ctrl = RTTICast<suic::Control>(target->GetUIElement());
+    }
+
+    if (NULL != ctrl)
+    {
+        EditRootPanel* editPanel = FindEditRttoPanel(this);
+        RTTIOfInfo* ownerRtti = ctrl->GetRTTIType();
+        TemplateRootItem* pTemp = RTTICast<TemplateRootItem>(GetSetterNode(true)->GetResNode());
+        ThemeEditorWindow* themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL);
+
+        if (NULL == pTemp)
+        {
+            pTemp = CreateFrameworkTemplate(ownerRtti);
+            if (NULL == pTemp)
+            {
+                return ;
+            }
+        }
+        else
+        {
+            pTemp->ref();
+        }
+
+        themeWnd->ref();
+
+        pTemp->SetTargetType(ownerRtti);
+        themeWnd->SetTemplateNode(pTemp);
+        themeWnd->SetResourceElement(target);
+
+        MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
+        if (NULL != mainWnd)
+        {
+            suic::EventHandler h;
+            GetMainReturnEvent(h);
+            themeWnd->SetMainReturnEvent(h);
+            mainWnd->SwitchToThemeView(themeWnd);
+        }
 
         pTemp->unref();
         themeWnd->unref();
@@ -3012,9 +3098,33 @@ suic::RTTIOfInfo* StyleSetterEditor::GetStyleTargetRTTIInfo()
     return rttiInfo;
 }
 
+void StyleSetterEditor::OnMainReturnClick(suic::Object* sender)
+{
+    ThemeEditorWindow* themeWnd = (ThemeEditorWindow*)sender;
+    StyleNode* pStyle = themeWnd->GetStyleNode();
+    EditRootPanel* editPanel = FindEditRttoPanel(this);
+    DesignElement* target = themeWnd->GetResourceElement();
+
+    // 如果控件样式有内容，则设置到控件本身的资源集合
+    if (pStyle->HasContent())
+    {
+        GetSetterNode(true)->SetResNode(pStyle);
+    }
+    else
+    {
+        GetSetterNode(true)->SetValue(NULL);
+    }
+
+    // 刷新控件的新样式资源
+    RefleshSetterToDesignUI();
+
+    editPanel->UpdateDesignPanel(target);
+    UpdateShow();
+}
+
 void StyleSetterEditor::OnEditClick()
 {
-    DesignElement* target = GetEditTarget();
+    /*DesignElement* target = GetEditTarget();
     suic::RTTIOfInfo* rttiInfo = GetStyleTargetRTTIInfo();
 
     if (NULL != rttiInfo && NULL != Project::GetCurrentProject())
@@ -3065,6 +3175,52 @@ void StyleSetterEditor::OnEditClick()
 
         editPanel->UpdateDesignPanel(target);
         UpdateShow();
+
+        pStyle->unref();
+        themeWnd->unref();
+    }*/
+
+    DesignElement* target = GetEditTarget();
+    suic::RTTIOfInfo* rttiInfo = GetStyleTargetRTTIInfo();
+
+    if (NULL != rttiInfo && NULL != Project::GetCurrentProject())
+    {
+        EditRootPanel* editPanel = FindEditRttoPanel(this);
+        StyleNode* pStyle = RTTICast<StyleNode>(GetSetterNode(true)->GetResNode());
+        const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
+        ThemeEditorWindow* themeWnd = NULL;
+
+        // 如果控件本身没有Style，则重新生成一个
+        // Style是放在控件的.Resources资源节点下
+        if (NULL == pStyle)
+        {
+            pStyle = CreateNewStyle(rttiInfo);
+            if (NULL == pStyle)
+            {
+                return;
+            }
+        }
+        else 
+        {
+            pStyle->ref();
+        }
+
+        themeWnd = new ThemeEditorWindow(editPanel->GetRootItem(), NULL);
+        
+        themeWnd->ref();
+        themeWnd->SetStyleNode(pStyle);
+        // 设置资源查询的目标元素
+        // 对于模板来说，必须设置模板的模板父元素，系统会用其来查询资源
+        themeWnd->SetResourceElement(target);
+
+        MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
+        if (NULL != mainWnd)
+        {
+            suic::EventHandler h;
+            GetMainReturnEvent(h);
+            themeWnd->SetMainReturnEvent(h);
+            mainWnd->SwitchToThemeView(themeWnd);
+        }
 
         pStyle->unref();
         themeWnd->unref();

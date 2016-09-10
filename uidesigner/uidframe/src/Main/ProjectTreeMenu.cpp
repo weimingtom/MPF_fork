@@ -208,6 +208,10 @@ bool ElementMenuItemCmd::CanExecute(Object* target, Object* parameter)
     return true;
 }
 
+void ElementMenuItemCmd::OnMainReturnClick(suic::Object* sender, suic::EventArg* e)
+{
+}
+
 void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
 {
     ElementRootItem* rootItem = NULL;
@@ -249,7 +253,7 @@ void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
         {
             if (!item->IsTemplate())
             {
-                const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
+                /*const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
 
                 if (NULL != rootItem && !rootItem->GetRootElement()->IsLocked())
                 {
@@ -260,17 +264,18 @@ void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
                     themeWnd->SetResourceElement(item);
                     themeWnd->ShowDialog(strPath);
                     themeWnd->unref();
-                }
+                }*/
 
-                /*MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
+                MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
                 if (NULL != mainWnd)
                 {
                     ThemeEditorWindow* themeWnd = new ThemeEditorWindow(rootItem, item->GetResourceDictionary());
                     themeWnd->ref();
                     themeWnd->SetResourceElement(item);
+                    themeWnd->SetMainReturnEvent(suic::EventHandler(this, &ElementMenuItemCmd::OnMainReturnClick));
                     mainWnd->SwitchToThemeView(themeWnd);
                     themeWnd->unref();
-                }*/
+                }
             }
         }
         else if (!_name.Equals(_U("更改布局类型")))

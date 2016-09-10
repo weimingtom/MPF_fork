@@ -47,6 +47,29 @@ void ThemeEditorWindow::Dispose()
     FREEREFOBJ(_templatePropEditorWnd);
     FREEREFOBJ(_tempTrgEditorWnd);
     FREEREFOBJ(_styleTrgEditorWnd);*/
+
+    FREEREFOBJ(_styleNode);
+    FREEREFOBJ(_templateNode);
+}
+
+StyleNode* ThemeEditorWindow::GetStyleNode() const
+{
+    return _styleNode;
+}
+
+void ThemeEditorWindow::SetStyleNode(StyleNode* node)
+{
+    SETREFOBJ(_styleNode, node);
+}
+
+TemplateRootItem* ThemeEditorWindow::GetTemplateNode() const
+{
+    return _templateNode;
+}
+
+void ThemeEditorWindow::SetTemplateNode(TemplateRootItem* node)
+{
+    SETREFOBJ(_templateNode, node);
 }
 
 RootItem* ThemeEditorWindow::GetRootItem() const
@@ -156,7 +179,7 @@ void ThemeEditorWindow::OnInitialized(EventArg* e)
         RefleshEditPanel(_U("StyleTriggersPanel"), _U("±à¼­ÑùÊ½"), _U(""));
 
         _styleTrgEditorWnd->FindName(_U("TriggersPanel_Return"))->SetVisibility(suic::Visibility::Collapsed);
-        //_styleTrgEditorWnd->FindName(_U("MainWindow_Return_FromStyle"))->SetVisibility(suic::Visibility::Visible);
+        _styleTrgEditorWnd->FindName(_U("MainWindow_Return_FromStyle"))->SetVisibility(suic::Visibility::Visible);
         
         _styleTrgEditorWnd->SetSetterColl(_styleNode->GetSetterCollection());
         _styleTrgEditorWnd->SetTriggerCollectionNode(NULL, _styleNode->GetTriggerCollection());
@@ -167,7 +190,7 @@ void ThemeEditorWindow::OnInitialized(EventArg* e)
         _tempEditorWnd->SetRootTemplateElement(_templateNode);
         RefleshEditPanel(_U("TemplatePanel"), _U("±à¼­Ä£°æ"), _U(""));
         _tempEditorWnd->FindName(_U("TemplatePanel_Return"))->SetVisibility(suic::Visibility::Collapsed);
-        //_tempEditorWnd->FindName(_U("MainWindow_Return_FromTemplate"))->SetVisibility(suic::Visibility::Visible);
+        _tempEditorWnd->FindName(_U("MainWindow_Return_FromTemplate"))->SetVisibility(suic::Visibility::Visible);
     }
 
     // ×¢²á¿ì½Ý¼ü
@@ -359,17 +382,11 @@ void ThemeEditorWindow::OnReturnMainPanel(Element* sender, RoutedEventArg* e)
     if (NULL != mainWnd)
     {
         mainWnd->SwitchToMainView();
+    }
 
-        DesignHelper::EnterDesignMode();
-
-        if (_rootItem != NULL && _rootItem->IsModified())
-        {
-            _rootItem->Save();
-            _rootItem->Close();
-            _rootItem->GetProject()->Reflesh(true);
-        }
-
-        DesignHelper::ExitDesignMode();
+    if (_mainReturnEvent.safe_bool())
+    {
+        _mainReturnEvent(this, &suic::EventArg::Empty);
     }
 }
 
@@ -399,6 +416,12 @@ void ThemeEditorWindow::SetModified()
     {
         _rootItem->SetModified(true);
     }
+}
+
+void ThemeEditorWindow::SetMainReturnEvent(suic::EventHandler h)
+{
+    _mainReturnEvent.Clear();
+    _mainReturnEvent += h;
 }
 
 PropEditorWindow* ThemeEditorWindow::ShowStylePropEditorWindow()

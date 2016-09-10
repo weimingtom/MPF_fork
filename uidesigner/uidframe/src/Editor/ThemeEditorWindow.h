@@ -148,15 +148,11 @@ public:
         return _templatePropEditorWnd;
     }
 
-    void SetStyleNode(StyleNode* node)
-    {
-        _styleNode = node;
-    }
+    StyleNode* GetStyleNode() const;
+    void SetStyleNode(StyleNode* node);
 
-    void SetTemplateNode(TemplateRootItem* node)
-    {
-        _templateNode = node;
-    }
+    TemplateRootItem* GetTemplateNode() const;
+    void SetTemplateNode(TemplateRootItem* node);
 
     ResourceDictionaryNode* GetResourceNode()
     {
@@ -184,6 +180,8 @@ public:
 
     void ShowPropWindow();
     void SetModified();
+
+    void SetMainReturnEvent(suic::EventHandler h);
 
     void OnDbClickTree(Element* sender, MouseButtonEventArg* e);
 
@@ -250,6 +248,7 @@ protected:
     Project* _project;
 
     EditorStack _editorStatck;
+    suic::EventHandler _mainReturnEvent;
 
     StyleNode* _styleNode;
     TemplateRootItem* _templateNode;

@@ -168,6 +168,8 @@ public:
 
     String ToString();
 
+    void OnMainReturnClick(suic::Object* sender, suic::EventArg* e);
+
 private:
 
     String _name;

@@ -191,14 +191,13 @@ void MainWindow::SwitchToThemeView(suic::Window* themeElem)
         mainView->SetVisibility(suic::Visibility::Collapsed);
         themeView->SetVisibility(suic::Visibility::Visible);
 
+        themeView->GetChildren()->Clear();
+
         suic::XamlReader xamlRead;
         themeElem->ref();
         xamlRead.LoadUri(NULL, themeElem, strPath);
         suic::FrameworkElement* fe = themeElem->FindElem<suic::FrameworkElement>(_U("editRootPanel"));
 
-        //fe->SetMargin(suic::Rect());
-
-        themeView->GetChildren()->Clear();
         themeView->AddChild(themeElem);
 
         themeElem->SetBorderThickness(suic::Rect());
@@ -221,6 +220,7 @@ void MainWindow::SwitchToMainView()
     {
         mainView->SetVisibility(suic::Visibility::Visible);
         themeView->SetVisibility(suic::Visibility::Collapsed);
+        themeView->GetChildren()->Clear();
     }
 }
 

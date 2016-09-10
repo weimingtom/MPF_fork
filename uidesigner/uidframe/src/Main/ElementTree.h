@@ -129,6 +129,7 @@ protected:
     void OnSelectedItemChanged(RoutedPropChangedEventArg* e);
 
     void OnPreviewMouseDoubleClick(MouseButtonEventArg* e);
+    void OnMainReturnClick(suic::Object* sender, suic::EventArg* e);
 
 private:
 
