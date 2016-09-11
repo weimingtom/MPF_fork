@@ -284,6 +284,29 @@ public:
         }
     }
 
+    int ValueFromIndex(int index)
+    {
+        suic::ValueDic<int, int>::Enumerator enumer(&_valMaps, 0);
+        while (enumer.HasNext())
+        {
+            if (enumer.Current()->val == index)
+            {
+                return enumer.Current()->key;
+            }
+        }
+        return index;
+    }
+
+    int ValueToIndex(int iVal)
+    {
+        int index = 0;
+        if (!_valMaps.TryGetValue(iVal, index))
+        {
+            index = iVal;
+        }
+        return index;
+    }
+
     void AddOption(const suic::String& val)
     {
         _options.Add(val);

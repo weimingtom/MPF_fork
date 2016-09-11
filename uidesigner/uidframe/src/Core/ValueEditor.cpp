@@ -1378,6 +1378,8 @@ void ChoiceSetterEditor::NotifySetterChanged()
         int index = -1;
 
         DpItem* dpItem = GetDpItem();
+        OptionDpItem* optDpItem = dynamic_cast<OptionDpItem*>(dpItem);
+
         if (NULL != dpItem)
         {
             index = dpItem->GetSelectIndex();
@@ -1401,6 +1403,10 @@ void ChoiceSetterEditor::NotifySetterChanged()
             if (NULL != meta)
             {
                 index = meta->GetDefaultValue()->ToInt();
+                if (optDpItem != NULL)
+                {
+                    index = optDpItem->ValueToIndex(index);
+                }
             }
         }
 
