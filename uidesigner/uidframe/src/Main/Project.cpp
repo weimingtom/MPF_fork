@@ -372,7 +372,10 @@ Project* Project::OpenPrj(SlnTreeManager* docMana, const suic::String& path)
     }
     else
     {
-        //pPrj->SetMainWindowTitle();
+        if (pPrj != _currentProject)
+        {
+            docMana->GetProjectTree()->SetSelectedItem(pPrj);
+        }
     }
 
     return pPrj;
@@ -554,7 +557,10 @@ Project* Project::CreatePrj(SlnTreeManager* docMana, const suic::String& name, c
     }
     else
     {
-        //pPrj->SetMainWindowTitle();
+        if (pPrj != _currentProject)
+        {
+            docMana->GetProjectTree()->SetSelectedItem(pPrj);
+        }
     }
 
     return pPrj;
