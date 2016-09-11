@@ -196,6 +196,7 @@ void DesignElement::SetNodeName(const suic::String& val)
 void DesignElement::SetTypeInfo(suic::RTTIOfInfo* typeInfo)
 {
     _typeInfo = typeInfo;
+    GetSetterCollection()->SetRTTIOfInfo(typeInfo);
 }
 
 suic::RTTIOfInfo* DesignElement::GetTypeInfo() const
@@ -475,6 +476,10 @@ void DesignElement::GetElementSetterXml(const String& offset, int iCurrSerial, S
                     if (resNode->GetValue() != NULL && resNode->GetValue() != DpProperty::UnsetValue())
                         //if (!propMeta->GetDefaultValue()->Equals(resNode->GetValue()))
                     {
+                        if (dpItem->name.Equals(_U("FontWeight")))
+                        {
+                            int ii = 0;
+                        }
                         String strTmp = dpItem->ValueToString(resNode);
                         String strPropName = pSetterNode->GetName();
                         int iDotPos = strPropName.IndexOf(_U("."));

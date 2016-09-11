@@ -75,8 +75,25 @@ void DpManager::InitPropertyOptions()
                 AddDpItem(optionItem);
                 for (int i = 0; i < vals->GetCount(); ++i)
                 {
-                    optionItem->AddOption(vals->GetItem(i)->ToString());
+                    suic::String strVal(vals->GetItem(i)->ToString());
+                    
+                    strVal.Trim();
+
+                    if (strVal[0] == '#')
+                    {
+                        strVal = strVal.Substring(1);
+                        suic::StringArray strArr;
+                        strArr.SplitString(strVal, _U(":"));
+                        if (strArr.GetCount() == 2)
+                        {
+                            strVal = strArr[0];
+                            optionItem->AddValueMap(strArr[1].ToInt(), i);
+                        }
+                    }
+                    optionItem->AddOption(strVal);
                 }
+
+                optionItem->CheckValueMap();
             }
         }
     }

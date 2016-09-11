@@ -289,11 +289,25 @@ public:
         _options.Add(val);
     }
 
+    void AddValueMap(int val, int index)
+    {
+        _valMaps.Add(val, index);
+    }
+
+    void CheckValueMap()
+    {
+        if (_valMaps.GetCount() != _options.GetCount())
+        {
+            _valMaps.Clear();
+        }
+    }
+
 private:
 
     int GetChoiceIndex(ResNode* val, Integer* pDef)
     {
         int iVal = 0;
+        int iIndex = 0;
 
         pDef->ref();
 
@@ -305,11 +319,18 @@ private:
         pDef->unref();
         
         iVal = val->GetValue()->ToInt();
-        return iVal;
+        
+        if (!_valMaps.TryGetValue(iVal, iIndex))
+        {
+            iIndex = iVal;
+        }
+
+        return iIndex;
     }
 
 private:
 
+    suic::ValueDic<int, int> _valMaps;
     suic::Array<suic::String> _options;
 };
 
