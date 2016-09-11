@@ -21,7 +21,14 @@ DpManager* DpManager::Ins()
 
 void DpManager::AddDpItem(DpItem* pItem)
 {
-    _dpItems.Add(pItem->name, pItem);
+    if (!_dpItems.Contains(pItem->name))
+    {
+        _dpItems.Add(pItem->name, pItem);
+    }
+    else
+    {
+        suic::InvalidValueException(suic::String().Format(_U("Property(%s) has exist"), pItem->name.c_str()), __FILELINE__);
+    }
 }
 
 void DpManager::InitFilterDps()
@@ -47,19 +54,49 @@ void DpManager::InitFilterDps()
     _filterDps.Add(_U("LayoutTransform"), 0);
 }
 
+void DpManager::InitPropertyOptions()
+{
+    suic::ResourceDictionary resDic;
+    resDic.setAutoDelete(false);
+    suic::XamlReader xamlRead;
+    String strPath("/mpfuid;/resource/uidesign/data/PropertyOptions.xaml");
+    xamlRead.LoadUri(NULL, &resDic, strPath);
+    suic::XDictionary* pDic = suic::RTTICast<suic::XDictionary>(resDic.Lookup(_U("propOptions")));
+    if (NULL != pDic)
+    {
+        suic::XDictionary::Enumerator enumer(pDic, 0);
+        while (enumer.HasNext())
+        {
+            suic::String strName = enumer.Current()->key;
+            suic::XArray* vals = suic::RTTICast<suic::XArray>(enumer.Current()->val);
+            if (NULL != vals)
+            {
+                OptionDpItem* optionItem = new OptionDpItem(strName);
+                AddDpItem(optionItem);
+                for (int i = 0; i < vals->GetCount(); ++i)
+                {
+                    optionItem->AddOption(vals->GetItem(i)->ToString());
+                }
+            }
+        }
+    }
+}
+
 void DpManager::InitDefaultDpItems()
 {
     DpProperty::GetProperties(_dps);
 
+    AddDpItem(new VertAlignDpItem(_U("VerticalAlignment")));
+    AddDpItem(new VertAlignDpItem(_U("VerticalContentAlignment")));
+
+    AddDpItem(new HoriAlignDpItem(_U("HorizontalAlignment")));
+    AddDpItem(new HoriAlignDpItem(_U("HorizontalContentAlignment")));
+
+    InitPropertyOptions();
+/*
     AddDpItem(new OrientationDpItem(_U("Orientation"), Integer::RTTIType()));
     AddDpItem(new DockDpItem(_U("Dock"), Integer::RTTIType()));
-
     AddDpItem(new DockDpItem(_U("TabStripPlacement"), Integer::RTTIType()));
-    
-    /*AddDpItem(new HoriAlignDpItem(_U("HorizontalAlignment"), Integer::RTTIType()));
-    AddDpItem(new VertAlignDpItem(_U("VerticalAlignment"), Integer::RTTIType()));
-    AddDpItem(new HoriAlignDpItem(_U("HorizontalContentAlignment"), Integer::RTTIType()));
-    AddDpItem(new VertAlignDpItem(_U("VerticalContentAlignment"), Integer::RTTIType()));*/
 
     AddDpItem(new VisibilityDpItem(_U("Visibility"), Integer::RTTIType()));
     AddDpItem(new WindowStateDpItem(_U("WindowState"), Integer::RTTIType()));
@@ -81,12 +118,8 @@ void DpManager::InitDefaultDpItems()
 
     AddDpItem(new ScrollBarVisibilityDpItem(_U("HorizontalScrollBarVisibility"), Integer::RTTIType()));
     AddDpItem(new ScrollBarVisibilityDpItem(_U("VerticalScrollBarVisibility"), Integer::RTTIType()));
-
-    AddDpItem(new AlignVertDpItem(_U("VerticalAlignment"), Integer::RTTIType()));
-    AddDpItem(new AlignVertDpItem(_U("VerticalContentAlignment"), Integer::RTTIType()));
-
-    AddDpItem(new AlignHoriDpItem(_U("HorizontalAlignment"), Integer::RTTIType()));
-    AddDpItem(new AlignHoriDpItem(_U("HorizontalContentAlignment"), Integer::RTTIType()));
+*/
+    //-----------------------------------------------------------------------------
 
     AddDpItem(new WidthDpItem(_U("Width"), Integer::RTTIType()));
     AddDpItem(new WidthDpItem(_U("Height"), Integer::RTTIType()));
