@@ -180,11 +180,20 @@ void MainWindow::OnMainMenuClick(suic::DpObject* sender, suic::RoutedEventArg* e
     }
 }
 
-void MainWindow::SwitchToThemeView(suic::Window* themeElem)
+void MainWindow::SwitchToThemeView(suic::Window* themeElem, const suic::String& strTitle)
 {
     suic::Panel* mainView = FindElem<suic::Panel>(_U("mainGridView"));
     suic::Panel* themeView = FindElem<suic::Panel>(_U("mainThemeView"));
+    suic::Element* redoPanel = FindName(_U("RedoPanel"));
+
     const String strPath = "/mpfuid;/resource/uidesign/layout/ThemeEditor.xaml";
+
+    if (NULL != redoPanel)
+    {
+        redoPanel->SetVisibility(suic::Visibility::Collapsed);
+    }
+
+    SetTitle(strTitle);
 
     if (mainView != NULL && themeView != NULL)
     {
@@ -215,6 +224,14 @@ void MainWindow::SwitchToMainView()
 {
     suic::Panel* mainView = FindElem<suic::Panel>(_U("mainGridView"));
     suic::Panel* themeView = FindElem<suic::Panel>(_U("mainThemeView"));
+    suic::Element* redoPanel = FindName(_U("RedoPanel"));
+
+    if (NULL != redoPanel)
+    {
+        redoPanel->SetVisibility(suic::Visibility::Visible);
+    }
+
+    SetMainTitle(_mainTitle);
 
     if (mainView != NULL && themeView != NULL)
     {
@@ -222,6 +239,12 @@ void MainWindow::SwitchToMainView()
         themeView->SetVisibility(suic::Visibility::Collapsed);
         themeView->GetChildren()->Clear();
     }
+}
+
+void MainWindow::SetMainTitle(const String& strTitle)
+{
+    _mainTitle = strTitle;
+    SetTitle(_mainTitle);
 }
 
 Project* MainWindow::OpenOrLoadProject()
@@ -248,10 +271,8 @@ void MainWindow::OpenOrLoadProjectSuccess(Project* prj)
     {
         _startWindow->AddRecentlyProject(prj->GetProjectName(), prj->GetProjectPath());
         _startWindow->SaveRecentlyProjects();
-        String strTitle;
 
-        strTitle.Format(_U("MPF界面设计(%s)"), prj->GetProjectPath().c_str());
-        SetTitle(strTitle);
+        _mainTitle.Format(_U("MPF界面设计(%s)"), prj->GetProjectPath().c_str());
 
         prj->GetSlnTreeManager()->RefleshProject(prj);
     }

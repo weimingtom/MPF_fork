@@ -63,6 +63,9 @@ public:
     bool Zip(const String& strZip, const String& pwd);
 
     void SwitchToCurrent();
+    void SetMainWindowTitle();
+
+    void SetMainWindowTitle(suic::String strTitle);
 
     void FindAllResourceDicRootItems(suic::Array<ResourceDicRootItem*>& resRootItems);
 

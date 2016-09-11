@@ -112,8 +112,10 @@ public:
 
     void ShowStartWindow();
 
-    void SwitchToThemeView(suic::Window* themeElem);
+    void SwitchToThemeView(suic::Window* themeElem, const suic::String& strTitle);
     void SwitchToMainView();
+
+    void SetMainTitle(const String& strTitle);
 
 protected:
 
@@ -152,6 +154,7 @@ protected:
 protected:
 
     HMODULE _uidCore;
+    String _mainTitle;
 
     // ÔªËØ¶ÔÏóÊ÷
     ElementTree* _eleTree;

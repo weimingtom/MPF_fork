@@ -2924,7 +2924,9 @@ void TemplateSetterEditor::OnEditClick()
             suic::EventHandler h;
             GetMainReturnEvent(h);
             themeWnd->SetMainReturnEvent(h);
-            mainWnd->SwitchToThemeView(themeWnd);
+            mainWnd->SwitchToThemeView(themeWnd, String().Format(_U("±à¼­Ä£°å - %s£º%s"), 
+                target->GetTypeName().c_str(), 
+                pTemp->GetTemplateType()->typeName));
         }
 
         pTemp->unref();
@@ -3219,7 +3221,7 @@ void StyleSetterEditor::OnEditClick()
             suic::EventHandler h;
             GetMainReturnEvent(h);
             themeWnd->SetMainReturnEvent(h);
-            mainWnd->SwitchToThemeView(themeWnd);
+            mainWnd->SwitchToThemeView(themeWnd, String().Format(_U("±à¼­ÑùÊ½ - %s"), target->GetTypeName().c_str()));
         }
 
         pStyle->unref();

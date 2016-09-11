@@ -5,6 +5,7 @@
 #include "Project.h"
 #include "SlnTreeManager.h"
 
+#include <main/MainWindow.h>
 #include <main/DesignPanel.h>
 #include <System/Tools/CoreHelper.h>
 
@@ -369,6 +370,10 @@ Project* Project::OpenPrj(SlnTreeManager* docMana, const suic::String& path)
         pPrj->unref();
         pPrj = NULL;
     }
+    else
+    {
+        //pPrj->SetMainWindowTitle();
+    }
 
     return pPrj;
 }
@@ -546,6 +551,10 @@ Project* Project::CreatePrj(SlnTreeManager* docMana, const suic::String& name, c
     {
         pPrj->unref();
         pPrj = NULL;
+    }
+    else
+    {
+        //pPrj->SetMainWindowTitle();
     }
 
     return pPrj;
@@ -893,6 +902,25 @@ Project* Project::GetCurrentProject()
     return _currentProject;
 }
 
+void Project::SetMainWindowTitle()
+{
+    if (suic::Application::Current() != NULL)
+    {
+        suic::String strTitle;
+        MainWindow* mainWnd = dynamic_cast<MainWindow*>(Application::Current()->GetMainWindow());
+        strTitle.Format(_U("MPF界面设计(%s)"), GetProjectPath().c_str());
+        mainWnd->SetMainTitle(strTitle);
+    }
+}
+
+void Project::SetMainWindowTitle(suic::String strTitle)
+{
+    if (suic::Application::Current() != NULL)
+    {
+        Application::Current()->GetMainWindow()->SetTitle(strTitle);
+    }
+}
+
 void Project::SwitchToCurrent()
 {
     ApplicationRootItem* appItem = NULL;
@@ -904,6 +932,8 @@ void Project::SwitchToCurrent()
         {
             DesignHelper::SetDesignApplication(appItem->GetApplicationNode()->GetApplication());
         }
+
+        SetMainWindowTitle();
     }
 }
 

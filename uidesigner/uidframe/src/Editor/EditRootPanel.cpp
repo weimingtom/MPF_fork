@@ -7,6 +7,7 @@
 #include <Core/ValueEditor.h>
 #include <Main/Project.h>
 #include <Main/DesignPanel.h>
+#include <Main/MainWindow.h>
 #include <Editor/GridDefWindow.h>
 
 ImplementRTTIOfClass(EditRootPanel, suic::Grid)
@@ -173,20 +174,9 @@ void EditRootPanel::InitEditPanelInfo(RootItem* rootElem, DesignPanel* design)
         if (tempRoot == NULL)
         {
             _rootItem = rootElem;
-            //_tempParent = NULL;
         }
-        /*else
-        {
-            _tempParent = tempRoot->GetTemplateType();
-        }*/
 
         suic::ThemeOp::AddDir(_resName, _resDir);
-        if (suic::Application::Current() != NULL)
-        {
-            suic::String strTitle;
-            strTitle.Format(_U("MPF界面设计(%s)"), _project->GetProjectPath().c_str());
-            Application::Current()->GetMainWindow()->SetTitle(strTitle);
-        }
     }
     else
     {

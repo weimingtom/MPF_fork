@@ -356,11 +356,14 @@ void ProjectTree::OnContextMenu(ContextMenuEventArg* e)
 void ProjectTree::OnSelectedItemChanged(RoutedPropChangedEventArg* e)
 {
     e->SetHandled(true);
-    if (NULL != GetProject())
+    suic::Object* selObj = GetSelectedItem();
+    FilterNode* selItem = suic::RTTICast<FilterNode>(GetSelectedItem());
+
+    if (selItem != NULL)
     {
-        GetProject()->SwitchToCurrent();
+        Project* pPrj = selItem->GetProject();
+        pPrj->SwitchToCurrent();
     }
-    //GetProject()->SwitchToCurrent();
 }
 
 void ProjectTree::OnMainReturnClick(suic::Object* sender, suic::EventArg* e)
@@ -433,7 +436,7 @@ void ProjectTree::OnPreviewMouseDoubleClick(MouseButtonEventArg* e)
                 ThemeEditorWindow* themeWnd = new ThemeEditorWindow(pElemItem, resRootItem->GetResourceDicNode());
                 themeWnd->ref();
                 themeWnd->SetMainReturnEvent(suic::EventHandler(this, &ProjectTree::OnMainReturnClick));
-                mainWnd->SwitchToThemeView(themeWnd);
+                mainWnd->SwitchToThemeView(themeWnd, String().Format(_U("±à¼­Ö÷Ìâ - %s"), resRootItem->GetRelativePath().c_str()));
                 themeWnd->unref();
             }
         }

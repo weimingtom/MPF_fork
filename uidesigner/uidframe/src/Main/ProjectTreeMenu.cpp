@@ -273,7 +273,8 @@ void ElementMenuItemCmd::Execute(Object* target, Object* parameter)
                     themeWnd->ref();
                     themeWnd->SetResourceElement(item);
                     themeWnd->SetMainReturnEvent(suic::EventHandler(this, &ElementMenuItemCmd::OnMainReturnClick));
-                    mainWnd->SwitchToThemeView(themeWnd);
+                    mainWnd->SwitchToThemeView(themeWnd, String().Format(_U("±à¼­×ÊÔ´ - %s(%s)"), 
+                        item->GetDisplayName().c_str(), rootItem->GetRelativePath().c_str()));
                     themeWnd->unref();
                 }
             }
