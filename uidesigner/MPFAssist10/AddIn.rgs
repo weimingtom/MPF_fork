@@ -1,0 +1,81 @@
+HKCR
+{
+	MPFAssist.Connect.1 = s 'Connect Class'
+	{
+		CLSID = s '{FF3B2ABC-E066-47D3-8B56-1700886E679D}'
+	}
+	MPFAssist.Connect = s 'Connect Class'
+	{
+		CLSID = s '{FF3B2ABC-E066-47D3-8B56-1700886E679D}'
+		CurVer = s 'MPFAssist.Connect.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove '{FF3B2ABC-E066-47D3-8B56-1700886E679D}' = s 'Connect Class'
+		{
+			ProgID = s 'MPFAssist.Connect.1'
+			VersionIndependentProgID = s 'MPFAssist.Connect'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{E1202578-F265-4699-9E25-216B4583962A}'
+		}
+	}
+}
+
+HKCU
+{
+	NoRemove 'SOFTWARE'
+	{
+		NoRemove 'Microsoft'
+		{
+			NoRemove 'VSA'
+			{
+				NoRemove '10.0'
+				{
+					NoRemove 'AddIns'
+					{
+						ForceRemove 'MPFAssist.Connect'
+						{
+							val LoadBehavior = d 1
+							val CommandLineSafe = d 0
+							val CommandPreload = d 0
+							val FriendlyName = s 'MPFAssist - No Name provided.'
+							val Description = s 'MPFAssist - No Description provided.'
+							val AboutBoxDetails = s 'For more information about Microsoft, see the Microsoft website at\r\nhttp://www.Microsoft.com\r\nFor customer support, call 1-800-xxx-xxxx.\r\nCopyright (c) 2016 Microsoft Inc.'
+							val AboutBoxIcon = s '%MODULE%,1'
+						}
+					}
+				}
+			}
+		}
+	}
+	NoRemove 'SOFTWARE'
+	{
+		NoRemove 'Microsoft'
+		{
+			NoRemove 'VisualStudio'
+			{
+				NoRemove '10.0'
+				{
+					NoRemove 'AddIns'
+					{
+						ForceRemove 'MPFAssist.Connect'
+						{
+							val LoadBehavior = d 1
+							val CommandLineSafe = d 0
+							val CommandPreload = d 0
+							val FriendlyName = s 'MPFAssist - No Name provided.'
+							val Description = s 'MPFAssist - No Description provided.'
+							val AboutBoxDetails = s 'For more information about Microsoft, see the Microsoft website at\r\nhttp://www.Microsoft.com\r\nFor customer support, call 1-800-xxx-xxxx.\r\nCopyright (c) 2016 Microsoft Inc.'
+							val AboutBoxIcon = s '%MODULE%,1'
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
