@@ -122,6 +122,7 @@ void MainWindow::OpenWindow(const suic::String& strUri)
         FileDir::SplitToPath(strUri, strFilename, strFileext);
 
         FilterNode* pParent = pPrj;
+        RootItem* rootFilter = NULL;
         ElementRootItem* rootItem = NULL;
 
         if (!strName.Empty())
@@ -132,14 +133,28 @@ void MainWindow::OpenWindow(const suic::String& strUri)
         if (NULL != pParent)
         {
             strFilename += _U(".");
-            rootItem = pPrj->AddRootElement(pParent, strFilename + strFileext);
+
+            rootFilter = pPrj->FindRootItem(strFilename + strFileext);
+            rootItem = RTTICast<ElementRootItem>(rootFilter);
+
+            if (NULL != rootFilter && NULL == rootItem)
+            {
+                return ;
+            }
+
+            if (NULL == rootItem)
+            {
+                rootItem = pPrj->AddRootElement(pParent, strFilename + strFileext);
+            }
+
             if (NULL != rootItem)
             {
-                if (!rootItem->IsLoaded())
+                if (rootItem->IsLoaded())
                 {
-                    rootItem->Load(false);
+                    rootItem->Close();                    
                 }
 
+                rootItem->Load(false);
                 _docMana->SwitchToRootElement(NULL, rootItem);
             }
         }
