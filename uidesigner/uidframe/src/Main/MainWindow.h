@@ -112,7 +112,7 @@ public:
     Project* OpenOrLoadProject();
     void OpenOrLoadProjectSuccess(Project* prj);
 
-    void ShowStartWindow();
+    void ShowStartWindow(bool bExitMain);
 
     void SwitchToThemeView(suic::Window* themeElem, const suic::String& strTitle);
     void SwitchToMainView();

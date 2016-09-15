@@ -294,7 +294,7 @@ void MainWindow::OnMainMenuClick(suic::DpObject* sender, suic::RoutedEventArg* e
         }
         else if (strName.Equals(_U("新建")) || strName.Equals(_U("打开")))
         {
-            ShowStartWindow();
+            ShowStartWindow(false);
         }
         else if (strName.Equals(_U("保存")))
         {
@@ -433,7 +433,7 @@ void LoadPrjThread::OnInvoker(Object* sender, InvokerArg* e)
     mainWnd->OpenOrLoadProjectSuccess(_project);
 }
 
-void MainWindow::ShowStartWindow()
+void MainWindow::ShowStartWindow(bool bExitMain)
 {
     if (_skipStartWindow)
     {
@@ -456,7 +456,10 @@ void MainWindow::ShowStartWindow()
 
         if (!_startWindow->IsCanContinue())
         {
-            AsyncClose();
+            if (bExitMain)
+            {
+                AsyncClose();
+            }
         }
         else 
         {
@@ -508,7 +511,7 @@ void MainWindow::OnLoaded(suic::LoadedEventArg* e)
         pLink->AddHandler(suic::Hyperlink::ClickEvent, new suic::RoutedEventHandler(this, &MainWindow::OnHyperlinkClick));
     }
 
-    ShowStartWindow();
+    ShowStartWindow(true);
 }
 
 void MainWindow::InitToolbarEvents()
