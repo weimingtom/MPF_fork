@@ -87,7 +87,12 @@ void MainWindow::OpenWindow(const suic::String& strUri)
     suic::StringArray arrStr;
     Project* pPrj = NULL;
 
-    strDir = FileDir::SplitToDir(strUri);
+    suic::String strFileext;
+    suic::String strFilename;
+    strDir = FileDir::SplitToPath(strUri, strFilename, strFileext);
+
+    strFilename += _U(".");
+    strFilename += strFileext;
 
     strDir.Replace(_U("\\"), _U("/"));
     strDir.Replace(_U("//"), _U("/"));
@@ -110,20 +115,29 @@ void MainWindow::OpenWindow(const suic::String& strUri)
             if (NULL == pPrj)
             {
                 suic::String strPath = strTemp + arrStr[i] + _U(".uiproj");
-                pPrj = _docMana->OpenProject(strPath);
+                if (suic::FileDir::FileExist(strPath))
+                {
+                    suic::String tmpPath = strTemp;
+                    for (int j = i + 1; j < arrStr.GetCount(); ++j)
+                    {
+                        tmpPath += arrStr[j];
+                        tmpPath += _U("/");
+                    }
+
+                    tmpPath += strFilename;
+                    if (suic::FileDir::FileExist(tmpPath))
+                    {
+                        pPrj = _docMana->OpenProject(strPath);
+                    }
+                }
             }
         }
     }
 
     if (NULL != pPrj)
     {
-        suic::String strFileext;
-        suic::String strFilename;
-        FileDir::SplitToPath(strUri, strFilename, strFileext);
-
         FilterNode* pParent = pPrj;
-        RootItem* rootFilter = NULL;
-        ElementRootItem* rootItem = NULL;
+        RootItem* rootItem = NULL;
 
         if (!strName.Empty())
         {
@@ -132,20 +146,35 @@ void MainWindow::OpenWindow(const suic::String& strUri)
 
         if (NULL != pParent)
         {
-            strFilename += _U(".");
+            ElementRootItem* elemRootItem = NULL;
 
-            rootFilter = pPrj->FindRootItem(strFilename + strFileext);
-            rootItem = RTTICast<ElementRootItem>(rootFilter);
-
-            if (NULL != rootFilter && NULL == rootItem)
-            {
-                return ;
-            }
+            rootItem = pPrj->FindRootItem(strFilename);
 
             if (NULL == rootItem)
             {
-                rootItem = pPrj->AddRootElement(pParent, strFilename + strFileext);
+                String strNodeName = Utils::CheckUIXmlRoot(strUri);
+
+                if (strNodeName.Equals(_U("Application")))
+                {
+                    return;
+                }
+                else if (strNodeName.Equals(_U("ResourceDictionary")))
+                {
+                    rootItem = new ResourceDicRootItem();
+                }
+                else
+                {
+                    rootItem = new ElementRootItem(new DesignElement());
+                }
+
+                rootItem->SetFileName(strFilename);
+
+                pParent->AddItem(rootItem);
+
+                //rootItem = pPrj->AddRootElement(pParent, strFilename);
             }
+            
+            elemRootItem = suic::RTTICast<ElementRootItem>(rootItem);
 
             if (NULL != rootItem)
             {
@@ -155,7 +184,11 @@ void MainWindow::OpenWindow(const suic::String& strUri)
                 }
 
                 rootItem->Load(false);
-                _docMana->SwitchToRootElement(NULL, rootItem);
+
+                if (NULL != elemRootItem)
+                {
+                    _docMana->SwitchToRootElement(NULL, elemRootItem);
+                }
             }
         }
     }
