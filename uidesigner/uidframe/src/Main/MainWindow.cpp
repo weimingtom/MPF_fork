@@ -29,6 +29,8 @@ MainWindow::MainWindow()
     _menuBtn = NULL;
 
     _encryWnd = NULL;
+    _skipStartWindow = false;
+    _mode = IUIDFrame::UIDMode::umNormal;
 }
 
 MainWindow::~MainWindow()
@@ -71,6 +73,84 @@ MainWindow::~MainWindow()
     }
 }
 
+void MainWindow::SetSkipStartWindow(bool bSkip)
+{
+    _skipStartWindow = bSkip;
+}
+
+
+void MainWindow::OpenWindow(const suic::String& strUri)
+{
+    suic::String strTemp;
+    suic::String strDir;
+    suic::String strName;
+    suic::StringArray arrStr;
+    Project* pPrj = NULL;
+
+    strDir = FileDir::SplitToDir(strUri);
+
+    strDir.Replace(_U("\\"), _U("/"));
+    strDir.Replace(_U("//"), _U("/"));
+    strDir.Replace(_U("//"), _U("/"));
+
+    arrStr.SplitString(strDir, _U("/"));
+
+    for (int i = 0; i < arrStr.GetCount(); ++i)
+    {
+        strTemp += arrStr[i];
+        strTemp += _U("/");
+
+        if (NULL != pPrj)
+        {
+            strName += arrStr[i];
+        }
+        else
+        {
+            pPrj = _docMana->FindProject(strTemp);
+            if (NULL == pPrj)
+            {
+                suic::String strPath = strTemp + arrStr[i] + _U(".uiproj");
+                pPrj = _docMana->OpenProject(strPath);
+            }
+        }
+    }
+
+    if (NULL != pPrj)
+    {
+        suic::String strFileext;
+        suic::String strFilename;
+        FileDir::SplitToPath(strUri, strFilename, strFileext);
+
+        FilterNode* pParent = pPrj;
+        ElementRootItem* rootItem = NULL;
+
+        if (!strName.Empty())
+        {
+            pParent = pPrj->CreateFilterByDir(strName);
+        }
+
+        if (NULL != pParent)
+        {
+            strFilename += _U(".");
+            rootItem = pPrj->AddRootElement(pParent, strFilename + strFileext);
+            if (NULL != rootItem)
+            {
+                if (!rootItem->IsLoaded())
+                {
+                    rootItem->Load(false);
+                }
+
+                _docMana->SwitchToRootElement(NULL, rootItem);
+            }
+        }
+    }
+}
+
+void MainWindow::SetUIDMode(IUIDFrame::UIDMode mode)
+{
+    _mode = mode;
+}
+
 Project* MainWindow::OpenProject(const suic::String& path)
 {
     return _docMana->OpenProject(path);
@@ -99,6 +179,12 @@ void MainWindow::OnClosing(CancelEventArg* e)
         {
             ;
         }
+    }
+
+    if (_mode == IUIDFrame::UIDMode::umAddin)
+    {
+        Hide();
+        e->SetCancel(true);
     }
 }
 
@@ -301,6 +387,11 @@ void LoadPrjThread::OnInvoker(Object* sender, InvokerArg* e)
 
 void MainWindow::ShowStartWindow()
 {
+    if (_skipStartWindow)
+    {
+        return;
+    }
+
     if (NULL != _startWindow)
     {
         _startWindow->unref();
@@ -544,11 +635,15 @@ void MainWindow::OnPreviewButtonClick(suic::Element* sender, suic::RoutedEventAr
     ObjTreeManager* objMana = _docMana->GetObjTreeManager();
     
     ElementRootItem* rootElem = objMana->GetDesignPanel()->GetRootElement();
-    if (rootElem->IsModified())
+
+    if (NULL != rootElem)
     {
-        rootElem->Save();
+        if (rootElem->IsModified())
+        {
+            rootElem->Save();
+        }
+        ExecutePreview(rootElem);
     }
-    ExecutePreview(rootElem);
 }
 
 bool MainWindow::StartProcess(wchar_t* path, int timeout)

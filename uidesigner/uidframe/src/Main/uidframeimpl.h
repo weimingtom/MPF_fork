@@ -11,10 +11,8 @@
 #ifndef _UIDFRAMEIMPL_H_
 #define _UIDFRAMEIMPL_H_
 
+#include "MainWindow.h"
 #include <uidcore/uidframe.h>
-
-
-typedef delegate<void(int,int,int,int)> MyHandler;
 
 class UIDFrameImpl : public IUIDFrame
 {
@@ -24,18 +22,24 @@ public:
     virtual ~UIDFrameImpl();
 
     virtual bool LoadRes(const suic::String& path, const suic::String& pwd);
-    virtual suic::ElementPtr LoadFrame(const suic::String& path);
+    virtual bool LoadProject(const suic::String& strDir, const suic::String& strTheme, bool bNoExistCreate);
 
-    virtual bool RunFrame(const suic::String& path);
-    virtual bool RunWindow(suic::ElementPtr main);
+    virtual bool RunFrame();
+    virtual bool StartWindow(const suic::String& strUri);
+    virtual void RemoveWindow(const suic::String& strUri);
+
+    virtual void SetUIDMode(IUIDFrame::UIDMode mode);
 
     virtual void Dispose();
 
-    void OnText(int,int,int,int);
+private:
+
+    bool InitApplication();
 
 private:
 
-    MyHandler MyHand;
+    MainWindow* _mainWnd;
+    IUIDFrame::UIDMode _mode;
 };
 
 #endif

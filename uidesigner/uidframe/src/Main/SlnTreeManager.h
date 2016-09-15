@@ -41,6 +41,7 @@ public:
     Project* CreateProject(const suic::String& name, const suic::String& path);
 
     bool ExistProject(const suic::String& prjDir);
+    Project* FindProject(const suic::String& prjDir);
 
     void InitSolutionTree(FrameworkElement* mainWnd);
     void UpdateSolutionTree();

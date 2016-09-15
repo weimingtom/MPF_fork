@@ -1051,7 +1051,13 @@ void Project::FindAllResourceDicRootItems(FilterNode* pParent, suic::Array<Resou
 
 ElementRootItem* Project::AddRootElement(FilterNode* pParent, const String& fileName)
 {
-    String strName = fileName + _U(".xaml");
+    String strName = fileName;
+
+    if (strName.IndexOf(_U(".")) == -1)
+    {
+        strName += _U(".xaml");
+    }
+
     String strPath = pParent->GetFullPath() + strName;
     String strOriPath = FileDir::CalculatePath(TEMPLATE_WINDOW_PATH);
 
@@ -1070,7 +1076,13 @@ ElementRootItem* Project::AddRootElement(FilterNode* pParent, const String& file
 
 ResourceDicRootItem* Project::AddResourceDicRootElement(FilterNode* pParent, const String& fileName)
 {
-    String strName = fileName + _U(".xaml");
+    String strName = fileName;
+
+    if (strName.IndexOf(_U(".")) == -1)
+    {
+        strName += _U(".xaml");
+    }
+
     String strPath = pParent->GetFullPath() + strName;
     String strOriPath = FileDir::CalculatePath(TEMPLATE_THEME_PATH);
 
@@ -1085,6 +1097,48 @@ ResourceDicRootItem* Project::AddResourceDicRootElement(FilterNode* pParent, con
     BackupRootItem(rootItem);
 
     return rootItem;
+}
+
+FilterNode* Project::CreateFilterByDir(const String& strDir)
+{
+    FilterNode* addNode = NULL;
+    String strPath = strDir;
+    strPath.Replace(_U("\\"), _U("/"));
+    strPath.Replace(_U("//"), _U("/"));
+    StringArray vec;
+
+    vec.SplitString(strPath, _U("/"));
+
+    // 为1表示增加到根节点下
+    if (vec.GetCount() == 0)
+    {
+        addNode = this;
+    }
+    else
+    {
+        addNode = this;
+
+        for (int i = 0; i < vec.GetCount(); ++i)
+        {
+            String strSubDir = vec[i];
+            FilterNode* newNode = NULL;
+            strSubDir.Trim();
+
+            if (!strSubDir.Empty())
+            {
+                newNode = addNode->FindItemOnChild(strSubDir);
+                if (NULL == newNode)
+                {
+                    newNode = new FilterNode();
+                    newNode->SetName(strSubDir);
+                    addNode->AddItem(newNode);
+                }
+                addNode = newNode;
+            }
+        }
+    }
+
+    return addNode;
 }
 
 FilterNode* Project::CreateFilterByPath(const String& strUri, String& strName)

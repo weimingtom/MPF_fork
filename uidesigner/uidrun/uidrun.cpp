@@ -24,15 +24,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     UIDGetFrame(frame);
 
     //
-    // 载入设计器资源文件
-    //
-    frame->LoadRes(_U("default.sres"), _U("wrdesign"));
-
-    //
     // 运行
     //
-    frame->RunFrame(_U("/mpfuid;/resource/uidesign/layout/Application.xaml"));
-
+    frame->RunFrame();
     frame = NULL;
 
     //

@@ -17,13 +17,18 @@ class IUIDFrame : public suic::Object
 {
 public:
 
+    enum UIDMode { umNormal, umAddin, };
+
     virtual ~IUIDFrame() {}
 
     virtual bool LoadRes(const suic::String& path, const suic::String& pwd) = 0;
-    virtual suic::ElementPtr LoadFrame(const suic::String& path) = 0;
+    virtual bool LoadProject(const suic::String& strDir, const suic::String& strTheme, bool bNoExistCreate) = 0;
 
-    virtual bool RunFrame(const suic::String& path) = 0;
-    virtual bool RunWindow(suic::ElementPtr main) = 0;
+    virtual bool RunFrame() = 0;
+    virtual bool StartWindow(const suic::String& strUri) = 0;
+    virtual void RemoveWindow(const suic::String& strUri) = 0;
+
+    virtual void SetUIDMode(IUIDFrame::UIDMode mode) = 0;
 
     virtual void Dispose() = 0;
 };

@@ -15,6 +15,8 @@ using namespace suic;
 
 #include "StartWindow.h"
 #include "SlnTreeManager.h"
+
+#include <uidcore/uidframe.h>
 #include <main/EncryResource.h>
 #include <Editor/ControlAssetsWindow.h>
 
@@ -116,6 +118,11 @@ public:
     void SwitchToMainView();
 
     void SetMainTitle(const String& strTitle);
+    void SetSkipStartWindow(bool bSkip);
+
+    void OpenWindow(const suic::String& strUri);
+
+    void SetUIDMode(IUIDFrame::UIDMode mode);
 
 protected:
 
@@ -155,6 +162,9 @@ protected:
 
     HMODULE _uidCore;
     String _mainTitle;
+
+    bool _skipStartWindow;
+    IUIDFrame::UIDMode _mode;
 
     // ÔªËØ¶ÔÏóÊ÷
     ElementTree* _eleTree;

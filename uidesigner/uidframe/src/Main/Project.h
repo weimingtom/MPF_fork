@@ -46,6 +46,9 @@ public:
     String GetProjectDir() const;
     String GetProjectPath() const;
 
+    // 根据传入的path创建FilterNode
+    FilterNode* CreateFilterByDir(const String& strDir);
+
     bool HasModified();
     bool OpenRootElement(ElementRootItem* mainElem);
 

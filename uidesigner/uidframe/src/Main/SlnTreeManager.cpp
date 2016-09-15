@@ -145,7 +145,7 @@ bool SlnTreeManager::RemoveProject(Project* pPrj, bool bTipIfChanged)
     return bSucc;
 }
 
-bool SlnTreeManager::ExistProject(const suic::String& prjDir)
+Project* SlnTreeManager::FindProject(const suic::String& prjDir)
 {
     suic::String strDir = prjDir;
     strDir.Trim();
@@ -157,11 +157,16 @@ bool SlnTreeManager::ExistProject(const suic::String& prjDir)
 
         if (tmDir.CompareI(strDir) == 0)
         {
-            return true;
+            return GetProject(i);
         }
     }
 
-    return false;
+    return NULL;
+}
+
+bool SlnTreeManager::ExistProject(const suic::String& prjDir)
+{
+    return (FindProject(prjDir) != NULL);
 }
 
 Project* SlnTreeManager::CreateProject(const suic::String& name, const suic::String& path)
