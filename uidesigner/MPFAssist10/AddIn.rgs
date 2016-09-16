@@ -46,6 +46,9 @@ HKCU
 							val Description = s 'MPFAssist - No Description provided.'
 							val AboutBoxDetails = s 'For more information about Microsoft, see the Microsoft website at\r\nhttp://www.Microsoft.com\r\nFor customer support, call 1-800-xxx-xxxx.\r\nCopyright (c) 2016 Microsoft Inc.'
 							val AboutBoxIcon = s '%MODULE%,1'
+
+							val SatelliteDllName = s 'MPFAssistRes.dll'
+                            val SatelliteDllPath = s '..\..\..\bin\'
 						}
 					}
 				}
@@ -71,6 +74,9 @@ HKCU
 							val Description = s 'MPFAssist - No Description provided.'
 							val AboutBoxDetails = s 'For more information about Microsoft, see the Microsoft website at\r\nhttp://www.Microsoft.com\r\nFor customer support, call 1-800-xxx-xxxx.\r\nCopyright (c) 2016 Microsoft Inc.'
 							val AboutBoxIcon = s '%MODULE%,1'
+
+							val SatelliteDllName = s 'MPFAssistRes.dll'
+                            val SatelliteDllPath = s '..\..\..\bin\'
 						}
 					}
 				}

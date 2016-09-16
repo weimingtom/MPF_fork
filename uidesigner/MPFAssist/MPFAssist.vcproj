@@ -284,10 +284,6 @@
 				RelativePath=".\AddIn.rgs"
 				>
 			</File>
-			<File
-				RelativePath=".\res\OpenFile.bmp"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>
