@@ -12,9 +12,9 @@ static LPCTSTR UI_OPENFILEID = _T("OpenFile");
 static LPCTSTR UI_OPENMAINWNDID = _T("OpenMainWnd");
 static LPCTSTR UI_OPENSETTINGID = _T("OpenSetting");
 
-static LPCTSTR UI_OPENFILENAME = _T("F123");
-static LPCTSTR UI_OPENMAINWNDNAME = _T("M123");
-static LPCTSTR UI_OPENSETTINGNAME = _T("S1232");
+static LPCTSTR UI_OPENFILENAME = _T("F");
+static LPCTSTR UI_OPENMAINWNDNAME = _T("M");
+static LPCTSTR UI_OPENSETTINGNAME = _T("S");
 
 static int UI_OPENFILECMD = 8001;
 static int UI_OPENMAINWNDCMD = 8002;
@@ -65,6 +65,15 @@ STDMETHODIMP CConnect::OnConnection(IDispatch *pApplication, ext_ConnectMode Con
 
 STDMETHODIMP CConnect::OnDisconnection(ext_DisconnectMode /*RemoveMode*/, SAFEARRAY ** /*custom*/ )
 {
+    if (NULL != _uiFrame.get())
+    {
+        _uiFrame = NULL;
+        //
+        // MPF环境清理
+        //
+        suic::ExitUIWgx();
+    }
+
 	m_pDTE = NULL;
 	m_pAddInInstance = NULL;
 
@@ -83,13 +92,16 @@ suic::String CConnect::GetActiveFilePath()
     suic::String strPath;
     EnvDTE::Document* pDoc = NULL;
 
-    m_pDTE->get_ActiveDocument(&pDoc);
-
-    if (NULL != pDoc)
+    if (m_pDTE != NULL)
     {
-        CComBSTR bsFullName; 
-        pDoc->get_FullName(&bsFullName);
-        strPath = (LPCTSTR)bsFullName;
+        m_pDTE->get_ActiveDocument(&pDoc);
+
+        if (NULL != pDoc)
+        {
+            CComBSTR bsFullName; 
+            pDoc->get_FullName(&bsFullName);
+            strPath = (LPCTSTR)bsFullName;
+        }
     }
 
     return strPath;
@@ -97,7 +109,7 @@ suic::String CConnect::GetActiveFilePath()
 
 void CConnect::InitUIDesigner()
 {
-    if (_uiFrame.get() == NULL)
+    if (m_pDTE != NULL && _uiFrame.get() == NULL)
     {
         //
         // 初始化MPF环境
@@ -115,17 +127,6 @@ void CConnect::InitUIDesigner()
 
 STDMETHODIMP CConnect::OnAddInsUpdate (SAFEARRAY ** /*custom*/ )
 {
-    CComBSTR bsPath;
-    EnvDTE::Document* pDoc = NULL;
-    m_pDTE->get_ActiveDocument(&pDoc);
-    if (NULL != pDoc)
-    {
-        CComBSTR bsFullName; 
-        pDoc->get_FullName(&bsFullName);
-        
-        pDoc->get_Path(&bsPath);
-    }
-
 	return S_OK;
 }
 
@@ -148,12 +149,6 @@ STDMETHODIMP CConnect::OnStartupComplete (SAFEARRAY ** /*custom*/ )
 
 STDMETHODIMP CConnect::OnBeginShutdown (SAFEARRAY ** /*custom*/ )
 {
-    _uiFrame = NULL;
-    //
-    // MPF环境清理
-    //
-    suic::ExitUIWgx();
-
 	return S_OK;
 }
 
@@ -317,6 +312,7 @@ HRESULT CConnect::InitCommandBar(IDispatch *pApplication, ext_ConnectMode Connec
         {  
            bRecreateToolbar = true;  
         }
+
         pCommandBar = NULL;  
     }  
     else  
