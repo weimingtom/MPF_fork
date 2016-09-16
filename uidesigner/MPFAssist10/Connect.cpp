@@ -21,21 +21,21 @@ static int UI_OPENMAINWNDCMD = 8002;
 static int UI_OPENSETTINGCMD = 8003;
 
 static int UI_OPENFILE_BMP = 101;
-static int UI_OPENMAINWND_BMP = 101;
-static int UI_OPENSETTING_BMP = 101;
+static int UI_OPENMAINWND_BMP = 103;
+static int UI_OPENSETTING_BMP = 102;
 
 static stCommandInfo s_commandList[] = {
     {
         UI_OPENFILEID,
         UI_OPENFILENAME,            // 按钮名字  
-        _T("编辑当前文件"),         // 按钮提示  
+        _T("使用MPF编辑当前文件"),  // 按钮提示  
         TRUE,                       // 是否有图标  
         UI_OPENFILE_BMP,            // 对应的位图ID  
         UI_OPENFILECMD,             // 命令ID  
     },
     {
         UI_OPENMAINWNDID,
-        UI_OPENMAINWNDNAME,                    // 按钮名字  
+        UI_OPENMAINWNDNAME,         // 按钮名字  
         _T("打开MPF设计界面"),      // 按钮提示  
         TRUE,                       // 是否有图标  
         UI_OPENMAINWND_BMP,         // 对应的位图ID  
@@ -43,7 +43,7 @@ static stCommandInfo s_commandList[] = {
     },
     {
         UI_OPENSETTINGID,
-        UI_OPENSETTINGNAME,                    // 按钮名字  
+        UI_OPENSETTINGNAME,         // 按钮名字  
         _T("打开MPF助手设置"),      // 按钮提示  
         TRUE,                       // 是否有图标  
         UI_OPENSETTING_BMP,         // 对应的位图ID  
@@ -305,9 +305,10 @@ HRESULT CConnect::InitCommandBar(IDispatch *pApplication, ext_ConnectMode Connec
 
     if (SUCCEEDED(hr))  
     {
-        //pCommands->RemoveCommandBar(pCommandBar);
+        pCommands->RemoveCommandBar(pCommandBar);
+        bRecreateToolbar = true;
 
-        CComPtr<CommandBarControls> pCommandBarControls;  
+        /*CComPtr<CommandBarControls> pCommandBarControls;  
         pCommandBar->get_Controls(&pCommandBarControls);  
         int count = 0;  
         pCommandBarControls->get_Count(&count);  
@@ -315,7 +316,7 @@ HRESULT CConnect::InitCommandBar(IDispatch *pApplication, ext_ConnectMode Connec
         if (count == 0)  
         {  
            bRecreateToolbar = true;  
-        }
+        }*/
         pCommandBar = NULL;  
     }  
     else  
@@ -323,7 +324,7 @@ HRESULT CConnect::InitCommandBar(IDispatch *pApplication, ext_ConnectMode Connec
         bRecreateToolbar = TRUE;  
     }
   
-    if (1 || ConnectMode == 5 || bRecreateToolbar) //5 == ext_cm_UISetup  
+    if (ConnectMode == 5 || bRecreateToolbar) //5 == ext_cm_UISetup  
     {  
         // See if the CodeLib toolbar has been created.  
         hr = FindToolbarByName(pCommandBars, TOOLBAR_NAME, &pCommandBar);  
@@ -355,7 +356,7 @@ HRESULT CConnect::InitCommandBar(IDispatch *pApplication, ext_ConnectMode Connec
                 CComBSTR(commandInfo->m_id),  
                 CComBSTR(commandInfo->m_name),  
                 CComBSTR(commandInfo->m_strTip),  
-                VARIANT_TRUE,  
+                VARIANT_FALSE,  
                 CComVariant(commandInfo->m_bitmapID),  
                 NULL,  
                 (EnvDTE::vsCommandStatusSupported + EnvDTE::vsCommandStatusEnabled),  

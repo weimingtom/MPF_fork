@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding="gb2312"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="MPFAssist"
-	ProjectGUID="{930710F0-639E-406A-B903-3BA98909087D}"
-	RootNamespace="MPFAssist"
-	Keyword="AtlProj"
-	TargetFrameworkVersion="0"
+	Name="MPFAssistRes"
+	ProjectGUID="{29FA97B0-6F5F-4D7D-93D7-856B3891F678}"
+	RootNamespace="MPFAssistRes"
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -18,16 +18,14 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="..\..\..\bin\intermediate\debug\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="del /f/s/q ..\..\..\bin\$(ProjectName).dll"
+				CommandLine="del /f/s/q ..\..\..\bin\1033\$(ProjectName).dll"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -40,24 +38,15 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AddIn.tlb"
-				HeaderFileName="AddIn.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="AddIn_i.c"
-				ProxyFileName="AddIn_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../include/suic;../include"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;MPFASSISTRES_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -66,26 +55,18 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				PerUserRedirection="true"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies="uidframeud.lib"
-				OutputFile="..\..\..\bin\$(ProjectName).dll"
+				AdditionalOptions="/NOENTRY"
+				OutputFile="..\..\..\bin\1033\$(ProjectName).dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../../lib"
-				ModuleDefinitionFile=".\AddIn.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/$(ProjectName).lib"
+				ResourceOnlyDLL="true"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -108,21 +89,19 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="regsrv32 ..\..\..\bin\$(ProjectName).dll"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="..\..\..\bin\intermediate\Release\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="del /f/s/q ..\..\..\bin\$(ProjectName).dll"
+				CommandLine="del /f/s/q ..\..\..\bin\1033\$(ProjectName).dll"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -135,21 +114,15 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AddIn.tlb"
-				HeaderFileName="AddIn.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="AddIn_i.c"
-				ProxyFileName="AddIn_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../include/suic;../include"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL"
-				RuntimeLibrary="0"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MPFASSISTRES_EXPORTS"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -158,27 +131,18 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies="uidframeu.lib"
-				OutputFile="..\..\..\bin\$(ProjectName).dll"
+				OutputFile="..\..\..\bin\1033\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../../../lib"
-				ModuleDefinitionFile=".\AddIn.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/$(ProjectName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -213,19 +177,29 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AddIn.cpp"
+				RelativePath=".\dllmain.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						CompileAsManaged="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						CompileAsManaged="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\AddIn.def"
-				>
-			</File>
-			<File
-				RelativePath=".\AddIn.idl"
-				>
-			</File>
-			<File
-				RelativePath="Connect.cpp"
+				RelativePath=".\MPFAssistRes.cpp"
 				>
 			</File>
 			<File
@@ -255,40 +229,44 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="Connect.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
+			<File
+				RelativePath=".\targetver.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AddIn.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\AddIn.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\AddIn.rgs"
+				RelativePath=".\MPFAssistRes.rc"
 				>
 			</File>
 			<File
 				RelativePath=".\res\OpenFile.bmp"
 				>
 			</File>
+			<File
+				RelativePath=".\res\OpenUI.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\Setting.bmp"
+				>
+			</File>
 		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

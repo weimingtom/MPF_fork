@@ -49,9 +49,12 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icons
+// Icon
 //
-1             ICON      "AddIn.ico"
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+1                       ICON                    "AddIn.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
