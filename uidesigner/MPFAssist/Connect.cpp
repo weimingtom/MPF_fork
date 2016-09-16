@@ -305,10 +305,10 @@ HRESULT CConnect::InitCommandBar(IDispatch *pApplication, ext_ConnectMode Connec
 
     if (SUCCEEDED(hr))  
     {
-        pCommands->RemoveCommandBar(pCommandBar);
-        bRecreateToolbar = true;
+        //pCommands->RemoveCommandBar(pCommandBar);
+        //bRecreateToolbar = true;
 
-        /*CComPtr<CommandBarControls> pCommandBarControls;  
+        CComPtr<CommandBarControls> pCommandBarControls;  
         pCommandBar->get_Controls(&pCommandBarControls);  
         int count = 0;  
         pCommandBarControls->get_Count(&count);  
@@ -316,7 +316,7 @@ HRESULT CConnect::InitCommandBar(IDispatch *pApplication, ext_ConnectMode Connec
         if (count == 0)  
         {  
            bRecreateToolbar = true;  
-        }*/
+        }
         pCommandBar = NULL;  
     }  
     else  
