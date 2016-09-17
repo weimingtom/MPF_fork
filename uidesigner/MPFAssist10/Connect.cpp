@@ -51,6 +51,8 @@ static stCommandInfo s_commandList[] = {
     },
 };
 
+extern HINSTANCE _hInstance;
+
 // CConnect
 STDMETHODIMP CConnect::OnConnection(IDispatch *pApplication, ext_ConnectMode ConnectMode, IDispatch *pAddInInst, SAFEARRAY ** /*custom*/ )
 {

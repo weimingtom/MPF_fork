@@ -94,6 +94,26 @@ public:
 		m_hInstance = hInstance;
 	}
 
+	virtual HRESULT AddCommonRGSReplacements(_Inout_ IRegistrarBase* pRegistrar) throw()
+	{
+		TCHAR strPath[256];
+
+		strPath[0] = _T('\0');
+		::GetModuleFileName(m_hInstance, strPath, 255);
+
+		for (int i = _tcslen(strPath); i >= 0; --i)
+		{
+			if (strPath[i] == _T('\\') || strPath[i] == _T('/'))
+			{
+				strPath[i + 1] = _T('\0');
+				break;
+			}
+		}
+
+		pRegistrar->AddReplacement(_T("MODULE_DIR"), strPath);
+		return CAtlDllModuleT< CAddInModule >::AddCommonRGSReplacements(pRegistrar);
+	}
+
 private:
 	HINSTANCE m_hInstance;
 };

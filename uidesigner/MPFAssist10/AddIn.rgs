@@ -42,13 +42,13 @@ HKCU
 							val LoadBehavior = d 1
 							val CommandLineSafe = d 0
 							val CommandPreload = d 0
-							val FriendlyName = s 'MPFAssist - No Name provided.'
-							val Description = s 'MPFAssist - No Description provided.'
-							val AboutBoxDetails = s 'For more information about Microsoft, see the Microsoft website at\r\nhttp://www.Microsoft.com\r\nFor customer support, call 1-800-xxx-xxxx.\r\nCopyright (c) 2016 Microsoft Inc.'
+							val FriendlyName = s 'MPFAssist'
+							val Description = s 'MPFAssist - MPF助手'
+							val AboutBoxDetails = s 'For more information about MPFAssist, see the MPFAssist website at\r\nhttp://www.shidian.net.cn\r\nFor customer support, Please contact QQ(386666951).\r\nCopyright (c) 2016 视点科技 Inc.'
 							val AboutBoxIcon = s '%MODULE%,1'
 
 							val SatelliteDllName = s 'MPFAssistRes.dll'
-                            val SatelliteDllPath = s '..\..\..\bin\'
+                            val SatelliteDllPath = s '%MODULE_DIR%'
 						}
 					}
 				}
@@ -61,6 +61,26 @@ HKCU
 		{
 			NoRemove 'VisualStudio'
 			{
+				NoRemove '9.0'
+				{
+					NoRemove 'AddIns'
+					{
+						ForceRemove 'MPFAssist.Connect'
+						{
+							val LoadBehavior = d 1
+							val CommandLineSafe = d 0
+							val CommandPreload = d 0
+							val FriendlyName = s 'MPFAssist'
+							val Description = s 'MPFAssist - MPF助手'
+							val AboutBoxDetails = s 'For more information about MPFAssist, see the MPFAssist website at\r\nhttp://www.shidian.net.cn\r\nFor customer support, Please contact QQ(386666951).\r\nCopyright (c) 2016 视点科技 Inc.'
+							val AboutBoxIcon = s '%MODULE%,1'
+
+							val SatelliteDllName = s 'MPFAssistRes.dll'
+                            val SatelliteDllPath = s '%MODULE_DIR%'
+						}
+					}
+				}
+
 				NoRemove '10.0'
 				{
 					NoRemove 'AddIns'
@@ -70,13 +90,13 @@ HKCU
 							val LoadBehavior = d 1
 							val CommandLineSafe = d 0
 							val CommandPreload = d 0
-							val FriendlyName = s 'MPFAssist - No Name provided.'
-							val Description = s 'MPFAssist - No Description provided.'
-							val AboutBoxDetails = s 'For more information about Microsoft, see the Microsoft website at\r\nhttp://www.Microsoft.com\r\nFor customer support, call 1-800-xxx-xxxx.\r\nCopyright (c) 2016 Microsoft Inc.'
+							val FriendlyName = s 'MPFAssist'
+							val Description = s 'MPFAssist - MPF助手'
+							val AboutBoxDetails = s 'For more information about MPFAssist, see the MPFAssist website at\r\nhttp://www.shidian.net.cn\r\nFor customer support, Please contact QQ(386666951).\r\nCopyright (c) 2016 视点科技 Inc.'
 							val AboutBoxIcon = s '%MODULE%,1'
 
 							val SatelliteDllName = s 'MPFAssistRes.dll'
-                            val SatelliteDllPath = s '..\..\..\bin\'
+                            val SatelliteDllPath = s '%MODULE_DIR%'
 						}
 					}
 				}

@@ -5,11 +5,12 @@
 #include "AddIn.h"
 
 CAddInModule _AtlModule;
-
+HINSTANCE _hInstance = NULL;
 
 // DLL Entry Point
 extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+	_hInstance = hInstance;
 	_AtlModule.SetResourceInstance(hInstance);
 	return _AtlModule.DllMain(dwReason, lpReserved); 
 }
