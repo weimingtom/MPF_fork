@@ -262,9 +262,9 @@ void SetterEditorCmd::EditPropertyBinding(SetterEditor* setterEditor)
         resDicNode = editPanel->GetResourceDicNode();
     }
 
-    if (resDicNode == NULL)
+    if (resDicNode == NULL && NULL != pPrj)
     {
-        resDicNode = editPanel->GetProject()->GetApplicationRootItem()->GetApplicationNode()->GetResourceDictionary();
+        resDicNode = pPrj->GetApplicationRootItem()->GetApplicationNode()->GetResourceDictionary();
     }
 
     BindingEditorWindow bindingWnd(targetElem, dp, resDicNode, resNode);
