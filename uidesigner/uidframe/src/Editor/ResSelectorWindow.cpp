@@ -77,7 +77,7 @@ void ResSelectorWindow::OnSelectedChanged(suic::Element* sender, suic::Selection
         else
         {
             pPanel->SetMargin(suic::Rect(5, 5, 0, 0));
-            fromType->SetVisibility(suic::Visibility::Hidden);
+            fromType->SetVisibility(suic::Visibility::Collapsed);
         }
 
         pPanel->GetParent()->UpdateLayout();

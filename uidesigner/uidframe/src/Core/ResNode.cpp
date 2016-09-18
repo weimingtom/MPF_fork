@@ -1609,6 +1609,10 @@ ImageBrushResNode::~ImageBrushResNode()
 
 ResourceUri* ImageBrushResNode::GetResPath()
 {
+    if (NULL != GetImageBrush() && NULL != GetImageBrush()->GetImageSource())
+    {
+        _resPath = GetImageBrush()->GetImageSource()->GetUri();
+    }
     return (&_resPath);
 }
 
