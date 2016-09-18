@@ -107,7 +107,8 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
         }
 
         ResNode* resNode = pSetter->GetResNode();
-        if (resNode->GetValue() != NULL && resNode->GetValue() != DpProperty::UnsetValue())
+
+        if (resNode != NULL && NullResNode::Value != resNode)
         {
             if (dp != NULL)
             {
@@ -142,30 +143,34 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
 
             if (resNode->IsSingleValue())
             {
-                DpItem* dpItem = pSetter->GetDpItem();
-                String strTmp;
-
-                if (NULL != dpItem)
+                if (resNode->GetValue() != NULL && resNode->GetValue() != DpProperty::UnsetValue())
                 {
-                    strTmp = dpItem->ValueToString(pSetter->GetResNode());
+                    DpItem* dpItem = pSetter->GetDpItem();
+                    String strTmp;
+
+                    if (NULL != dpItem)
+                    {
+                        strTmp = dpItem->ValueToString(pSetter->GetResNode());
+                    }
+                    else
+                    {
+                        // tbl
+                        ResNode* sRes = pSetter->GetResNode();
+                        if (NULL != sRes)
+                        {
+                            strTmp = sRes->GetSingleXml();
+                        }
+                    }
+
+                    strSetterXml += _U(" Value=\"");
+                    strSetterXml += strTmp;
+
+                    strSetterXml += _U("\" />\n");
                 }
                 else
                 {
-                    // tbl
-                    ResNode* sRes = pSetter->GetResNode();
-                    if (NULL != sRes)
-                    {
-                        strTmp = sRes->GetSingleXml();
-                    }
+                    strSetterXml = _U("");
                 }
-
-                if (!strTmp.Empty())
-                {
-                    strSetterXml += _U(" Value=\"");
-                    strSetterXml += strTmp;
-                }
-
-                strSetterXml += _U("\" />\n");
             }
             else
             {
