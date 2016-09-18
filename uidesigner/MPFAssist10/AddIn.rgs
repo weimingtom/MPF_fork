@@ -100,6 +100,26 @@ HKCU
 						}
 					}
 				}
+
+                NoRemove '12.0'
+				{
+					NoRemove 'AddIns'
+					{
+						ForceRemove 'MPFAssist.Connect'
+						{
+							val LoadBehavior = d 1
+							val CommandLineSafe = d 0
+							val CommandPreload = d 0
+							val FriendlyName = s 'MPFAssist'
+							val Description = s 'MPFAssist - MPF助手'
+							val AboutBoxDetails = s 'For more information about MPFAssist, see the MPFAssist website at\r\nhttp://www.shidian.net.cn\r\nFor customer support, Please contact QQ(386666951).\r\nCopyright (c) 2016 视点科技 Inc.'
+							val AboutBoxIcon = s '%MODULE%,1'
+
+							val SatelliteDllName = s 'MPFAssistRes.dll'
+                            val SatelliteDllPath = s '%MODULE_DIR%'
+						}
+					}
+				}
 			}
 		}
 	}

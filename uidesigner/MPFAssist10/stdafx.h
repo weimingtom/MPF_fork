@@ -64,6 +64,7 @@
 
 	//The following #import imports DTE100
 	#import <dte100.olb> raw_interfaces_only named_guids
+
 #pragma warning( default : 4146 )
 #pragma warning( default : 4278 )
 
