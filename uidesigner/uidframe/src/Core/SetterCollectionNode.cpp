@@ -107,45 +107,44 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
         }
 
         ResNode* resNode = pSetter->GetResNode();
-
-        if (dp != NULL)
+        if (resNode->GetValue() != NULL && resNode->GetValue() != DpProperty::UnsetValue())
         {
-            propMeta = dp->GetMetadata(ownerType);
-
-            if (NULL == propMeta)
+            if (dp != NULL)
             {
-                propMeta = dp->GetDefaultMetadata();
+                propMeta = dp->GetMetadata(ownerType);
+
+                if (NULL == propMeta)
+                {
+                    propMeta = dp->GetDefaultMetadata();
+                }
+
+                int iDotPos = strPropName.IndexOf(_U("."));
+
+                if (iDotPos == -1 && 
+                    dp->IsAttached() && 
+                    !ownerType->InheritFrom(dp->GetOwnerType()) && 
+                    !ownerType->InheritFrom(propMeta->GetType()))
+                {
+                    strSetter += dp->GetOwnerType()->typeName;
+                    strSetter += _U(".");
+                }
             }
 
-            int iDotPos = strPropName.IndexOf(_U("."));
+            strSetter += strPropName;
+            strSetter += _U("\"");
 
-            if (iDotPos == -1 && 
-                dp->IsAttached() && 
-                !ownerType->InheritFrom(dp->GetOwnerType()) && 
-                !ownerType->InheritFrom(propMeta->GetType()))
+            if (!pSetter->GetTargetName().Empty())
             {
-                strSetter += dp->GetOwnerType()->typeName;
-                strSetter += _U(".");
+                strSetterXml += _U(" TargetName=\"");
+                strSetterXml += pSetter->GetTargetName();
+                strSetterXml += _U("\"");
             }
-        }
 
-        strSetter += strPropName;
-        strSetter += _U("\"");
-
-        if (!pSetter->GetTargetName().Empty())
-        {
-            strSetterXml += _U(" TargetName=\"");
-            strSetterXml += pSetter->GetTargetName();
-            strSetterXml += _U("\"");
-        }
-
-        if (resNode->IsSingleValue())
-        {
-            if (resNode->GetValue() != NULL && resNode->GetValue() != DpProperty::UnsetValue())
+            if (resNode->IsSingleValue())
             {
                 DpItem* dpItem = pSetter->GetDpItem();
                 String strTmp;
-                
+
                 if (NULL != dpItem)
                 {
                     strTmp = dpItem->ValueToString(pSetter->GetResNode());
@@ -165,32 +164,32 @@ suic::String SetterCollectionNode::GetResXml(const String& offset)
                     strSetterXml += _U(" Value=\"");
                     strSetterXml += strTmp;
                 }
-            }
 
-            strSetterXml += _U("\" />\n");
-        }
-        else
-        {
-            String strTmp = pSetter->GetResNode()->GetResXml(offset + ResNode::OFFSET2);
-
-            if (!strTmp.Empty())
-            {
-                strSetterXml += _U(">\n");
-                strSetterXml += offset + ResNode::OFFSET1 + _U("<Setter.Value>\n");
-                strSetterXml += strTmp;
-                strSetterXml += offset + ResNode::OFFSET1 + _U("</Setter.Value>\n");
-                strSetterXml += offset + _U("</Setter>\n");
+                strSetterXml += _U("\" />\n");
             }
             else
             {
-                strSetterXml += _U("/>\n");
-            }
-        }
+                String strTmp = pSetter->GetResNode()->GetResXml(offset + ResNode::OFFSET2);
 
-        if (!strSetterXml.Empty())
-        {
-            strXml += strSetter;
-            strXml += strSetterXml;
+                if (!strTmp.Empty())
+                {
+                    strSetterXml += _U(">\n");
+                    strSetterXml += offset + ResNode::OFFSET1 + _U("<Setter.Value>\n");
+                    strSetterXml += strTmp;
+                    strSetterXml += offset + ResNode::OFFSET1 + _U("</Setter.Value>\n");
+                    strSetterXml += offset + _U("</Setter>\n");
+                }
+                else
+                {
+                    strSetterXml += _U("/>\n");
+                }
+            }
+
+            if (!strSetterXml.Empty())
+            {
+                strXml += strSetter;
+                strXml += strSetterXml;
+            }
         }
     }
 

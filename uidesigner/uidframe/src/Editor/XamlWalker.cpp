@@ -1404,10 +1404,11 @@ void XamlWalker::WalkTemplateElement(DesignElement* dElem, suic::FrameworkElemen
         IXamlNode* pChildNode = pNode->Current();
         suic::String strName = pChildNode->GetName();
         suic::FEFactory* feChild = suic::FEFactory::Create();
-        suic::RTTIOfInfo* childInfo = BuildFactory::Ins()->Lookup(strName);
+        suic::RTTIOfInfo* childInfo = NULL;
 
         if (strName.IndexOf(namePrefix, 0) != String::npos)
         {
+            childInfo = BuildFactory::Ins()->Lookup(strNodeName);
             String kidName = strName.Substring(namePrefix.Length());
             suic::DpProperty* dp = ParseProp(childInfo, kidName);
             if (NULL != dp)
@@ -1430,6 +1431,10 @@ void XamlWalker::WalkTemplateElement(DesignElement* dElem, suic::FrameworkElemen
 
                 continue;
             }
+        }
+        else
+        {
+            childInfo = BuildFactory::Ins()->Lookup(strName);
         }
 
         feChild->SetType(childInfo);

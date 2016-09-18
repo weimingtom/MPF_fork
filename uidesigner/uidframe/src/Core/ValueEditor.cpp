@@ -91,7 +91,7 @@ static EditRootPanel* FindEditRttoPanel(suic::FrameworkElement* elem)
     while (parent)
     {
         editPanel = suic::DynamicCast<EditRootPanel>(parent);
-        if (NULL != editPanel && editPanel->IsVisible())
+        if (NULL != editPanel/* && editPanel->IsVisible()*/)
         {
             break;
         }
@@ -504,6 +504,17 @@ void SetterEditor::SetRealValue(Object* val, bool bCreate)
         }
 
         RefleshSetterToDesignUI();
+
+        SetterCollectionNode* pSetterColl = NULL;
+        
+        if (NULL == val)
+        {
+            pSetterColl = suic::RTTICast<SetterCollectionNode>(pSetterNode->GetParent());
+            if (NULL != pSetterColl)
+            {
+                pSetterColl->RemoveItem(pSetterNode);
+            }
+        }
     }
 
     if (val != NULL)
@@ -3126,7 +3137,11 @@ void StyleSetterEditor::OnMainReturnClick(suic::Object* sender)
     // 刷新控件的新样式资源
     RefleshSetterToDesignUI();
 
-    editPanel->UpdateDesignPanel(target);
+    if (NULL != editPanel)
+    {
+        editPanel->UpdateDesignPanel(target);
+    }
+
     UpdateShow();
 }
 

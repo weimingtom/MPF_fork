@@ -379,14 +379,15 @@ void ThemeEditorWindow::OnReturnMainPanel(Element* sender, RoutedEventArg* e)
 {
     e->SetHandled(true);
     MainWindow* mainWnd = dynamic_cast<MainWindow*>(suic::Application::Current()->GetMainWindow());
-    if (NULL != mainWnd)
-    {
-        mainWnd->SwitchToMainView();
-    }
 
     if (_mainReturnEvent.safe_bool())
     {
         _mainReturnEvent(this, &suic::EventArg::Empty);
+    }
+
+    if (NULL != mainWnd)
+    {
+        mainWnd->SwitchToMainView();
     }
 }
 
