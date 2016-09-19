@@ -681,6 +681,26 @@ SetterCollectionNode* DesignElement::GetSetterCollection()
     return _setterColl;
 }
 
+void DesignElement::SetResourceDictionary(ResourceDictionaryNode* val)
+{
+    if (NULL != val)
+    {
+        SETREFOBJ(_resDic, val);
+    }
+    else
+    {
+        ResourceDictionaryNode* resDic = new ResourceDictionaryNode();
+        SETREFOBJ(_resDic, resDic);
+    }
+
+    suic::FrameworkElement* fe = GetUIElement();
+
+    if (NULL != fe)
+    {
+        fe->SetResources(_resDic->GetResourceDictionary());
+    }
+}
+
 ResourceDictionaryNode* DesignElement::GetResourceDictionary()
 {
     return _resDic;

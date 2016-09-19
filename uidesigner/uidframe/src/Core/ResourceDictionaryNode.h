@@ -117,6 +117,7 @@ public:
 
     SetterCollectionNode* GetSetterCollection();
     ResourceDictionaryNode* GetResourceDictionary();
+    void SetResourceDictionary(ResourceDictionaryNode* val);
 
     void Close();
     void Clear();

@@ -599,6 +599,24 @@ ResourceDictionaryNode* ApplicationNode::GetResourceDictionary()
     return _resDic;
 }
 
+void ApplicationNode::SetResourceDictionary(ResourceDictionaryNode* val)
+{
+    if (NULL != val)
+    {
+        SETREFOBJ(_resDic, val);
+    }
+    else
+    {
+        ResourceDictionaryNode* resDic = new ResourceDictionaryNode();
+        SETREFOBJ(_resDic, resDic);
+    }
+
+    if (NULL != _value)
+    {
+        _value->SetResources(_resDic->GetResourceDictionary());
+    }
+}
+
 void ApplicationNode::Close()
 {
 }

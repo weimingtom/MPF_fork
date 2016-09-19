@@ -129,6 +129,7 @@ void ResApplyWindow::OnDownMoveButtonClick(suic::DpObject* sender, suic::RoutedE
 void ResApplyWindow::OnOkButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
 {
     e->SetHandled(true);
+
     MergedDictionariesNode* mergedDic = _resDicNode->GetMergedDictionariesNode();
     if (NULL != mergedDic)
     {
@@ -140,12 +141,44 @@ void ResApplyWindow::OnOkButtonClick(suic::DpObject* sender, suic::RoutedEventAr
         ResApplyItem* resItem = dynamic_cast<ResApplyItem*>(itemColl->GetItem(i));
         if (resItem->GetResourceDicRootItem() != NULL)
         {
+            /*if (!resItem->GetResourceDicRootItem()->IsLoaded())
+            {
+                resItem->GetResourceDicRootItem()->Load(false);
+            }*/
+
             ResourceDictionaryNode* pResNode = new ResourceDictionaryNode();
             pResNode->SetSourceResource(resItem->GetResourceDicRootItem());
             _resDicNode->AddMergedDictionary(pResNode);
         }
     }
     _rootItem->SetModified(true);
+
+    // 从新读取其资源
+    suic::String strXml = _resDicNode->GetResXml(_U(""));
+    ResourceDicRootItem resRootItem;
+
+    resRootItem.setAutoDelete(false);
+    resRootItem.SetProject(_rootItem->GetProject());
+    
+    XamlLoader xamlLoader;
+
+    if (xamlLoader.LoadResourceDicRootXamlFromMemory(&resRootItem, strXml.c_str()))
+    {
+        ElementRootItem* elemRootItem = suic::RTTICast<ElementRootItem>(_rootItem);
+        if (NULL != elemRootItem)
+        {
+            elemRootItem->GetRootElement()->SetResourceDictionary(resRootItem.GetResourceDicNode());
+        }
+        else
+        {
+            ApplicationRootItem* appRootItem = suic::RTTICast<ApplicationRootItem>(_rootItem);
+            if (NULL != appRootItem)
+            {
+                appRootItem->GetApplicationNode()->SetResourceDictionary(resRootItem.GetResourceDicNode());
+            }
+        }
+    }
+
     AsyncClose();
 }
 

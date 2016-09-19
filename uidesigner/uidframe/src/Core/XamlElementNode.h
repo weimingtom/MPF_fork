@@ -115,6 +115,8 @@ public:
     SetterCollectionNode* GetSetterCollection();
     ResourceDictionaryNode* GetResourceDictionary();
 
+    void SetResourceDictionary(ResourceDictionaryNode* val);
+
     bool CreateElement(DesignElementPtr& elem, const String& strPath, const String& clsName);
     void SetElementAsTemplate(DesignElement* elem);
 
