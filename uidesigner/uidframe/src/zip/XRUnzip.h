@@ -111,6 +111,15 @@ public:
         }
     }
 
+    int GetZipItemCount()
+    {
+        return 0;
+    }
+
+    void ZipItemToPath(int index, const suic::String& strPath)
+    {
+    }
+
 protected:
 
     HZIP _hzip;
