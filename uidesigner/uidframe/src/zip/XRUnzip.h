@@ -69,6 +69,25 @@ public:
         }
     }
 
+	int GetZipItemData(int index, suic::Mulstr& data, suic::String& name)
+    {
+        ZIPENTRYW ze; 
+        int iSize = 0;
+        data = "";
+		
+		ZRESULT zipRes = GetZipItemW(_hzip, index, &ze);
+		
+		if (zipRes == ZR_OK)
+		{
+			iSize = ze.unc_size;
+			data.Resize(iSize);
+			name = ze.name;
+			UnzipItem(_hzip, index, data.c_str(), ze.unc_size, ZIP_MEMORY);
+		}
+		
+		return iSize;
+    }
+	
     int GetZipItemData(suic::Char* lpszName, suic::Mulstr& data)
     {
         ZIPENTRYW ze; 
