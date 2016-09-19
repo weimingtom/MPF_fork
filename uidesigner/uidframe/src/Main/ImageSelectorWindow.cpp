@@ -235,7 +235,7 @@ void ImageSelectorWindow::OnDbClickTree(Element* sender, MouseButtonEventArg* e)
         return;
     }
 
-    if (!_strSelImage.Empty())
+    if (!_strSelImage.Empty() && FindElem<suic::Button>(_U("Ok"))->IsEnabled())
     {
         if (_strSelImage.IndexOf(_U(".")) == -1)
         {
