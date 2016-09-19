@@ -216,6 +216,8 @@ ItemCollection* ResTypePool::GetTypeItems()
         _types->AddItem(new ResTypeItem(OfPoint::RTTIType(), _U("fPoint")));
         _types->AddItem(new ResTypeItem(ORect::RTTIType(), _U("Rect")));
         _types->AddItem(new ResTypeItem(OfRect::RTTIType(), _U("fRect")));
+
+        _types->AddItem(new ResTypeItem(ImageSource::RTTIType(), _U("ImageSource")));
     }
 
     return _types;

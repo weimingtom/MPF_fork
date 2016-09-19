@@ -590,6 +590,35 @@ protected:
     bool OnBaseValueChangedOverride(Element* sender);
 };
 
+class ImageSourceEditor : public EditorControl
+{
+public:
+
+    ImageSourceEditor();
+    ~ImageSourceEditor();
+
+    RTTIOfClass(ImageSourceEditor)
+
+    suic::ImageSource* GetImageSource()
+    {
+        return RTTICast<suic::ImageSource>(GetRealValue());
+    }
+
+protected:
+
+    void OnUpdateValue();
+    void CreateDefaultValue(ResNodePtr& obj);
+
+    void OnApplyTemplate();
+    bool OnBaseValueChangedOverride(Element* sender);
+
+    void OnSourceClick(suic::Element* sender, suic::RoutedEventArg* e);
+
+private:
+
+    suic::TextBox* _info;
+};
+
 class BrushEditor : public EditorControl
 {
 public:

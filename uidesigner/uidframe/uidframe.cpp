@@ -88,6 +88,8 @@ void InitDControls()
     suic::BuildFactory::Ins()->Add(RectEditor::RTTIType());
     suic::BuildFactory::Ins()->Add(fRectEditor::RTTIType());
 
+    suic::BuildFactory::Ins()->Add(ImageSourceEditor::RTTIType());
+
     suic::BuildFactory::Ins()->Add(BrushEditor::RTTIType());
     suic::BuildFactory::Ins()->Add(NullBrushEditor::RTTIType());
     suic::BuildFactory::Ins()->Add(NullBrushSetterEditor::RTTIType());

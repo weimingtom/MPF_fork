@@ -148,6 +148,7 @@ void ImageSelectorWindow::OnInitialized(EventArg* e)
     {
         InitTreeView();
         _treeView->AddSelectedItemChanged(new suic::RoutedPropChangedEventHandler(this, &ImageSelectorWindow::OnTreeItemSelectedChanged));
+        _treeView->AddPreviewMouseDoubleClick(new MouseButtonEventHandler(this, &ImageSelectorWindow::OnDbClickTree));
     }
 }
 
@@ -165,6 +166,7 @@ void ImageSelectorWindow::OnLoaded(suic::LoadedEventArg* e)
     if (NULL != pOkBtn)
     {
         pOkBtn->AddClick(new ClickEventHandler(this, &ImageSelectorWindow::OnOkClick));
+        pOkBtn->Enable(false);
     }
 
     suic::Button* pCancelBtn = FindElem<suic::Button>(_U("Cancel"));
@@ -192,7 +194,10 @@ void ImageSelectorWindow::OnCancelClick(suic::Element* sender, suic::RoutedEvent
 void ImageSelectorWindow::OnTreeItemSelectedChanged(suic::Element* sender, suic::RoutedPropChangedEventArg* e)
 {
     Object* selObj = e->GetNewValue();
+    suic::Button* pOkBtn = FindElem<suic::Button>(_U("Ok"));
     ImageRootItem* selElem = suic::DynamicCast<ImageRootItem>(selObj);
+
+    pOkBtn->Enable(false);
 
     if (NULL != selElem)
     {
@@ -211,9 +216,31 @@ void ImageSelectorWindow::OnTreeItemSelectedChanged(suic::Element* sender, suic:
                 {
                     tipBlock->SetText(_strSelImage);
                 }
+                pOkBtn->Enable(true);
+            }
+            else
+            {
+                _strSelImage = _U("");
             }
         }
     }
 
     e->SetHandled(true);
+}
+
+void ImageSelectorWindow::OnDbClickTree(Element* sender, MouseButtonEventArg* e)
+{
+    if (e->GetMouseButton() != suic::MouseButton::mbLeftButton)
+    {
+        return;
+    }
+
+    if (!_strSelImage.Empty())
+    {
+        if (_strSelImage.IndexOf(_U(".")) == -1)
+        {
+            _strSelImage = _U("");
+        }
+        AsyncClose();
+    }
 }

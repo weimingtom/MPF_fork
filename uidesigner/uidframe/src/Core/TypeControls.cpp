@@ -45,6 +45,8 @@ ImplementRTTIOfClass(fPointEditor, EditorControl)
 ImplementRTTIOfClass(RectEditor, EditorControl)
 ImplementRTTIOfClass(fRectEditor, EditorControl)
 
+ImplementRTTIOfClass(ImageSourceEditor, EditorControl)
+
 ImplementRTTIOfClass(BrushEditor, EditorControl)
 ImplementRTTIOfClass(NullBrushEditor, BrushEditor)
 ImplementRTTIOfClass(StyleEditor, EditorControl)
@@ -1781,6 +1783,84 @@ bool fRectEditor::OnBaseValueChangedOverride(Element* sender)
     }
 
     return bChanged;
+}
+
+//=====================================================
+// ImageSourceEditor
+ImageSourceEditor::ImageSourceEditor()
+{
+    _info = NULL;
+}
+
+ImageSourceEditor::~ImageSourceEditor()
+{
+}
+
+void ImageSourceEditor::OnUpdateValue()
+{
+    if (NULL != _info && NULL != GetImageSource())
+    {
+        _info->SetText(GetImageSource()->GetUri().ToString());
+    }
+}
+
+void ImageSourceEditor::CreateDefaultValue(ResNodePtr& obj)
+{
+    ResNode::CreateResNode(new ImageSource(), obj);
+}
+
+void ImageSourceEditor::OnApplyTemplate()
+{
+    suic::Button* pBtn = RTTICast<suic::Button>(GetTemplateChild(_U("PART_EditSource")));
+    if (NULL != pBtn)
+    {
+        pBtn->AddClick(new suic::ClickEventHandler(this, &ImageSourceEditor::OnSourceClick));
+    }
+    _info = RTTICast<suic::TextBox>(GetTemplateChild(_U("PART_Source")));
+
+    OnUpdateValue();
+}
+
+bool ImageSourceEditor::OnBaseValueChangedOverride(Element* sender)
+{
+    return true;
+}
+
+void ImageSourceEditor::OnSourceClick(suic::Element* sender, suic::RoutedEventArg* e)
+{
+    EditRootPanel* pEditPanel = FindEditRttoPanel(this);
+
+    e->SetHandled(true);
+
+    if (pEditPanel->GetRootItem() == NULL)
+    {
+        return;
+    }
+
+    suic::String imgSource;
+    Project* pPrj = pEditPanel->GetRootItem()->GetProject();
+    const String strPath = "/mpfuid;/resource/uidesign/layout/ImagesSelector.xaml";
+    ItemCollection* obserItems = pPrj->GetItemColl();
+    ImageSelectorWindow imgWindow(pPrj->GetSlnTreeManager(), obserItems, pEditPanel->GetResDir());
+
+    imgWindow.setAutoDelete(false);
+    imgWindow.ShowDialog(strPath);
+
+    imgSource = imgWindow.GetSelectedImage();
+
+    if (!imgSource.Empty())
+    {
+        ResourceUri resUri;
+
+        resUri.SetComponent(pEditPanel->GetResName());
+        resUri.SetResourcePath(imgSource);
+        suic::ImageSource* imgSrc = new ImageSource();
+
+        imgSrc->SetUri(resUri);
+        UpdateRealValue(imgSrc);
+
+        NotifyValueToEditRootPanel();
+    }
 }
 
 //=====================================================

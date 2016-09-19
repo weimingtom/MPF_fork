@@ -105,6 +105,7 @@ public:
     void OnOkClick(suic::Element* sender, suic::RoutedEventArg* e);
     void OnCancelClick(suic::Element* sender, suic::RoutedEventArg* e);
     void OnTreeItemSelectedChanged(suic::Element* sender, suic::RoutedPropChangedEventArg* e);
+    void OnDbClickTree(Element* sender, MouseButtonEventArg* e);
 
 protected:
 
