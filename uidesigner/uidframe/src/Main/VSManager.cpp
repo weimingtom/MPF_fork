@@ -9,20 +9,22 @@
 
 static suic::Mulstr VSTEMPLATENAME = "MPFTemplate";
 
-void VSManager::UnzipTo(const suic::Mulstr& data, const suic::String& strDir, const suic::String& name)
+void VSManager::UnzipTo(const suic::String& strZipPath, const suic::String& strDir, const suic::String& name)
 {
 	XRUnzip xrZip;
-    suic::Byte* prjData = new suic::Byte[data.Length()];
-    memcpy(prjData, data.c_str(), data.Length());
+    //suic::Byte* prjData = new suic::Byte[data.Length()];
+    //memcpy(prjData, data.c_str(), data.Length());
+    //suic::Mulstr data;
+    //Utils::ReadResFromFile(suic::Mulstr(strZipPath.c_str()).c_str(), "rb", data);
 
-	if (xrZip.OpenFromMemory(prjData, data.Length()))
+    if (xrZip.OpenFromFile(strZipPath.c_str()))
 	{
         int index = 0;
 
 		for (;;)
 		{
 			suic::String shortFile;
-			suic::Mulstr unzipData;
+			suic::ByteStream unzipData;
 			int iSize = xrZip.GetZipItemData(index, unzipData, shortFile);
 			if (iSize < 0)
 			{
@@ -51,8 +53,7 @@ void VSManager::UnzipTo(const suic::Mulstr& data, const suic::String& strDir, co
 	
 			if (iSize > 0 && fs.Open(strPath))
 			{
-                unzipData.Replace("\r", "");
-				fs.WriteAscii(unzipData.c_str());
+                fs.WriteByte(unzipData.GetBuffer(), unzipData.GetSize());
 				fs.Close();
 			}
 
@@ -64,23 +65,33 @@ void VSManager::UnzipTo(const suic::Mulstr& data, const suic::String& strDir, co
 bool VSManager::CreateVSProject(const suic::String& strVer, const suic::String& name, const suic::String& strDir)
 {
 	// 获取对应的VS工程数据
-	suic::Mulstr data;
     suic::String strPath;
+    suic::String strDll;
     FileReader fReader;
 
     strPath = FileDir::CalculatePath(String().Format(_U("resource\\uidesign\\VSTemplate\\%s\\trunk.zip"), strVer.c_str()));
 
-    Utils::ReadResFromFile(suic::Mulstr(strPath.c_str()).c_str(), "rb", data);
 	// 解压到指定目录
-	UnzipTo(data, strDir, name);
+	UnzipTo(strPath, strDir, name);
 	
 	// 用name替换模板的工程项目名称
 	ReplacePrjName(name, strDir + name);
 
     strPath = FileDir::CalculatePath(String().Format(_U("resource\\uidesign\\VSTemplate\\common\\common.zip")));
-    Utils::ReadResFromFile(suic::Mulstr(strPath.c_str()).c_str(), "rb", data);
 	// 解压到指定目录
-	UnzipTo(data, strDir, name);
+	UnzipTo(strPath, strDir, name);
+
+    strPath.Format(_U("%s\\%s\\bin\\suicoreu.dll"), strDir.c_str(), name.c_str());
+    FileDir::CopyFileTo(FileDir::CalculatePath(_U("suicoreu.dll")), strPath, true);
+
+    strPath.Format(_U("%s\\%s\\bin\\suicoreud.dll"), strDir.c_str(), name.c_str());
+    FileDir::CopyFileTo(FileDir::CalculatePath(_U("suicoreud.dll")), strPath, true);
+
+    strPath.Format(_U("%s\\%s\\bin\\suiwgxu.dll"), strDir.c_str(), name.c_str());
+    FileDir::CopyFileTo(FileDir::CalculatePath(_U("suiwgxu.dll")), strPath, true);
+
+    strPath.Format(_U("%s\\%s\\bin\\suiwgxud.dll"), strDir.c_str(), name.c_str());
+    FileDir::CopyFileTo(FileDir::CalculatePath(_U("suiwgxud.dll")), strPath, true);
 
     return true;
 }
@@ -121,7 +132,7 @@ void VSManager::ReplacePrjName(const suic::String& name, const suic::String& str
                 data.Replace(VSTEMPLATENAME.c_str(), name.c_str());
 
                 fWriter.Open(strPath);
-                fWriter.WriteAscii(data);
+                fWriter.WriteByte((suic::Byte*)data.c_str(), data.Length());
             }
 		}
         else

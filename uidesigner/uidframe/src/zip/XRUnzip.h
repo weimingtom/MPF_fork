@@ -24,7 +24,7 @@ public:
         return _hzip;
     }
 
-    bool OpenFromFile(TCHAR* lpszName)
+    bool OpenFromFile(const TCHAR* lpszName)
     {
         Close();
         _hzip = OpenZip((void*)lpszName, 0, ZIP_FILENAME);
@@ -69,11 +69,10 @@ public:
         }
     }
 
-	int GetZipItemData(int index, suic::Mulstr& data, suic::String& name)
+    int GetZipItemData(int index, suic::ISeqStream& data, suic::String& name)
     {
         ZIPENTRYW ze; 
         int iSize = 0;
-        data = "";
 		
         ZRESULT zipRes = ::GetZipItemW(_hzip, index, &ze);
 		
@@ -81,11 +80,34 @@ public:
 		{
 			iSize = ze.unc_size;
             name = ze.name;
+            ZRESULT zrRes = ZR_OK;
 
             if (iSize > 0)
             {
-                data.Resize(iSize);
-			    UnzipItem(_hzip, index, data.c_str(), ze.unc_size, ZIP_MEMORY);
+                const int READBYTES = 1024 * 64;
+                int unZipSize = ze.unc_size;
+                int zipSize = READBYTES;
+                suic::Byte zipBuff[READBYTES] = {0};
+
+                zipSize = min(zipSize, unZipSize);
+
+                for (;;)
+                {
+                    zrRes = UnzipItem(_hzip, index, zipBuff, zipSize, ZIP_MEMORY);
+                    if (ZR_MORE == zrRes || ZR_OK == zrRes)
+                    {
+                        data.Write(zipBuff, zipSize);
+                    }
+                    if (ZR_MORE == zrRes)
+                    {
+                        unZipSize -= zipSize;
+                        zipSize = min(READBYTES, unZipSize);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
 		}
         else

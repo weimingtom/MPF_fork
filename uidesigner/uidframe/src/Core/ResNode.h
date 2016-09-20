@@ -57,11 +57,11 @@ public:
         }
     }
 
-    void WriteAscii(const Mulstr& info)
+    void WriteByte(Byte* info, int iSize)
     {
         if (_f != NULL)
         {
-            fwrite(info.c_str(), info.Length(), 1, _f);
+            fwrite(info, iSize, 1, _f);
         }
     }
 
@@ -69,7 +69,7 @@ public:
     {
         Close();
 
-        _f = fopen(Mulstr(strFile.c_str()).c_str(), "w");
+        _f = fopen(Mulstr(strFile.c_str()).c_str(), "wb");
 
         return (NULL != _f);
     }
