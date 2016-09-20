@@ -17,6 +17,8 @@
 #include <Editor/SystemResource.h>
 #include <System/Tools/TreeBuilder.h>
 
+#include <main/VSManager.h>
+
 #include "uidframeimpl.h"
 
 static suic::String APP_URI = _U("/mpfuid;/resource/uidesign/layout/Application.xaml");
@@ -27,6 +29,8 @@ UIDFrameImpl::UIDFrameImpl()
     : _mainWnd(NULL)
     , _mode(IUIDFrame::UIDMode::umNormal)
 {
+    //VSManager::CreateVSProject(_U("2008"), _U("MPF999"), _U("d:\\"));
+
     InitDControls();
 
     SystemResource::Ins()->InitDefaultResDic();

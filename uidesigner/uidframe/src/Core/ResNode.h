@@ -106,10 +106,14 @@ public:
     {
         if (_f != NULL)
         {
-            int iSize = ftell(_f);
+            suic::Byte buff[512] = {0};
 
-            info.Resize(iSize);
-            fread(info.c_str(), iSize, 1, _f);
+            size_t iSize = fread(buff, 1, 512, _f);
+            while (iSize > 0)
+            {
+                info.Append((const char*)buff, (int)iSize);
+                iSize = fread(buff, 512, 1, _f);
+            }
         }
     }
 
@@ -117,7 +121,7 @@ public:
     {
         Close();
 
-        _f = fopen(Mulstr(strFile.c_str()).c_str(), "r");
+        _f = fopen(Mulstr(strFile.c_str()).c_str(), "rb");
 
         return (NULL != _f);
     }

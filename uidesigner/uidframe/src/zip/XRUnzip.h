@@ -80,10 +80,18 @@ public:
 		if (zipRes == ZR_OK)
 		{
 			iSize = ze.unc_size;
-			data.Resize(iSize);
-			name = ze.name;
-			UnzipItem(_hzip, index, data.c_str(), ze.unc_size, ZIP_MEMORY);
+            name = ze.name;
+
+            if (iSize > 0)
+            {
+                data.Resize(iSize);
+			    UnzipItem(_hzip, index, data.c_str(), ze.unc_size, ZIP_MEMORY);
+            }
 		}
+        else
+        {
+            iSize =  -1;
+        }
 		
 		return iSize;
     }
