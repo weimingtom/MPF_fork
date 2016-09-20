@@ -4292,7 +4292,7 @@ ZRESULT GetZipItemW(HZIP hz, int index, ZIPENTRYW *zew)
 	return lasterrorU;
 }
 
-int GetZipItemCount()
+int GetZipItemCount(HZIP hz)
 {
     if (hz==0) 
 	{
@@ -4306,24 +4306,6 @@ int GetZipItemCount()
 
 	TUnzip *unz = han->unz;
     return unz->cze.comp_size;
-}
-
-ZRESULT UnzipItem(HZIP hz, int index,void *dst,unsigned int len,DWORD flags)
-{
-    if (hz==0) 
-	{
-		lasterrorU=ZR_ARGS;
-		return ZR_ARGS;
-	}
-	TUnzipHandleData *han = (TUnzipHandleData*)hz;
-	if (han->flag!=1) 
-	{
-		lasterrorU=ZR_ZMODE;
-		return ZR_ZMODE;
-	}
-	TUnzip *unz = han->unz;
-	lasterrorU = unz->UnzipItem(index,dst,len,flags);
-	return lasterrorU;
 }
 
 ZRESULT FindZipItemA(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRY *ze)

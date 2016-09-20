@@ -57,11 +57,67 @@ public:
         }
     }
 
+    void WriteAscii(const Mulstr& info)
+    {
+        if (_f != NULL)
+        {
+            fwrite(info.c_str(), info.Length(), 1, _f);
+        }
+    }
+
     bool Open(String strFile)
     {
         Close();
 
         _f = fopen(Mulstr(strFile.c_str()).c_str(), "w");
+
+        return (NULL != _f);
+    }
+
+    void Close()
+    {
+        if (_f)
+        {
+            fclose(_f);
+            _f = NULL;
+        }
+    }
+
+private:
+
+    FILE* _f;
+};
+
+class FileReader
+{
+public:
+
+    FileReader()
+    {
+        _f = NULL;
+    }
+
+    ~FileReader()
+    {
+        Close();
+    }
+
+    void Read(Mulstr& info)
+    {
+        if (_f != NULL)
+        {
+            int iSize = ftell(_f);
+
+            info.Resize(iSize);
+            fread(info.c_str(), iSize, 1, _f);
+        }
+    }
+
+    bool Open(String strFile)
+    {
+        Close();
+
+        _f = fopen(Mulstr(strFile.c_str()).c_str(), "r");
 
         return (NULL != _f);
     }

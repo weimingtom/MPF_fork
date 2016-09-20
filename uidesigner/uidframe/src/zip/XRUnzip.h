@@ -75,7 +75,7 @@ public:
         int iSize = 0;
         data = "";
 		
-		ZRESULT zipRes = GetZipItemW(_hzip, index, &ze);
+        ZRESULT zipRes = ::GetZipItemW(_hzip, index, &ze);
 		
 		if (zipRes == ZR_OK)
 		{
@@ -109,15 +109,6 @@ public:
 
             return iSize;
         }
-    }
-
-    int GetZipItemCount()
-    {
-        return 0;
-    }
-
-    void ZipItemToPath(int index, const suic::String& strPath)
-    {
     }
 
 protected:
