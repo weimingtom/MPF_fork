@@ -29,7 +29,7 @@ UIDFrameImpl::UIDFrameImpl()
     : _mainWnd(NULL)
     , _mode(IUIDFrame::UIDMode::umNormal)
 {
-    VSManager::CreateVSProject(_U("2010"), _U("MPF999"), _U("d:\\"));
+    //VSManager::CreateVSProject(_U("2010"), _U("MPF999"), _U("d:\\"));
 
     InitDControls();
 
