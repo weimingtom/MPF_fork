@@ -1229,6 +1229,7 @@ void DesignElement::OnInstantiateDesignElement(suic::FrameworkElement* fe)
 void DesignElement::InstantiateDesignElement(DesignElement* parent, FrameworkElement* templatedParent, bool fromTempParent)
 {
     FrameworkElement* fe = CASTTOFE(_typeInfo->Create());
+
     if (NULL == fe)
     {
         throw InvalidValueException(_U("cant create designelement"), __FILELINE__);

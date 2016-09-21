@@ -1437,20 +1437,33 @@ void XamlWalker::WalkTemplateElement(DesignElement* dElem, suic::FrameworkElemen
             childInfo = BuildFactory::Ins()->Lookup(strName);
         }
 
-        feChild->SetType(childInfo);
-        feChild->SetName(strName);
-        feFactory->AddChild(feChild);
+        if (NULL == childInfo)
+        {
+            // 非法元素节点
+            ReadContext rCtx;
 
-        DesignElement* dFeChild = CreateDesignElement(childInfo);
+            rCtx.d = NULL;
+            rCtx.ac = NULL;
+            rCtx.fe = NULL;
+            WalkUserXamlElement(dElem, rCtx, pChildNode);
+        }
+        else
+        {
+            feChild->SetType(childInfo);
+            feChild->SetName(strName);
+            feFactory->AddChild(feChild);
 
-        dFeChild->SetTypeInfo(childInfo);
-        dFeChild->SetNodeName(strName);
+            DesignElement* dFeChild = CreateDesignElement(childInfo);
 
-        dElem->AddXamlElement(dFeChild);
+            dFeChild->SetTypeInfo(childInfo);
+            dFeChild->SetNodeName(strName);
 
-        WalkTemplateElement(dFeChild, fe, pChildNode, feChild);
+            dElem->AddXamlElement(dFeChild);
 
-        dElem->OnFinishReadChildElement(dFeChild);
+            WalkTemplateElement(dFeChild, fe, pChildNode, feChild);
+
+            dElem->OnFinishReadChildElement(dFeChild);
+        }
     }
 }
 
