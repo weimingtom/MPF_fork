@@ -783,6 +783,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Main\VSWindow.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Main\VSWindow.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\main\XamlRootItem.cpp"
 					>
 				</File>
