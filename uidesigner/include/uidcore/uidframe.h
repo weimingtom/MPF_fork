@@ -25,10 +25,14 @@ public:
     virtual bool LoadProject(const suic::String& strDir, const suic::String& strTheme, bool bNoExistCreate) = 0;
 
     virtual bool RunFrame() = 0;
+    
+    virtual bool UpdateWindow(const suic::String& strUri) = 0;
     virtual bool StartWindow(const suic::String& strUri) = 0;
     virtual void RemoveWindow(const suic::String& strUri) = 0;
 
     virtual void SetUIDMode(IUIDFrame::UIDMode mode) = 0;
+
+    virtual void ShowCreateVS() = 0;
 
     virtual void Dispose() = 0;
 };

@@ -9,6 +9,7 @@
 
 VSWindow::VSWindow()
 {
+    _checkedVs = _U("2008");
 }
 
 VSWindow::~VSWindow()
@@ -38,39 +39,41 @@ void VSWindow::OnOpenDirButtonClick(suic::DpObject* sender, suic::RoutedEventArg
 
 void VSWindow::OnButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
 {
-    suic::Element* pElem = suic::RTTICast<suic::Element>(sender);
-    suic::TextBox* prjName = FindElem<suic::TextBox>(_U("PrjName"));
-    suic::TextBox* prjDir = FindElem<suic::TextBox>(_U("PrjDir"));
-
-    suic::String strName = prjName->GetText();
-    suic::String strDir = prjDir->GetText();
-
-    strName.Trim();
-    strDir.Trim();
-
     e->SetHandled(true);
 
-    if (strName.Empty())
-    {
-        suic::Toast::Show(_U("请输入工程名称！"), Toast::DelayClose::ShortTime);
-        return;
-    }
+    suic::Element* pElem = suic::RTTICast<suic::Element>(sender);
 
-    if (strDir.Empty())
-    {
-        suic::Toast::Show(_U("请输入工程路径！"), Toast::DelayClose::ShortTime);
-        return;
-    }
-
-    if (strName.Equals(_U("OKBtn")))
+    if (pElem->GetName().Equals(_U("OkBtn")))
     {
         if (_checkedVs.Empty())
         {
             return;
         }
+        
+        suic::TextBox* prjName = FindElem<suic::TextBox>(_U("PrjName"));
+        suic::TextBox* prjDir = FindElem<suic::TextBox>(_U("PrjDir"));
+
+        suic::String strName = prjName->GetText();
+        suic::String strDir = prjDir->GetText();
+
+        strName.Trim();
+        strDir.Trim();
+
+        if (strName.Empty())
+        {
+            suic::Toast::Show(_U("请输入工程名称！"), Toast::DelayClose::ShortTime);
+            return;
+        }
+
+        if (strDir.Empty())
+        {
+            suic::Toast::Show(_U("请输入工程路径！"), Toast::DelayClose::ShortTime);
+            return;
+        }
 
         VSManager::CreateVSProject(_checkedVs, strName, strDir);
     }
+
     AsyncClose();
 }
 

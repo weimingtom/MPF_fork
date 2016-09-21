@@ -6,6 +6,8 @@
 #include "MainWindow.h"
 #include "DesignPanel.h"
 #include "Solution.h"
+
+#include <main/VSWindow.h>
 #include <main/XamlRootItem.h>
 
 #include <shellapi.h>
@@ -646,6 +648,8 @@ void MainWindow::OnMenuButtonClick(suic::Element* sender, suic::RoutedEventArg* 
 void MainWindow::OnExportResButtonClick(suic::Element* sender, suic::RoutedEventArg* e)
 {
     e->SetHandled(true);
+
+    //VSWindow::StartVSCreator();
 
     if (Utils::CheckUseTimeout(_U("这是Beta版本,请重新启动!")))
     {

@@ -195,7 +195,7 @@ STDMETHODIMP CConnect::Exec (
     {
         if (_uiFrame.get() != NULL)
         {
-            _uiFrame->StartWindow(GetActiveFilePath());
+            _uiFrame->UpdateWindow(GetActiveFilePath());
         }
     }
     else if (strName.Equals(GetCmdName(UI_OPENMAINWNDID)))
@@ -207,6 +207,10 @@ STDMETHODIMP CConnect::Exec (
     }
     else if (strName.Equals(GetCmdName(UI_OPENSETTINGID)))
     {
+		if (_uiFrame.get() != NULL)
+        {
+            _uiFrame->ShowCreateVS();
+        }
     }
 
     return S_OK;

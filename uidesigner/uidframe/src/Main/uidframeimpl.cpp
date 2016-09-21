@@ -17,6 +17,7 @@
 #include <Editor/SystemResource.h>
 #include <System/Tools/TreeBuilder.h>
 
+#include <main/VSWindow.h>
 #include <main/VSManager.h>
 
 #include "uidframeimpl.h"
@@ -100,7 +101,7 @@ bool UIDFrameImpl::RunFrame()
     return true;
 }
 
-bool UIDFrameImpl::StartWindow(const suic::String& strUri)
+bool UIDFrameImpl::UpdateWindow(const suic::String& strUri)
 {
     if (InitApplication())
     {
@@ -115,8 +116,21 @@ bool UIDFrameImpl::StartWindow(const suic::String& strUri)
     return true;
 }
 
+bool UIDFrameImpl::StartWindow(const suic::String& strUri)
+{
+    return UpdateWindow(strUri);
+}
+
 void UIDFrameImpl::RemoveWindow(const suic::String& strUri)
 {
+}
+
+void UIDFrameImpl::ShowCreateVS()
+{
+    if (InitApplication())
+    {
+        VSWindow::StartVSCreator();
+    }
 }
 
 void UIDFrameImpl::SetUIDMode(IUIDFrame::UIDMode mode)
