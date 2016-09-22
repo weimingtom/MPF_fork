@@ -27,7 +27,7 @@ public:
     static void SetTemplateParent(DpObject* parent, FrameworkElement* child);
     static void SetTemplateDesignMode(FrameworkElement* child);
 
-    static void ReadDefaultThemeData(suic::Mulstr& data);
+    static void ReadDefaultThemeData(suic::ISStream* data);
 };
 
 }

@@ -69,7 +69,7 @@ public:
         }
     }
 
-    int GetZipItemData(int index, suic::ISeqStream& data, suic::String& name)
+    int GetZipItemData(int index, suic::ISStream& data, suic::String& name)
     {
         ZIPENTRYW ze; 
         int iSize = 0;

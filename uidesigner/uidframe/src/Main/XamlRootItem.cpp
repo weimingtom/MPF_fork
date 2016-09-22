@@ -541,7 +541,7 @@ bool ElementRootItem::OnLoadFromXml()
         OnClose();
 
         strXml.EncodeUtf8();
-        xamlLoader.LoadElementRootXamlFromMemory(this, strXml);
+        xamlLoader.LoadElementRootXamlFromMemory(this, strXml.c_str(), strXml.Length());
 
         if (isCurrent)
         {
@@ -1132,7 +1132,9 @@ void TemplateRootItem::ParseTemplateValue(Project* pPrj, FrameworkElement* fe, O
     {
         XamlWalker walker(pPrj);
         IXamlNode* pRoot = NULL;
-        xamlDoc->LoadMemory(strXml.c_str());
+        suic::Mulstr strData(strXml.c_str());
+
+        xamlDoc->LoadMemory((suic::Byte*)strData.c_str(), strData.Length());
         pRoot = xamlDoc->GetRootNode();
         if (NULL != pRoot)
         {
@@ -1463,7 +1465,7 @@ bool XamlLoader::LoadResourceDicRootXaml(ResourceDicRootItem* root, const String
     }
 }
 
-bool XamlLoader::LoadElementRootXamlFromMemory(ElementRootItem* root, const Mulstr& data)
+bool XamlLoader::LoadElementRootXamlFromMemory(ElementRootItem* root, const char* data, int size)
 {
     bool bSucc = false;
     String strErr;
@@ -1474,7 +1476,7 @@ bool XamlLoader::LoadElementRootXamlFromMemory(ElementRootItem* root, const Muls
 
     try
     {
-        bSucc = walker.WalkMemory(NULL, NULL, data.c_str());
+        bSucc = walker.WalkMemory(NULL, NULL, data, size);
         root->UpdateRootElement(walker.GetDesignElement());
     }
     catch (suic::Exception& e)
@@ -1493,7 +1495,7 @@ bool XamlLoader::LoadElementRootXamlFromMemory(ElementRootItem* root, const Muls
     }
 }
 
-bool XamlLoader::LoadResourceDicRootXamlFromMemory(ResourceDicRootItem* root, const Mulstr& data)
+bool XamlLoader::LoadResourceDicRootXamlFromMemory(ResourceDicRootItem* root, const char* data, int size)
 {
     bool bSucc = false;
     String strErr;
@@ -1504,7 +1506,7 @@ bool XamlLoader::LoadResourceDicRootXamlFromMemory(ResourceDicRootItem* root, co
 
     try
     {
-        bSucc = walker.WalkMemory(root->GetResourceDicNode(), NULL, data.c_str());
+        bSucc = walker.WalkMemory(root->GetResourceDicNode(), NULL, data, size);
     }
     catch (suic::Exception& e)
     {

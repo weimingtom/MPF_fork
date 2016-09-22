@@ -59,7 +59,7 @@ bool UIDFrameImpl::LoadRes(const suic::String& path, const suic::String& pwd)
 {
     //suic::ResourceHelper::SetSystemRes(path, pwd);
     //UIEncrypt::Encrypt(pwd, suic::FileDir::CalculatePath(path));
-    suic::ThemeOp::AddUri(_U("mpfuid"), path, pwd);
+    suic::ThemeOp::AddTheme(_U("mpfuid"), path, pwd);
     suic::ThemeOp::AddDir(_U("mpfuid"), FileDir::CalculatePath(_U("")));
     return true;
 }

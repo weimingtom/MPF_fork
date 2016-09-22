@@ -161,8 +161,9 @@ void ResApplyWindow::OnOkButtonClick(suic::DpObject* sender, suic::RoutedEventAr
     resRootItem.SetProject(_rootItem->GetProject());
     
     XamlLoader xamlLoader;
+    suic::Mulstr strData(strXml.c_str());
 
-    if (xamlLoader.LoadResourceDicRootXamlFromMemory(&resRootItem, strXml.c_str()))
+    if (xamlLoader.LoadResourceDicRootXamlFromMemory(&resRootItem, strData.c_str(), strData.Length()))
     {
         ElementRootItem* elemRootItem = suic::RTTICast<ElementRootItem>(_rootItem);
         if (NULL != elemRootItem)

@@ -31,7 +31,9 @@ void StyleNode::ParseStyleValue(Project* pPrj, FrameworkElement* fe, ObjectPtr& 
     {
         XamlWalker walker(pPrj);
         IXamlNode* pRoot = NULL;
-        xamlDoc->LoadMemory(strXml.c_str());
+        suic::Mulstr strData(strXml.c_str());
+
+        xamlDoc->LoadMemory((suic::Byte*)strData.c_str(), strData.Length());
         pRoot = xamlDoc->GetRootNode();
         if (NULL != pRoot)
         {

@@ -97,7 +97,7 @@ public:
     }
 
     bool WalkUri(Object* dObj, Object* component, const String& strUri);
-    bool WalkMemory(Object* dObj, Object* component, const char* strXml);
+    bool WalkMemory(Object* dObj, Object* component, const char* strXml, int size);
 
     bool ReadTemplateRes(RTTIOfInfo* targetInfo, suic::FrameworkElement* fe, IXamlNode* pNode, ResourceItem& resItem);
     bool ReadStyleRes(suic::FrameworkElement* fe, IXamlNode* pNode, ResourceItem& resItem);

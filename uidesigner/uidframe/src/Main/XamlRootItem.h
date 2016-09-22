@@ -523,8 +523,8 @@ public:
     bool LoadElementRootXaml(ElementRootItem* root, const String& strPath);
     bool LoadResourceDicRootXaml(ResourceDicRootItem* root, const String& strPath);
 
-    bool LoadElementRootXamlFromMemory(ElementRootItem* root, const Mulstr& data);
-    bool LoadResourceDicRootXamlFromMemory(ResourceDicRootItem* root, const Mulstr& data);
+    bool LoadElementRootXamlFromMemory(ElementRootItem* root, const char* data, int size);
+    bool LoadResourceDicRootXamlFromMemory(ResourceDicRootItem* root, const char* data, int size);
 };
 
 #endif

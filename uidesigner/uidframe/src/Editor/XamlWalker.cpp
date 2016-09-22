@@ -81,10 +81,10 @@ bool XamlWalker::WalkUri(Object* dObj, Object* component, const String& strUri)
     return HandleXamlDoc(dObj, component);
 }
 
-bool XamlWalker::WalkMemory(Object* dObj, Object* component, const char* strXml)
+bool XamlWalker::WalkMemory(Object* dObj, Object* component, const char* strXml, int size)
 {
     _xamlDoc = XamlTools::CreateXamlDoc();
-    _xamlDoc->LoadMemory(strXml);
+    _xamlDoc->LoadMemory((suic::Byte*)strXml, size);
     return HandleXamlDoc(dObj, component);
 }
 

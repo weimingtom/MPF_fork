@@ -101,12 +101,12 @@ bool  SystemResource::InitDefaultResDic()
     {
         //static suic::String strDefRes(_U("resource/uidesign/Template/theme.xaml"));
         //suic::String strPath = suic::FileDir::CalculatePath(strDefRes);
-        suic::Mulstr data;
-        DesignHelper::ReadDefaultThemeData(data);
+        suic::ByteStream data;
+        DesignHelper::ReadDefaultThemeData(&data);
         XamlLoader xamlLoader;
         _resRootItem = new ResourceDicRootItem();
         _resRootItem->ref();
-        return xamlLoader.LoadResourceDicRootXamlFromMemory(_resRootItem, data);
+        return xamlLoader.LoadResourceDicRootXamlFromMemory(_resRootItem, (const char*)data.GetBuffer(), data.GetSize());
         //return xamlLoader.LoadResourceDicRootXaml(_resRootItem, strPath);
     }
     return (NULL != _resRootItem);
