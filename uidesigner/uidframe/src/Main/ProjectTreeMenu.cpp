@@ -78,7 +78,7 @@ void PrjTreeMenu::Initialize(SlnTreeManager* stm, TreeView* tv)
         images = new suic::ObservableCollection();
         images->ref();
 
-        images->AddItem(new ImageNodeCmd(this, _U("打开")));
+        images->AddItem(new ImageNodeCmd(this, _U("打开图像")));
         images->AddItem(new ImageNodeCmd(this, _U("删除")));
         images->AddItem(new ImageNodeCmd(this, _U("重命名")));
         images->AddItem(new suic::Separator());
@@ -477,7 +477,7 @@ void ImageNodeCmd::Execute(Object* target, Object* parameter)
 
     if (NULL != item)
     {
-        if (_name.Equals(_U("打开")))
+        if (_name.Equals(_U("打开图像")))
         {
             ;
         }
