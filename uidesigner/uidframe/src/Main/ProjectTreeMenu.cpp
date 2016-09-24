@@ -26,6 +26,8 @@ static void OpenAndSelectFile(const String& strPath)
     String strTemp = strPath;
 
     strTemp.Replace(_U("/"), _U("\\"));
+    strTemp.Replace(_U("\\\\"), _U("\\"));
+
     strSelect.Format(_U("/select,%s"), strTemp.c_str()) ;
 
     ShellExecute(NULL, _U("open"), _U("explorer.exe"), strSelect.c_str(), NULL, SW_NORMAL) ;
