@@ -180,6 +180,18 @@ STDMETHODIMP CConnect::QueryStatus (
     return S_OK;
 }
 
+static void OpenAndSelectFile(const suic::String& strPath)
+{
+    suic::String strSelect;
+    suic::String strTemp = strPath;
+
+    strTemp.Replace(_U("/"), _U("\\"));
+    strTemp.Replace(_U("\\\\"), _U("\\"));
+    strSelect.Format(_U("/select,%s"), strTemp.c_str()) ;
+
+    ShellExecute(NULL, _U("open"), _U("explorer.exe"), strSelect.c_str(), NULL, SW_NORMAL) ;
+}
+
 STDMETHODIMP CConnect::Exec (
         /*[in]*/ BSTR CmdName,
         /*[in]*/ enum vsCommandExecOption ExecuteOption,
@@ -212,8 +224,21 @@ STDMETHODIMP CConnect::Exec (
 			long lCount = 0;
 			CComBSTR strVer;
 			CreateVSInfo vsInfo;
+            _Solution* _sln;
+            m_pDTE->get_Solution(&_sln);
 
+            if (NULL == _sln)
+            {
+                suic::Toast::Show(_U("获取解决方案失败！"), suic::Toast::DelayClose::ShortTime);
+                return S_OK;
+            }
+
+            _sln->get_Count(&lCount);
 			m_pDTE->get_Version(&strVer);
+
+            vsInfo.needOpenSln = true;
+            vsInfo.needAddSln = false;
+            vsInfo.needOpenDir = lCount > 0;
 
 			vsInfo.targetVs = (LPCTSTR)strVer;
             _uiFrame->ShowCreateVS(vsInfo);
@@ -222,27 +247,22 @@ STDMETHODIMP CConnect::Exec (
 			{
 				if (vsInfo.createVs.Equals(vsInfo.targetVs))
 				{
-					_Solution* _sln;
-					m_pDTE->get_Solution(&_sln);
-					if (NULL != _sln)
-					{
-						_sln->get_Count(&lCount);
-						if (lCount > 0)
-						{
-							suic::Toast::Show(_U("当前已经有工程打开！"), suic::Toast::DelayClose::ShortTime);
-						}
-						else
-						{
-							CComBSTR bstrPath(vsInfo.slnPath.c_str());
-							_sln->Open(bstrPath);
-						}
-					}
-				}
-				else
-				{
-					;
-				}
+                    if (lCount > 0)
+                    {
+                        suic::Toast::Show(_U("当前已经有工程打开！"), suic::Toast::DelayClose::ShortTime);
+                    }
+                    else
+                    {
+                        CComBSTR bstrPath(vsInfo.slnPath.c_str());
+                        _sln->Open(bstrPath);
+                    }
+                }
 			}
+
+            if (vsInfo.needOpenDir && !vsInfo.createVs.Empty())
+            {
+                OpenAndSelectFile(vsInfo.slnPath.c_str());
+            }
 
         }
     }

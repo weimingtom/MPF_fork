@@ -17,6 +17,8 @@ struct CreateVSInfo
 {
     bool needOpenSln;
     bool needAddSln;
+    bool needOpenDir;
+
     suic::String createVs;
     suic::String targetVs;
     suic::String prjPath;
