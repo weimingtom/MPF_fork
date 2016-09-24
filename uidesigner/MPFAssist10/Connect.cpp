@@ -209,6 +209,7 @@ STDMETHODIMP CConnect::Exec (
     {
 		if (_uiFrame.get() != NULL)
         {
+			long lCount = 0;
 			CComBSTR strVer;
 			CreateVSInfo vsInfo;
 
@@ -225,8 +226,16 @@ STDMETHODIMP CConnect::Exec (
 					m_pDTE->get_Solution(&_sln);
 					if (NULL != _sln)
 					{
-						CComBSTR bstrPath(vsInfo.slnPath.c_str());
-						_sln->Open(bstrPath);
+						_sln->get_Count(&lCount);
+						if (lCount > 0)
+						{
+							suic::Toast::Show(_U("当前已经有工程打开！"), suic::Toast::DelayClose::ShortTime);
+						}
+						else
+						{
+							CComBSTR bstrPath(vsInfo.slnPath.c_str());
+							_sln->Open(bstrPath);
+						}
 					}
 				}
 				else
