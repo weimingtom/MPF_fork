@@ -11,6 +11,8 @@
 # ifndef _VSWINDOW_H_
 # define _VSWINDOW_H_
 
+#include <uidcore/uidframe.h>
+
 using namespace suic;
 
 class VSWindow : public suic::Window
@@ -26,7 +28,10 @@ public:
     VSWindow();
     ~VSWindow();
 
-    static void StartVSCreator();
+    void SetVSVersion(const suic::String& strVer);
+    void InitVSType(const suic::String strVer);
+
+    static void StartVSCreator(CreateVSInfo& info);
 
 protected:
 
@@ -43,6 +48,7 @@ protected:
 
 private:
 
+    CreateVSInfo _createVsInfo;
     suic::String _checkedVs;
 };
 

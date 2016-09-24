@@ -67,9 +67,16 @@ bool VSManager::CreateVSProject(const suic::String& strVer, const suic::String& 
 	// 获取对应的VS工程数据
     suic::String strPath;
     suic::String strDll;
+    suic::String strCommon;
     FileReader fReader;
 
+    strCommon = FileDir::CalculatePath(String().Format(_U("resource\\uidesign\\VSTemplate\\common\\common.zip")));
     strPath = FileDir::CalculatePath(String().Format(_U("resource\\uidesign\\VSTemplate\\%s\\trunk.zip"), strVer.c_str()));
+
+    if (!FileDir::FileExist(strPath) || !FileDir::FileExist(strPath))
+    {
+        return false;
+    }
 
 	// 解压到指定目录
 	UnzipTo(strPath, strDir, name);
@@ -77,9 +84,8 @@ bool VSManager::CreateVSProject(const suic::String& strVer, const suic::String& 
 	// 用name替换模板的工程项目名称
 	ReplacePrjName(name, strDir + name);
 
-    strPath = FileDir::CalculatePath(String().Format(_U("resource\\uidesign\\VSTemplate\\common\\common.zip")));
 	// 解压到指定目录
-	UnzipTo(strPath, strDir, name);
+	UnzipTo(strCommon, strDir, name);
 
     strPath.Format(_U("%s\\%s\\bin\\suicoreu.dll"), strDir.c_str(), name.c_str());
     FileDir::CopyFileTo(FileDir::CalculatePath(_U("suicoreu.dll")), strPath, true);

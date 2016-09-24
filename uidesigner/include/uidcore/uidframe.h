@@ -13,6 +13,16 @@
 
 #include <System/Windows/Element.h>
 
+struct CreateVSInfo
+{
+    bool needOpenSln;
+    bool needAddSln;
+    suic::String createVs;
+    suic::String targetVs;
+    suic::String prjPath;
+    suic::String slnPath;
+};
+
 class IUIDFrame : public suic::Object
 {
 public:
@@ -32,7 +42,7 @@ public:
 
     virtual void SetUIDMode(IUIDFrame::UIDMode mode) = 0;
 
-    virtual void ShowCreateVS() = 0;
+    virtual void ShowCreateVS(CreateVSInfo& info) = 0;
 
     virtual void Dispose() = 0;
 };

@@ -31,7 +31,7 @@ public:
 
     virtual void SetUIDMode(IUIDFrame::UIDMode mode);
 
-    virtual void ShowCreateVS();
+    virtual void ShowCreateVS(CreateVSInfo& info);
 
     virtual void Dispose();
 

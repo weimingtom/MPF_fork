@@ -16,13 +16,38 @@ VSWindow::~VSWindow()
 {
 }
 
-void VSWindow::StartVSCreator()
+void VSWindow::SetVSVersion(const suic::String& strVer)
+{
+    _createVsInfo.targetVs = strVer;
+}
+
+void VSWindow::InitVSType(const suic::String strVer)
+{
+    suic::RadioButton* vsType = FindElem<suic::RadioButton>(strVer);
+    if (NULL != vsType)
+    {
+        vsType->SetChecked(suic::Boolean::True);
+        _checkedVs = vsType->GetContent()->ToString();
+    }
+}
+
+void VSWindow::StartVSCreator(CreateVSInfo& info)
 {
     VSWindow vsWnd;
     suic::String strUri(_U("/mpfuid;/resource/uidesign/layout/VSWindow.xaml"));
 
     vsWnd.setAutoDelete(false);
-    vsWnd.ShowDialog(strUri);
+    vsWnd.SetVSVersion(info.targetVs);
+    info.createVs = info.targetVs;
+	vsWnd._createVsInfo = info;
+
+    if (vsWnd.ShowDialog(strUri) == 0)
+    {
+        info = vsWnd._createVsInfo;
+        if (info.needOpenSln)
+        {
+        }
+    }
 }
 
 void VSWindow::OnOpenDirButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
@@ -52,6 +77,7 @@ void VSWindow::OnButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
         
         suic::TextBox* prjName = FindElem<suic::TextBox>(_U("PrjName"));
         suic::TextBox* prjDir = FindElem<suic::TextBox>(_U("PrjDir"));
+        suic::CheckBox* openSln = FindElem<suic::CheckBox>(_U("IsOpenSln"));
 
         suic::String strName = prjName->GetText();
         suic::String strDir = prjDir->GetText();
@@ -71,7 +97,15 @@ void VSWindow::OnButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
             return;
         }
 
-        VSManager::CreateVSProject(_checkedVs, strName, strDir);
+        if (VSManager::CreateVSProject(_checkedVs, strName, strDir))
+        {
+             SetDialogResult(0);
+             if (NULL != openSln)
+             {
+                 _createVsInfo.needOpenSln = openSln->IsChecked();
+             }
+             _createVsInfo.slnPath.Format(_U("%s\\%s\\trunk\\%s.sln"), strDir.c_str(), strName.c_str(), strName.c_str());
+        }
     }
 
     AsyncClose();
@@ -82,6 +116,7 @@ void VSWindow::OnVSButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
     suic::RadioButton* pElem = suic::RTTICast<suic::RadioButton>(sender);
     suic::String strName = pElem->GetName();
 
+    _createVsInfo.createVs = pElem->GetName();
     _checkedVs = pElem->GetContent()->ToString();
 
     e->SetHandled(true);
@@ -99,6 +134,15 @@ void VSWindow::OnConnect(suic::IXamlNode* pNode, suic::Object* target)
 void VSWindow::OnInitialized(EventArg* e)
 {
     suic::Window::OnInitialized(e);
+    SetDialogResult(-1);
+    if (!_createVsInfo.targetVs.Empty())
+    {
+        suic::String strTitle;
+        strTitle.Format(_U("%s - %s"), GetTitle().c_str(), _createVsInfo.targetVs.c_str());
+        SetTitle(strTitle);
+
+        InitVSType(_createVsInfo.targetVs);
+    }
 }
 
 void VSWindow::OnLoaded(suic::LoadedEventArg* e)

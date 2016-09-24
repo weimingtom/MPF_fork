@@ -209,7 +209,32 @@ STDMETHODIMP CConnect::Exec (
     {
 		if (_uiFrame.get() != NULL)
         {
-            _uiFrame->ShowCreateVS();
+			CComBSTR strVer;
+			CreateVSInfo vsInfo;
+
+			m_pDTE->get_Version(&strVer);
+
+			vsInfo.targetVs = (LPCTSTR)strVer;
+            _uiFrame->ShowCreateVS(vsInfo);
+
+			if (vsInfo.needOpenSln)
+			{
+				if (vsInfo.createVs.Equals(vsInfo.targetVs))
+				{
+					_Solution* _sln;
+					m_pDTE->get_Solution(&_sln);
+					if (NULL != _sln)
+					{
+						CComBSTR bstrPath(vsInfo.slnPath.c_str());
+						_sln->Open(bstrPath);
+					}
+				}
+				else
+				{
+					;
+				}
+			}
+
         }
     }
 

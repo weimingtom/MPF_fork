@@ -125,11 +125,13 @@ void UIDFrameImpl::RemoveWindow(const suic::String& strUri)
 {
 }
 
-void UIDFrameImpl::ShowCreateVS()
+void UIDFrameImpl::ShowCreateVS(CreateVSInfo& info)
 {
     if (InitApplication())
     {
-        VSWindow::StartVSCreator();
+        info.needAddSln = false;
+        info.needOpenSln = true;
+        VSWindow::StartVSCreator(info);
     }
 }
 
