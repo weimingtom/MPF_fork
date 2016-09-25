@@ -34,14 +34,18 @@ void MainWindow::OnConnect(suic::IXamlNode* pNode, suic::Object* target)
 void MainWindow::OnTimer(suic::Object* sender, suic::EventArg* e)
 {
     static int count = 1;
+    int iCheckCount = 8;
     suic::ListView* listView = FindElem<suic::ListView>("ListView");
 
-    if (listView)
+    if (listView != NULL && listView->GetItemsSource()->GetCount() >= iCheckCount)
     {
-        for (int i = 2; i < 10; ++i)
+        for (int i = 2; i < iCheckCount; ++i)
         {
             NameField* field = suic::DynamicCast<NameField>(listView->GetItem(i));
-            field->SetSexy(suic::String().Format(_U("name_%d"), count++));
+            if (NULL != field)
+            {
+                field->SetSexy(suic::String().Format(_U("name_%d"), count++));
+            }
         }
     }
 }
@@ -88,7 +92,7 @@ void MainWindow::OnBtnClicked(suic::Element* sender, suic::RoutedEventArg* e)
         return;
     }
 
-    if (item)
+    /*if (item)
     {
         pItem = item->GetDataContext();
     }
@@ -99,7 +103,7 @@ void MainWindow::OnBtnClicked(suic::Element* sender, suic::RoutedEventArg* e)
     else
     {
         suic::InfoBox::Show("点击单元格的Button控件!", "提示", suic::InfoBox::ButtonType::IB_OK);
-    }
+    }*/
 }
 
 void MainWindow::OnItemDbClck(suic::Element* sender, suic::MouseButtonEventArg* e)
@@ -121,9 +125,38 @@ void MainWindow::OnItemDbClck(suic::Element* sender, suic::MouseButtonEventArg* 
     e->SetHandled(true);
 }
 
+void MainWindow::OnDeleteListButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
+{
+    suic::ListView* listView = FindElem<suic::ListView>("ListView");
+
+    e->SetHandled(true);
+
+    if (listView && listView->GetItemsSource()->GetCount() > 1)
+    {
+        listView->GetItemsSource()->RemoveItemAt(listView->GetItemsSource()->GetCount() - 1);
+    }
+}
+
+void MainWindow::OnResetListButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e)
+{
+    suic::ListView* listView = FindElem<suic::ListView>("ListView");
+
+    e->SetHandled(true);
+
+    if (listView)
+    {
+        NameField* pName = new NameField(listView->GetItemsSource()->GetCount() + 1, _U("等雨停了"));
+        pName->SetSexy(_U("男"));
+        listView->AddChild(pName);
+        InsertUserItem(listView);
+    }
+}
+
 void MainWindow::OnClipListView(suic::Element* sender, suic::RoutedEventArg* e)
 {
     suic::ListView* listView = FindElem<suic::ListView>("ListView");
+
+    e->SetHandled(true);
 
     if (listView)
     {
@@ -158,6 +191,16 @@ void MainWindow::OnItemSelectionChanged(suic::Element* sender, suic::SelectionCh
     suic::Debug::Trace(_U("MainWindow::OnItemSelectionChanged -> %d"), ++num);
 }
 
+void MainWindow::InsertUserItem(suic::ListView* listView)
+{
+    suic::ListViewItem* testItem = new suic::ListViewItem();
+    listView->AddChild(testItem);
+    suic::Style* pSty = suic::RTTICast<suic::Style>(FindRes(_U("TestViewStyle")));
+
+    testItem->SetDataContext(new NameField(-1, _U("等雨停了888")));
+    testItem->SetStyle(pSty);
+}
+
 void MainWindow::RegisterButtonEvent()
 {
     suic::ListView* listView = FindElem<suic::ListView>("ListView");
@@ -167,7 +210,9 @@ void MainWindow::RegisterButtonEvent()
         listView->AddHandler(suic::Button::ClickEvent, new suic::ClickEventHandler(this, &MainWindow::OnBtnClicked));
         listView->AddMouseDoubleClick(new suic::MouseButtonEventHandler(this, &MainWindow::OnItemDbClck));
 
-        for (int i = 0; i < 100000; ++i)
+        InsertUserItem(listView);
+
+        for (int i = 0; i < 0; ++i)
         {
             NameField* pName = new NameField(i + 1, _U("等雨停了"));
             pName->SetSexy(_U("男"));

@@ -10,23 +10,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
                        int       nCmdShow)
 {
     suic::InitUIWgx();
+    suic::InitUILogLevel(suic::LogLevel::Trace);
 
     suic::WindowPtr wnd(new MainWindow());
-    //suic::ThemeOp::AddDir(_U("demon"), _U("Z:\\Work\\UI\\sharpui\\trunk\\bin\\debug_vc90\\jianfeng\\"));
+    //suic::ResourceHelper::AddDir(_U("demon"), _U("Z:\\Work\\UI\\sharpui\\trunk\\bin\\debug_vc90\\jianfeng\\"));
 
     try
     {
-        // 加载资源文件
-        //suic::ThemeOp::SetSystemTheme("default.sres", "wr");
-        //suic::String strApp = _T("jianfeng/Application.xml");
-
-        // 载入布局资源并运行系统
-        //suic::Application::RunApp(wnd.get(), strApp.c_str());
-        //wnd->Dispose();
-        // 加载资源文件
-        suic::ThemeOp::SetSystemTheme("default.sres", "wr");
         suic::String strApp = _T("ControlDemo/ListView/Application.xml");
-
         // 载入布局资源并运行系统
         suic::Application::RunApp(wnd.get(), strApp.c_str());
         wnd->Dispose();

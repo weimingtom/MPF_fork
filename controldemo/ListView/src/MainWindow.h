@@ -23,7 +23,8 @@ public:
     BeginMember(NameField, suic::NotifyPropChanged)
         MemberInt(Number)
         MemberString(Name)
-        MemberString(Tel)
+        MemberGetObject(Tel)
+        MemberObject(SelTel)
         MemberString(Sexy)
         MemberObject(Checked)
         MemberAttributes(Attris)
@@ -33,15 +34,18 @@ public:
 
     NameField()
     {
+        _tel.setAutoDelete(false);
         _checked = suic::Boolean::True;
     }
 
     NameField(int num, suic::String name)
     {
+        _tel.setAutoDelete(false);
         _number = num;
         _propName = name;
         _addr = _U("中国广东深圳");
-        _tel = _U("13500013800");
+        _tel.AddItem(new suic::OString(_U("13500013800")));
+        _tel.AddItem(new suic::OString(_U("13500013801")));
         _personId = _U("52020298888081231");
         _checked = suic::Boolean::True;
     }
@@ -76,14 +80,19 @@ public:
         _addr = val;
     }
 
-    suic::String GetTel()
+    suic::Object* GetSelTel()
     {
-        return _tel;
+        return _selItem.get();
     }
 
-    void SetTel(suic::String val)
+    void SetSelTel(suic::Object* obj)
     {
-        _tel = val;
+        _selItem = obj;
+    }
+
+    suic::Object* GetTel()
+    {
+        return &_tel;
     }
 
     suic::String GetSexy()
@@ -164,7 +173,8 @@ private:
     suic::Boolean* _checked;
     suic::String _propName;
     suic::String _addr;
-    suic::String _tel;
+    suic::ObjectPtr _selItem;
+    suic::ObservableCollection _tel;
     suic::String _sexy;
     suic::String _personId;
 };
@@ -172,6 +182,11 @@ private:
 class MainWindow : public suic::Window
 {
 public:
+
+    BeginRoutedEvent(MainWindow, suic::Window)
+        MemberRouted(OnResetListButtonClick)
+        MemberRouted(OnDeleteListButtonClick)
+    EndRoutedEvent()
 
     MainWindow();
     ~MainWindow();
@@ -186,6 +201,11 @@ public:
     void OnItemSelectionChanged(suic::Element* sender, suic::SelectionChangedEventArg* e);
 
 protected:
+
+    void InsertUserItem(suic::ListView* listView);
+
+    void OnDeleteListButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e);
+    void OnResetListButtonClick(suic::DpObject* sender, suic::RoutedEventArg* e);
 
     // 创建自己的控件对象
     bool OnBuild(suic::IXamlNode* pNode, suic::ObjectPtr& obj);
