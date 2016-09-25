@@ -226,7 +226,7 @@ void SetterEditorCmd::EditSelfExprestion(SetterEditor* setterEditor)
         }
 
         suic::ResourceItem resItem;
-        suic::ResourceParserOp::ParseExtension(tempInfo, strName, resItem);
+        suic::ResourceParserOp::ParseExtension(tempInfo, NULL, strName, resItem);
         if (resItem.res.get() != suic::DpProperty::UnsetValue())
         {
             setterEditor->UpdateExpressValue(resItem.res.get(), true);
