@@ -332,7 +332,15 @@ Size DesignPanel::OnMeasure(const suic::Size& constraitSize)
         if (_needMeasure)
         {
             _needMeasure = false;
-            pElem->Measure(constraitSize);
+            suic::Window* pWnd = suic::RTTICast<suic::Window>(pElem);
+            if (pWnd != NULL && pWnd->GetSizeToContent())
+            {
+                pWnd->UpdateSizeOnContent();
+            }
+            else
+            {
+                pElem->Measure(constraitSize);
+            }
             size = pElem->GetDesiredSize();
         }
 
@@ -352,14 +360,14 @@ void DesignPanel::OnArrange(const suic::Size& availableSize)
     if (_root && _root->GetUIElement())
     {
         suic::Rect rcLay;
-        suic::Element* elem(_root->GetUIElement());
+        suic::Element* pElem(_root->GetUIElement());
 
         rcLay.left = _margin.left;
         rcLay.top = _margin.top;
-        rcLay.right = rcLay.left + elem->GetDesiredSize().cx;
-        rcLay.bottom = rcLay.top + elem->GetDesiredSize().cy;
+        rcLay.right = rcLay.left + pElem->GetDesiredSize().cx;
+        rcLay.bottom = rcLay.top + pElem->GetDesiredSize().cy;
 
-        elem->Arrange(rcLay);
+        pElem->Arrange(rcLay);
     }
 }
 
