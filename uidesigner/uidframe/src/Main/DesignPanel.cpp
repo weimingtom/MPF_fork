@@ -332,12 +332,12 @@ Size DesignPanel::OnMeasure(const suic::Size& constraitSize)
         if (_needMeasure)
         {
             _needMeasure = false;
-            suic::Window* pWnd = suic::RTTICast<suic::Window>(pElem);
+            /*suic::Window* pWnd = suic::RTTICast<suic::Window>(pElem);
             if (pWnd != NULL && pWnd->GetSizeToContent())
             {
                 pWnd->UpdateSizeOnContent();
             }
-            else
+            else*/
             {
                 pElem->Measure(constraitSize);
             }
