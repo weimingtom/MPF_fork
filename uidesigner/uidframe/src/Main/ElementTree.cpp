@@ -64,8 +64,8 @@ void ElementTreeItem::ArrangeCore(const suic::Rect& arrangeRect)
     _offset.x = 0;
     _offset.y = arrangeRect.top;
 
-    _screenOffset = parent->GetScreenOffset();
-    _screenOffset.y = _offset.y + GetUIParent()->GetScreenOffset().y;
+    _canvasOffset = parent->GetCanvasOffset();
+    _canvasOffset.y = _offset.y + GetUIParent()->GetCanvasOffset().y;
 
     _renderSize.cx = scrollView->GetViewportWidth();
     _renderSize.cy = arrangeRect.Height();
@@ -79,7 +79,7 @@ void ElementTreeItem::ArrangeCore(const suic::Rect& arrangeRect)
         }
     }
 
-    _descendantBounds = Rect(_screenOffset, _renderSize);
+    _descendantBounds = Rect(_canvasOffset, _renderSize);
 }
 
 void TreeItemDockPanel::ArrangeCore(const suic::Rect& arrangeRect)
@@ -93,7 +93,7 @@ void TreeItemDockPanel::ArrangeChild(ElementTreeItem* parent, suic::ScrollViewer
     _offset.x = 0;
     _offset.y = 0;
     
-    _screenOffset = parent->GetScreenOffset();
+    _canvasOffset = parent->GetCanvasOffset();
     _renderSize = parent->GetRenderSize();
     _renderSize.cx = scrollView->GetViewportWidth();
 
@@ -151,7 +151,7 @@ void TreeItemGrid::ArrangeChild(Element* parent, suic::ScrollViewer* scrollView)
     _offset.x = 0;
     _offset.y = 0;
 
-    _screenOffset = parent->GetScreenOffset();
+    _canvasOffset = parent->GetCanvasOffset();
     _renderSize.cx = parent->GetActualWidth();//scrollView->GetViewportWidth();
     _renderSize.cy = GetDesiredSize().Height();
 
@@ -179,7 +179,7 @@ void TreeItemGrid::ArrangeChild(Element* parent, suic::ScrollViewer* scrollView)
     }
 
     _renderSize.cx += 6;
-    _descendantBounds = Rect(_screenOffset, _renderSize);
+    _descendantBounds = Rect(_canvasOffset, _renderSize);
 }
 
 ProjectTree::ProjectTree()

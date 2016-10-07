@@ -332,12 +332,27 @@ Size DesignPanel::OnMeasure(const suic::Size& constraitSize)
         if (_needMeasure)
         {
             _needMeasure = false;
-            /*suic::Window* pWnd = suic::RTTICast<suic::Window>(pElem);
-            if (pWnd != NULL && pWnd->GetSizeToContent())
+            suic::Window* pWnd = suic::RTTICast<suic::Window>(pElem);
+            if (pWnd != NULL)
             {
-                pWnd->UpdateSizeOnContent();
+                suic::Size szMeasure = constraitSize;
+                if (pWnd->GetSizeToContent() == suic::SizeToContent::stcWidth)
+                {
+                    szMeasure.cx = suic::Numeric::MeasureMaxInt;
+                }
+                else if (pWnd->GetSizeToContent() == suic::SizeToContent::stcHeight)
+                {
+                    szMeasure.cy = suic::Numeric::MeasureMaxInt;
+                }
+                else if (pWnd->GetSizeToContent() == suic::SizeToContent::stcWidthAndHeight)
+                {
+                    szMeasure.cx = suic::Numeric::MeasureMaxInt;
+                    szMeasure.cy = suic::Numeric::MeasureMaxInt;
+                }
+
+                pElem->Measure(szMeasure);
             }
-            else*/
+            else
             {
                 pElem->Measure(constraitSize);
             }
