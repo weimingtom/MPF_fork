@@ -378,7 +378,7 @@ void ChatTextContainer::AdjustChatItem(ChatItem* pInfo)
 
 void ChatTextContainer::OnRender(suic::Drawing* drawing)
 {
-    suic::Point pt = GetScreenOffset();
+    suic::Point pt = GetCanvasOffset();
     suic::Rect rcClient(pt, GetRenderSize());
     suic::ITextRender* textRender = GetTextRender();
 

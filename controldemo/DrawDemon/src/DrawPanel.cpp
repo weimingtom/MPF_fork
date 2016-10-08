@@ -87,7 +87,7 @@ void DrawPanel::UpdateDrawArea()
         //drawing->Save();
         //drawing->ClipGeometry(&path, suic::ClipOp::OpIntersect, false);
 
-        path.AddOval(suic::fRect(250, 15, 300, 50), true);
+        path.AddOval(suic::fRect(250, 15, 300, 50));
         pen.SetThickness(3);
 
         drawing->DrawGeometry(suic::SolidColorBrush::Green, &pen, &path);
