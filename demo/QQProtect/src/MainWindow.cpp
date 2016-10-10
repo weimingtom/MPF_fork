@@ -456,6 +456,11 @@ void MainWindow::OnMouseEnterUserInfo(Element* sender, MouseButtonEventArg* e)
             int left = pt.x + GetActualWidth();
             int top = pt.y + userInfo->PointToScreen(Point()).y;
 
+            if (left + _userWnd->GetWidth() > bounds.cx)
+            {
+                left = pt.x - _userWnd->GetWidth();
+            }
+
             _userWnd->SetPos(left, top);
             _userWnd->Show(this);
 
