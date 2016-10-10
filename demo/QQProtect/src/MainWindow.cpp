@@ -453,7 +453,7 @@ void MainWindow::OnMouseEnterUserInfo(Element* sender, MouseButtonEventArg* e)
             Point pt = PointTransform::GetRootScreenPos(this);
             Element* userInfo = FindElem<Element>(_U("HeadImg"));
 
-            int left = pt.x + GetWidth();
+            int left = pt.x + GetActualWidth();
             int top = pt.y + userInfo->PointToScreen(Point()).y;
 
             _userWnd->SetPos(left, top);
