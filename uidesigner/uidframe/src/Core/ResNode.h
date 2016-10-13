@@ -687,10 +687,11 @@ public:
     ResourceUri* GetResPath();
     suic::ImageBrush* GetImageBrush();
 
-    void RefleshImageSource();
+    suic::ImageBrush* RefleshImageSource();
     void SetImageBrush(suic::ImageBrush* val);
-    void SetImageSource(const String& imgSource);
+    //void SetImageSource(const String& imgSource);
 
+    virtual void SetValue(suic::Object* val);
     virtual suic::String GetResXml(const String& offset);
 
 private:

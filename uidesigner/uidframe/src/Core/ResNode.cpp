@@ -1607,54 +1607,61 @@ ImageBrushResNode::~ImageBrushResNode()
 {
 }
 
-ResourceUri* ImageBrushResNode::GetResPath()
+void ImageBrushResNode::SetValue(suic::Object* val)
 {
+    BrushResNode::SetValue(val);
     if (NULL != GetImageBrush() && NULL != GetImageBrush()->GetImageSource())
     {
         _resPath = GetImageBrush()->GetImageSource()->GetUri();
     }
+}
+
+ResourceUri* ImageBrushResNode::GetResPath()
+{
     return (&_resPath);
 }
 
 void ImageBrushResNode::SetImageBrush(suic::ImageBrush* val)
 {
     SetValue(val);
-    if (NULL != val->GetImageSource())
-    {
-        _resPath = val->GetImageSource()->GetUri();
-    }
 }
 
-void ImageBrushResNode::SetImageSource(const String& imgSource)
+/*void ImageBrushResNode::SetImageSource(const String& imgSource)
 {
     _resPath.Parse(imgSource);
+
+    //suic::ImageBrush* imgBr = new suic::ImageBrush();
+    //imgBr->SetImageSource(new ImageSource(imgSource));
+    //SetValue(imgBr);
+
     suic::ImageBrush* imgBr = GetImageBrush();
 
     if (NULL == imgBr)
     {
         imgBr = new suic::ImageBrush();
+        imgBr->SetImageSource(new ImageSource(imgSource));
         SetValue(imgBr);
     }
-
-    if (NULL != imgBr)
+    else
     {
         imgBr->SetImageSource(new ImageSource(imgSource));
     }
-}
+}*/
 
 suic::ImageBrush* ImageBrushResNode::GetImageBrush()
 {
     return RTTICast<suic::ImageBrush>(GetValue());
 }
 
-void ImageBrushResNode::RefleshImageSource()
+suic::ImageBrush* ImageBrushResNode::RefleshImageSource()
 {
-    suic::ImageBrush* imgBr = GetImageBrush();
+    suic::ImageBrush* imgBr = new suic::ImageBrush();
+    imgBr->ref();
+    imgBr->SetImageSource(new ImageSource(_resPath.ToString()));
+    SetValue(imgBr);
+    imgBr->unref();
 
-    if (NULL != imgBr)
-    {
-        imgBr->SetImageSource(new ImageSource(_resPath.ToString()));
-    }
+    return imgBr;
 }
 
 suic::String ImageBrushResNode::GetResXml(const String& offset)

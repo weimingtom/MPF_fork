@@ -2158,8 +2158,8 @@ void ImageBrushEditor::OnSelImageBtn(Element* sender, suic::RoutedEventArg* e)
             resPath->SetComponent(pEditPanel->GetResName());
             resPath->SetResourcePath(imgSource);
 
-            ibResNode->RefleshImageSource();
-
+            imgBrush = ibResNode->RefleshImageSource();
+ 
             if (NULL != pImgSource)
             {
                 pImgSource->SetText(resPath->GetResourcePath());
